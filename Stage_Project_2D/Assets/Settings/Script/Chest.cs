@@ -2,13 +2,26 @@ using UnityEngine;
 
 public class Chest : MonoBehaviour
 {
+    [Header("Sprites")]
+    [SerializeField] private SpriteRenderer sr;
     public Sprite closedSprite;
     public Sprite openSprite;
 
-    [SerializeField] private SpriteRenderer sr;
+    [Header("Collider")]
+    [SerializeField] private BoxCollider2D boxCollider;
 
     private bool isOpen = false;
     private bool playerInRange = false;
+
+    private void Start()
+    {
+        boxCollider = GetComponent<BoxCollider2D>();
+
+        if (sr == null || boxCollider == null)
+        {
+            Debug.LogWarning("Chest: SpriteRenderer o BoxCollider della chest nullo.");
+        }
+    }
 
     // Quando entro nell'area del trigger posso premere "E" per aprire o chiudere il forziere
     private void OnTriggerEnter2D(Collider2D other)
@@ -38,7 +51,16 @@ public class Chest : MonoBehaviour
                 return;
             }
 
-            isOpen = !isOpen;
+            isOpen = !isOpen; 
+
+            if (isOpen)
+            {
+                Debug.Log("isOpen --> true!");
+            }
+            else
+            {
+                Debug.Log("isOpen --> false!");
+            }
 
             //operatore ternario: if isOpen --> true: openSprite, false: closedSprite
             sr.sprite = isOpen ? openSprite : closedSprite;
