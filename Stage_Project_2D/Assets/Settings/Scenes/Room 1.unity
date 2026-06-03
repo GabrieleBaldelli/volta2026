@@ -622,6 +622,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 356562899}
     m_Modifications:
     - target: {fileID: 2055102311959635368, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
+    - target: {fileID: 2055102311959635368, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
       propertyPath: m_SortingLayer
       value: 1
       objectReference: {fileID: 0}
@@ -633,9 +637,13 @@ PrefabInstance:
       propertyPath: m_SortingLayerID
       value: -1792016837
       objectReference: {fileID: 0}
+    - target: {fileID: 2055102311959635368, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2055102311959635369, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
       propertyPath: m_Name
-      value: PF Props - Chest 01
+      value: Chest 01
       objectReference: {fileID: 0}
     - target: {fileID: 2055102311959635375, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
       propertyPath: m_LocalPosition.x
@@ -7083,7 +7091,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.011297703, y: 0.44438088}
+  m_Offset: {x: -0.00717628, y: 0.40728742}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -7094,7 +7102,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.3482065, y: 1.5272315}
+  m_Size: {x: 2.504824, y: 1.6014184}
   m_EdgeRadius: 0
 --- !u!1 &1574086942
 GameObject:
@@ -7641,15 +7649,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00192e51cd3724d62ab09070262d01dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sr: {fileID: 2071131256}
-  closedSprite: {fileID: 21300000, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
   openSprite: {fileID: 21300040, guid: 29c9cded5e558164aaf8c9bf08aa1510, type: 3}
-  boxCollider: {fileID: 0}
---- !u!212 &2071131256 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 2055102311959635368, guid: 99597c7b4aa47494fb2b6061505735da, type: 3}
-  m_PrefabInstance: {fileID: 636572767}
-  m_PrefabAsset: {fileID: 0}
+  openChest:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2071131254}
+        m_TargetAssemblyTypeName: Chest, Assembly-CSharp
+        m_MethodName: openChestEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!61 &2071131257
 BoxCollider2D:
   m_ObjectHideFlags: 0
