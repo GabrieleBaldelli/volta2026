@@ -100,18 +100,18 @@ public class PlayerMovement : MonoBehaviour
             HandleAttackInput();
         }
 
-        //INPUT del dash con il tasto "Q"
+        //INPUT del dash con il tasto "Shift"
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             StartCoroutine(DashCoroutine());
         }
 
-        /* INPUT del dash con il tasto "Q"
-        if (Input.GetKeyDown("q"))
+         //INPUT del dash con il tasto "Q"
+       /* if (Input.GetKeyDown(KeyCode.E))
         {
             StartCoroutine(DashCoroutine());
-        }
-        */
+        }*/
+        
 
         // TIMER DELLA COMBO
 
