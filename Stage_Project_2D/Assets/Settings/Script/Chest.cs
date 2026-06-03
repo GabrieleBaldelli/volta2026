@@ -1,30 +1,25 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Chest : MonoBehaviour
 {
+    [Header("Sprites")]
+    [SerializeField] private SpriteRenderer sr;
+    public Sprite closedSprite;
     public Sprite openSprite;
- 
-    public UnityEvent openChest = new UnityEvent();
-    
-    private BoxCollider2D boxCollider;
-    private SpriteRenderer sr;
-    private bool playerInRange = false;
+
+    [Header("Collider")]
+    [SerializeField] private BoxCollider2D boxCollider;
+
     private bool isOpen = false;
+    private bool playerInRange = false;
 
-    private void Awake()
+    private void Start()
     {
-        sr = GetComponent<SpriteRenderer>();
-        boxCollider = GetComponentInChildren<BoxCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
 
-        openChest.AddListener(openChestEvent);
-    }
-
-    private void Update()
-    {
-        if (playerInRange && !isOpen && Input.GetKeyDown(KeyCode.E))
+        if (sr == null || boxCollider == null)
         {
-            openChest.Invoke();
+            Debug.LogWarning("Chest: SpriteRenderer o BoxCollider della chest nullo.");
         }
     }
 
@@ -46,13 +41,29 @@ public class Chest : MonoBehaviour
         }
     }
 
-    public void openChestEvent()
+    void Update()
     {
-        isOpen = true;
-        Debug.Log("La cassa è stata aperta!");
+        if (playerInRange && Input.GetKeyDown(KeyCode.E))
+        {
+            if (sr == null)
+            {
+                Debug.LogWarning("Chest: assegna lo SpriteRenderer della chest nello script.");
+                return;
+            }
 
-        sr.sprite = openSprite;
+            isOpen = !isOpen; 
 
-        enabled = false;
+            if (isOpen)
+            {
+                Debug.Log("isOpen --> true!");
+            }
+            else
+            {
+                Debug.Log("isOpen --> false!");
+            }
+
+            //operatore ternario: if isOpen --> true: openSprite, false: closedSprite
+            sr.sprite = isOpen ? openSprite : closedSprite;
+        }
     }
 }
