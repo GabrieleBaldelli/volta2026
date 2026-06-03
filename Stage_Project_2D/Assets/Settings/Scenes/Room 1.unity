@@ -937,11 +937,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117128348835321587, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Size.y
-      value: 0.6171097
+      value: 0.66572064
       objectReference: {fileID: 0}
     - target: {fileID: 9117128348835321587, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Offset.y
-      value: 0.3705549
+      value: 0.39486036
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1021,9 +1021,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 4
   stopDistance: 1
-  chaseDistance: 8
+  chaseDistance: 6
   attackCooldown: 1.5
-  knockbackForce: 50
+  attackDuration: 0.6
+  attackHitDelay: 0.25
+  knockbackForce: 12
+  knockbackDuration: 0.15
 --- !u!212 &1253836701
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1123,7 +1126,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.06410745, y: 0.67727906}
+  m_Offset: {x: 0.11410281, y: 0.8433666}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -1134,7 +1137,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9443981, y: 1.3545581}
+  m_Size: {x: 0.8277429, y: 0.82793975}
   m_EdgeRadius: 0
 --- !u!50 &1253836704
 Rigidbody2D:
