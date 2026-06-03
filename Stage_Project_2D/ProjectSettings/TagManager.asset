@@ -45,6 +45,9 @@ TagManager:
   - name: GameObject
     uniqueID: 2502950459
     locked: 0
-  - name: Payer
+  - name: Enemy
+    uniqueID: 975740573
+    locked: 0
+  - name: Player
     uniqueID: 1768746897
     locked: 0

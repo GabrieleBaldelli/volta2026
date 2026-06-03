@@ -1,25 +1,30 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Chest : MonoBehaviour
 {
-    [Header("Sprites")]
-    [SerializeField] private SpriteRenderer sr;
-    public Sprite closedSprite;
     public Sprite openSprite;
-
-    [Header("Collider")]
-    [SerializeField] private BoxCollider2D boxCollider;
-
-    private bool isOpen = false;
+ 
+    public UnityEvent openChest = new UnityEvent();
+    
+    private BoxCollider2D boxCollider;
+    private SpriteRenderer sr;
     private bool playerInRange = false;
+    private bool isOpen = false;
 
-    private void Start()
+    private void Awake()
     {
-        boxCollider = GetComponent<BoxCollider2D>();
+        sr = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponentInChildren<BoxCollider2D>();
 
-        if (sr == null || boxCollider == null)
+        openChest.AddListener(openChestEvent);
+    }
+
+    private void Update()
+    {
+        if (playerInRange && !isOpen && Input.GetKeyDown(KeyCode.E))
         {
-            Debug.LogWarning("Chest: SpriteRenderer o BoxCollider della chest nullo.");
+            openChest.Invoke();
         }
     }
 
@@ -41,29 +46,13 @@ public class Chest : MonoBehaviour
         }
     }
 
-    void Update()
+    public void openChestEvent()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.E))
-        {
-            if (sr == null)
-            {
-                Debug.LogWarning("Chest: assegna lo SpriteRenderer della chest nello script.");
-                return;
-            }
+        isOpen = true;
+        Debug.Log("La cassa è stata aperta!");
 
-            isOpen = !isOpen; 
+        sr.sprite = openSprite;
 
-            if (isOpen)
-            {
-                Debug.Log("isOpen --> true!");
-            }
-            else
-            {
-                Debug.Log("isOpen --> false!");
-            }
-
-            //operatore ternario: if isOpen --> true: openSprite, false: closedSprite
-            sr.sprite = isOpen ? openSprite : closedSprite;
-        }
+        enabled = false;
     }
 }
