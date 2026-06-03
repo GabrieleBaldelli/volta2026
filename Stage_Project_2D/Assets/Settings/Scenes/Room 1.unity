@@ -937,11 +937,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117128348835321587, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Size.y
-      value: 0.66572064
+      value: 0.77965564
+      objectReference: {fileID: 0}
+    - target: {fileID: 9117128348835321587, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9117128348835321587, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Offset.y
-      value: 0.39486036
+      value: 0.45182785
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1021,7 +1025,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 4
   stopDistance: 1
-  chaseDistance: 6
+  chaseDistance: 7
   attackCooldown: 1.5
   attackDuration: 0.6
   attackHitDelay: 0.25
