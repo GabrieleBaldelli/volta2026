@@ -89,29 +89,34 @@ public class PlayerMovement : MonoBehaviour
             //Se il personaggio si muove a sinistra, lo sprite si ribalta
             spriteRenderer.flipX = true;
         }
+        else if(rb.velocity.y > 0 || rb.velocity.y < 0)
+        {
+            IsMoving = true;
+        }
+
         else
         {
             IsMoving = false;
         }
 
         //INPUT di attacco con il tasto SX del mouse
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && IsAttacking == false)
         {
             HandleAttackInput();
         }
 
-        //INPUT del dash con il tasto "Q"
+        //INPUT del dash con il tasto "Shift"
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             StartCoroutine(DashCoroutine());
         }
 
-        /* INPUT del dash con il tasto "Q"
-        if (Input.GetKeyDown("q"))
+         //INPUT del dash con il tasto "Q"
+       /* if (Input.GetKeyDown(KeyCode.E))
         {
             StartCoroutine(DashCoroutine());
-        }
-        */
+        }*/
+        
 
         // TIMER DELLA COMBO
 
