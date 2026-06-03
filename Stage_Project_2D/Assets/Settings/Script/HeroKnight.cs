@@ -89,13 +89,18 @@ public class PlayerMovement : MonoBehaviour
             //Se il personaggio si muove a sinistra, lo sprite si ribalta
             spriteRenderer.flipX = true;
         }
+        else if(rb.velocity.y > 0 || rb.velocity.y < 0)
+        {
+            IsMoving = true;
+        }
+
         else
         {
             IsMoving = false;
         }
 
         //INPUT di attacco con il tasto SX del mouse
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && IsAttacking == false)
         {
             HandleAttackInput();
         }
