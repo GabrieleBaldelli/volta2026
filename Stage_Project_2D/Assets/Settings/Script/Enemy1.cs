@@ -153,7 +153,7 @@ public class Enemy1 : MonoBehaviour
         }
     }
 
-    private void OnValidate()
+   /* private void OnValidate()
     {
         stopDistance = Mathf.Max(0.1f, stopDistance);
         chaseDistance = Mathf.Max(stopDistance + 0.1f, chaseDistance);
@@ -161,6 +161,6 @@ public class Enemy1 : MonoBehaviour
         attackDuration = Mathf.Max(0.1f, attackDuration);
         attackHitDelay = Mathf.Clamp(attackHitDelay, 0.01f, attackDuration);
         knockbackDuration = Mathf.Max(0.01f, knockbackDuration);
-    }
+    }*/
 }
         
