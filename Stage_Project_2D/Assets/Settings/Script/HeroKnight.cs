@@ -310,9 +310,5 @@ public class PlayerMovement : MonoBehaviour
         IsHurting = false;
 
         Debug.Log("viene colpito");
-
-        
     }
-
-
 }

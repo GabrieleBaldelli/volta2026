@@ -945,8 +945,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aece180e185724c24b0afdd72d46915b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 933564138}
   playerMovement: {fileID: 933564143}
-  player: {fileID: 933564144}
+  p: {fileID: 933564144}
   targetPosition: {fileID: 1612235937}
   walkSpeed: 2
   openDoorDelay: 1
@@ -1187,7 +1188,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 933564138}
-  playerAnimator: {fileID: 933564142}
   stopDistance: 1
   chaseDistance: 7
   attackCooldown: 1.5

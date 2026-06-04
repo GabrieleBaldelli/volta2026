@@ -7,9 +7,8 @@ public class Enemy1 : MonoBehaviour
 {
     [Header("Player References")]
     public GameObject player;
-    public Animator playerAnimator;
     private Transform p;
-    private PlayerMovement playerMovement;
+    private PlayerMovement playerScript;
 
     [Header("Enemy Stats")]
     public float stopDistance = 1f;
@@ -35,7 +34,7 @@ public class Enemy1 : MonoBehaviour
         spriterenderer = GetComponent<SpriteRenderer>();
         aiPath = GetComponent<AIPath>();
         p = player.transform;
-        playerMovement = player.GetComponent<PlayerMovement>();
+        playerScript = player.GetComponent<PlayerMovement>();
 
         // sicurezza iniziale
         aiPath.canMove = false;
@@ -122,21 +121,21 @@ public class Enemy1 : MonoBehaviour
     public void HitPlayer()
     {
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-        PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+        playerScript = player.GetComponent<PlayerMovement>();
 
-        StartCoroutine(KnockbackPlayer(playerRb, playerMovement));
+        StartCoroutine(KnockbackPlayer(playerRb, playerScript));
 
         Debug.Log("Colpito");
 
-        StartCoroutine(playerMovement.HurtCoroutine()); // Danno al giocatore, implamentato nella classe HeroKnight
+        StartCoroutine(playerScript.HurtCoroutine()); // Danno al giocatore, implamentato nella classe HeroKnight
     }
 
-    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerMovement)
+    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerScript)
     {
         Vector2 knockbackDirection = (p.position - transform.position).normalized;
 
-        if (playerMovement != null)
-            playerMovement.enabled = false;
+        if (playerScript != null)
+            playerScript.enabled = false;
 
         playerRb.velocity = Vector2.zero;
         playerRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
@@ -145,8 +144,8 @@ public class Enemy1 : MonoBehaviour
 
         playerRb.velocity = Vector2.zero;
 
-        if (playerMovement != null)
-            playerMovement.enabled = true;
+        if (playerScript != null)
+            playerScript.enabled = true;
     }
 
 }
