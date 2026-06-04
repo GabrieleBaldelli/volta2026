@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private bool IsMoving;
     private bool IsAttacking;
     private bool IsDashing;
+    private bool IsShielding;
 
     //Velocità del dash
     public float dashSpeed = 10f;
@@ -55,6 +56,11 @@ public class PlayerMovement : MonoBehaviour
         //Serve per dire che se sto dashando
         //Il return esce dall'update per far finire l'animazione
         if (IsDashing)
+            {
+                return;
+            }
+
+        if (IsShielding)
             {
                 return;
             }
@@ -105,6 +111,11 @@ public class PlayerMovement : MonoBehaviour
             HandleAttackInput();
         }
 
+        if (Input.GetMouseButtonDown(1) && IsShielding == false && IsAttacking == false && IsDashing == false)
+        {
+            StartCoroutine(ShieldCoroutine());
+        }
+
         //INPUT del dash con il tasto "Shift"
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -146,6 +157,11 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        if (IsShielding)
+        {
+            return;
+        }
+
         //Se dasha, non cambiare animazione
         if (IsDashing)
         {
@@ -168,85 +184,93 @@ public class PlayerMovement : MonoBehaviour
 }
 
 
-//GESTIONE DELL'ATTACCO 
+    //GESTIONE DELL'ATTACCO 
 
-private void HandleAttackInput()
-{
-    //Incrementa il numero della combo
-    comboStep++;
-
-    //Se supera il terzo colpo, allora ricomincia la combo da capo
-    if (comboStep > 3)
-        comboStep = 1;
-
-    //Avvio del tempo di attesa per la combo
-    StartCoroutine(AttackCoroutine(comboStep));
-}
-
-
-private IEnumerator AttackCoroutine(int attackIndex)
-{
-    //Sto attaccando 
-    IsAttacking = true;
-
-    //Immobilizza il mio personaggio
-    rb.velocity = Vector2.zero;
-
-    //resetta il timer della combo
-    comboTimer = comboResetTime; // reset finestra combo
-
-    //In base a quale step della combo sei, cambia l'animazione
-    switch (attackIndex)
+    private void HandleAttackInput()
     {
-        case 1:
-            anim.Play("Attacco1");
-            break;
+        //Incrementa il numero della combo
+        comboStep++;
 
-        case 2:
-            anim.Play("Attacco2");
-            break;
+        //Se supera il terzo colpo, allora ricomincia la combo da capo
+        if (comboStep > 3)
+            comboStep = 1;
 
-        case 3:
-            anim.Play("Attacco3");
-            break;
+        //Avvio del tempo di attesa per la combo
+        StartCoroutine(AttackCoroutine(comboStep));
     }
 
-    //Aspetto che finisca l'animazione
-    yield return new WaitForSeconds(0.3f); 
 
-    //Attacco finito
-    IsAttacking = false;
-}
-
-
-private IEnumerator DashCoroutine()
-{
-    //Sto dashando
-    IsDashing = true;
-
-    //Incremento la sua velocità, per il dash
-    rb.velocity = dashDirection * dashSpeed;
-
-    //Se si sta muovendo
-    if(IsMoving)
+    private IEnumerator AttackCoroutine(int attackIndex)
     {
-        //Cambio animazione
-        anim.Play("Player_Dash");
+        //Sto attaccando 
+        IsAttacking = true;
+
+        //Immobilizza il mio personaggio
+        rb.velocity = Vector2.zero;
+
+        //resetta il timer della combo
+        comboTimer = comboResetTime; // reset finestra combo
+
+        //In base a quale step della combo sei, cambia l'animazione
+        switch (attackIndex)
+        {
+            case 1:
+                anim.Play("Attacco1");
+                break;
+
+            case 2:
+                anim.Play("Attacco2");
+                break;
+
+            case 3:
+                anim.Play("Attacco3");
+                break;
+        }
+
+        //Aspetto che finisca l'animazione
+        yield return new WaitForSeconds(0.3f); 
+
+        //Attacco finito
+        IsAttacking = false;
     }
 
-    //Aspetto che l'animazione finisca
-    yield return new WaitForSeconds(0.3f);
 
-    //Imposto la velocità del personaggio a 0
-    rb.velocity = Vector2.zero;
+    private IEnumerator DashCoroutine()
+    {
+        //Sto dashando
+        IsDashing = true;
 
-    //Fine dash
-    IsDashing = false;
-}
+        //Incremento la sua velocità, per il dash
+        rb.velocity = dashDirection * dashSpeed;
 
+        //Se si sta muovendo
+        if(IsMoving)
+        {
+            //Cambio animazione
+            anim.Play("Player_Dash");
+        }
 
-//PROSSIMA COSA DA FARE
+        //Aspetto che l'animazione finisca
+        yield return new WaitForSeconds(0.3f);
 
-// TROVARE TUTTI GLI ASSETS DA SOSTITUIRE A QUELLO ORIGINALE
-   
+        //Imposto la velocità del personaggio a 0
+        rb.velocity = Vector2.zero;
+
+        //Fine dash
+        IsDashing = false;
+    } 
+
+    private IEnumerator ShieldCoroutine()
+    {
+        IsShielding = true;
+
+        rb.velocity = Vector2.zero;
+
+        anim.Play("Player_Shield");
+
+        yield return new WaitForSeconds(0.5f);
+
+        IsShielding = false;
+    }
+
 }
