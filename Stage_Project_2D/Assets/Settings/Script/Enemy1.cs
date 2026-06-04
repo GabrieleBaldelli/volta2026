@@ -9,6 +9,7 @@ public class Enemy1 : MonoBehaviour
     public GameObject player;
     public Animator playerAnimator;
     private Transform p;
+    private PlayerMovement playerMovement;
 
     [Header("Enemy Stats")]
     public float stopDistance = 1f;
@@ -34,6 +35,7 @@ public class Enemy1 : MonoBehaviour
         spriterenderer = GetComponent<SpriteRenderer>();
         aiPath = GetComponent<AIPath>();
         p = player.transform;
+        playerMovement = player.GetComponent<PlayerMovement>();
 
         // sicurezza iniziale
         aiPath.canMove = false;
@@ -50,7 +52,7 @@ public class Enemy1 : MonoBehaviour
             return;
         }
 
-        float distance = Vector2.Distance(transform.position, player.position);
+        float distance = Vector2.Distance(transform.position, p.position);
 
         // flip sprite
         if (p.position.x > transform.position.x)
@@ -98,7 +100,7 @@ public class Enemy1 : MonoBehaviour
 
         yield return new WaitForSeconds(attackHitDelay);
 
-        if (p != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f)
+        if (Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f) 
         {
             HitPlayer();
         }
@@ -124,7 +126,9 @@ public class Enemy1 : MonoBehaviour
 
         StartCoroutine(KnockbackPlayer(playerRb, playerMovement));
 
-        player.HurtCoroutine(); // Danno al giocatore, implamentato nella classe HeroKnight
+        Debug.Log("Colpito");
+
+        StartCoroutine(playerMovement.HurtCoroutine()); // Danno al giocatore, implamentato nella classe HeroKnight
     }
 
     private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerMovement)

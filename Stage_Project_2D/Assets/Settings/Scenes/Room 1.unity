@@ -1186,6 +1186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055a1785c56664380b8f80a6f9bb5e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 933564138}
+  playerAnimator: {fileID: 933564142}
   stopDistance: 1
   chaseDistance: 7
   attackCooldown: 1.5

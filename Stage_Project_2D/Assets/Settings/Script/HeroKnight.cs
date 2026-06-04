@@ -169,6 +169,11 @@ public class PlayerMovement : MonoBehaviour
 
    private void Animazioni()
 {
+        if (IsHurting)
+        {
+            return;
+        }
+
         //Se attacca, non cambiare animazione
         if (IsAttacking)
         {
@@ -180,10 +185,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (IsHurting)
-        {
-            return;
-        }
 
         //Se dasha, non cambiare animazione
         if (IsDashing)
@@ -192,14 +193,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
     //Se il personaggio si muove
-    if (IsMoving)
+    if (IsMoving && IsHurting == false)
     {
         //Cambio animazione
         anim.Play("Player_Run");
     }
 
     //Altrimenti se è fermo
-    else if(IsMoving == false)
+    else if(IsMoving == false && IsHurting == false)
     {
         //Cambio animzione
         anim.Play("Player_Idle");
@@ -296,17 +297,21 @@ public class PlayerMovement : MonoBehaviour
         IsShielding = false;
     }
 
-    private IEnumerator HurtCoroutine()
+    public IEnumerator HurtCoroutine()
     {
         IsHurting = true;
 
-        rb.velocity = Vector2.zero;
+        //rb.velocity = Vector2.zero;
 
         anim.Play("Player_Attacco_Subito");
 
         yield return new WaitForSeconds(0.3f);
 
         IsHurting = false;
+
+        Debug.Log("viene colpito");
+
+        
     }
 
 
