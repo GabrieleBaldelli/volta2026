@@ -5,8 +5,12 @@ using Pathfinding;
 
 public class Enemy1 : MonoBehaviour
 {
-    private Transform player;
+    [Header("Player References")]
+    public GameObject player;
+    public Animator playerAnimator;
+    private Transform p;
 
+    [Header("Enemy Stats")]
     public float stopDistance = 1f;
     public float chaseDistance = 4f;
     public float attackCooldown = 1f;
@@ -29,13 +33,7 @@ public class Enemy1 : MonoBehaviour
         animator = GetComponent<Animator>();
         spriterenderer = GetComponent<SpriteRenderer>();
         aiPath = GetComponent<AIPath>();
-        GameObject p = GameObject.FindGameObjectWithTag("Player");
-        
-        
-        if (p != null)
-        {
-            player = p.transform;
-        }
+        p = player.transform;
 
         // sicurezza iniziale
         aiPath.canMove = false;
@@ -43,7 +41,7 @@ public class Enemy1 : MonoBehaviour
 
     void Update()
     {
-        if (player == null)
+        if (p == null)
             return;
 
         if (isAttacking)
@@ -55,7 +53,7 @@ public class Enemy1 : MonoBehaviour
         float distance = Vector2.Distance(transform.position, player.position);
 
         // flip sprite
-        if (player.position.x > transform.position.x)
+        if (p.position.x > transform.position.x)
             spriterenderer.flipX = true;
         else
             spriterenderer.flipX = false;
@@ -100,7 +98,7 @@ public class Enemy1 : MonoBehaviour
 
         yield return new WaitForSeconds(attackHitDelay);
 
-        if (player != null && Vector2.Distance(transform.position, player.position) <= stopDistance + 0.4f)
+        if (p != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f)
         {
             HitPlayer();
         }
@@ -121,21 +119,17 @@ public class Enemy1 : MonoBehaviour
 
     public void HitPlayer()
     {
-        if (player == null)
-            return;
-
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
 
-        if (playerRb != null)
-        {
-            StartCoroutine(KnockbackPlayer(playerRb, playerMovement));
-        }
+        StartCoroutine(KnockbackPlayer(playerRb, playerMovement));
+
+        player.HurtCoroutine(); // Danno al giocatore, implamentato nella classe HeroKnight
     }
 
     private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerMovement)
     {
-        Vector2 knockbackDirection = (player.position - transform.position).normalized;
+        Vector2 knockbackDirection = (p.position - transform.position).normalized;
 
         if (playerMovement != null)
             playerMovement.enabled = false;
