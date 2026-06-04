@@ -19,6 +19,19 @@ public class PlayerMovement : MonoBehaviour
     private bool IsAttacking;
     private bool IsDashing;
     private bool IsShielding;
+    private bool IsHurting;
+
+   public bool IsHurtingSetGet
+    {
+        get 
+        { 
+            return IsHurting; 
+        }
+        set 
+        { 
+            IsHurting = value; 
+        }
+    }
 
     //Velocità del dash
     public float dashSpeed = 10f;
@@ -64,6 +77,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 return;
             }
+
+        if (IsHurting)
+        {
+            return;
+        }
 
        
         //INPUT asse orizzontale (X)
@@ -158,6 +176,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (IsShielding)
+        {
+            return;
+        }
+
+        if (IsHurting)
         {
             return;
         }
@@ -272,5 +295,19 @@ public class PlayerMovement : MonoBehaviour
 
         IsShielding = false;
     }
+
+    private IEnumerator HurtCoroutine()
+    {
+        IsHurting = true;
+
+        rb.velocity = Vector2.zero;
+
+        anim.Play("Player_Attacco_Subito");
+
+        yield return new WaitForSeconds(0.3f);
+
+        IsHurting = false;
+    }
+
 
 }
