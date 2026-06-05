@@ -2,29 +2,41 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pathfinding;
+using UnityEngine.UI;
 
 public class Enemy1 : MonoBehaviour
 {
+    [Header("Life bar")]
+    public Image HealthImage;
+
     [Header("Player References")]
     public GameObject player;
     private Transform p;
     private PlayerMovement playerScript;
 
     [Header("Enemy Stats")]
+    public float vitaMassima = 50f;
+    private float vita;
+
     public float danno = 10f;
+
     public float stopDistance = 1f;
     public float chaseDistance = 4f;
     public float attackCooldown = 1f;
     public float attackDuration = 1f;
     public float attackHitDelay = 0.25f;
+
     public float knockbackForce = 7f;
     public float knockbackDuration = 0.15f;
 
     private AIPath aiPath;
-    private float nextAttackTime = 0.5f;
+    public float nextAttackTime = 0.5f;
     private Animator animator;
     private SpriteRenderer spriterenderer;
     private bool IsAttacking = false;
+    private bool IsHurting;
+
+    
 
     public bool IsAttackingSetGet
         {
@@ -50,6 +62,8 @@ public class Enemy1 : MonoBehaviour
         p = player.transform;
         playerScript = player.GetComponent<PlayerMovement>();
 
+        vita = vitaMassima;
+
         // sicurezza iniziale
         aiPath.canMove = false;
     }
@@ -64,6 +78,12 @@ public class Enemy1 : MonoBehaviour
             aiPath.canMove = false;
             return;
         }
+
+          if (IsHurting)
+        {
+            return;
+        }
+
 
         float distance = Vector2.Distance(transform.position, p.position);
 
@@ -134,7 +154,7 @@ public class Enemy1 : MonoBehaviour
         animator.Play(animationName);
     }
 
-    public void HitPlayer()
+    private void HitPlayer()
     {
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         playerScript = player.GetComponent<PlayerMovement>();
@@ -162,6 +182,25 @@ public class Enemy1 : MonoBehaviour
 
         if (playerScript != null)
             playerScript.enabled = true;
+    }
+
+     public IEnumerator HurtCoroutine(float danno)
+    {
+        IsHurting = true;
+
+        //rb.velocity = Vector2.zero;
+
+        animator.Play("Enemy_Attacco_Subito");
+
+         vita -=danno;
+
+        HealthImage.fillAmount = vita / vitaMassima;
+
+        yield return new WaitForSeconds(0.3f);
+
+        IsHurting = false;
+
+        Debug.Log("viene colpito");
     }
 
 }
