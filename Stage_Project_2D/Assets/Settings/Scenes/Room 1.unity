@@ -405,7 +405,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -475.36273, y: 329.6805}
+  m_AnchoredPosition: {x: -381, y: 271}
   m_SizeDelta: {x: 133.3773, y: 36.3605}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &225071989
@@ -961,7 +961,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -475.10413, y: 329.68}
+  m_AnchoredPosition: {x: -380.7414, y: 270.9995}
   m_SizeDelta: {x: 134.9889, y: 35.0947}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &629256578
@@ -1670,7 +1670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 055a1785c56664380b8f80a6f9bb5e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HealthImage: {fileID: 0}
+  HealthImage: {fileID: 1246661205}
   player: {fileID: 933564138}
   vitaMassima: 50
   danno: 10
