@@ -24,7 +24,20 @@ public class Enemy1 : MonoBehaviour
     private float nextAttackTime = 0.5f;
     private Animator animator;
     private SpriteRenderer spriterenderer;
-    private bool isAttacking = false;
+    private bool IsAttacking = false;
+
+    public bool IsAttackingSetGet
+        {
+            get 
+            { 
+                return IsAttacking; 
+            }
+            set 
+            { 
+                IsAttacking = value; 
+            }
+        }
+
     private string currentAnimation;
     
 
@@ -46,7 +59,7 @@ public class Enemy1 : MonoBehaviour
         if (p == null)
             return;
 
-        if (isAttacking)
+        if (IsAttacking)
         {
             aiPath.canMove = false;
             return;
@@ -91,7 +104,9 @@ public class Enemy1 : MonoBehaviour
 
     private IEnumerator AttackCoroutine()
     {
-        isAttacking = true;
+        playerScript = player.GetComponent<PlayerMovement>();
+
+        IsAttacking = true;
         nextAttackTime = Time.time + attackDuration + attackCooldown;
 
         aiPath.canMove = false;
@@ -100,14 +115,14 @@ public class Enemy1 : MonoBehaviour
 
         yield return new WaitForSeconds(attackHitDelay);
 
-        if (Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f) 
+        if (Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShildingSetGet == false) 
         {
             HitPlayer();
         }
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - attackHitDelay));
 
-        isAttacking = false;
+        IsAttacking = false;
     }
 
     private void PlayAnimation(string animationName)

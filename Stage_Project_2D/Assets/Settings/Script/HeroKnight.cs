@@ -24,19 +24,23 @@ public class PlayerMovement : MonoBehaviour
     private bool IsAttacking;
     private bool IsDashing;
     private bool IsShielding;
-    private bool IsHurting;
 
-   public bool IsHurtingSetGet
-    {
-        get 
-        { 
-            return IsHurting; 
+    public GameObject enemy;
+    private Enemy1 enemyScript;
+
+    public bool IsShildingSetGet
+        {
+            get 
+            { 
+                return IsShielding; 
+            }
+            set 
+            { 
+                IsShielding = value; 
+            }
         }
-        set 
-        { 
-            IsHurting = value; 
-        }
-    }
+
+    private bool IsHurting;
 
     //Velocità del dash
     public float dashSpeed = 10f;
@@ -291,13 +295,26 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ShieldCoroutine()
     {
+        enemyScript = enemy.GetComponent<Enemy1>();
+
         IsShielding = true;
 
-        rb.velocity = Vector2.zero;
+        if(IsShielding == true && enemyScript.IsAttackingSetGet == true)
+        {
+            rb.velocity = Vector2.zero;
 
-        anim.Play("Player_Shield");
+            anim.Play("Player_PerfectShield");
 
-        yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+
+            anim.Play("Player_Shield");
+
+            yield return new WaitForSeconds(0.5f);
+        }
 
         IsShielding = false;
     }
