@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -140,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //INPUT del dash con il tasto "Shift"
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.R))
         {
             StartCoroutine(DashCoroutine());
         }
@@ -231,7 +231,10 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator AttackCoroutine(int attackIndex)
     {
-        float distanza = Vector2.Distance(transform.position, enemy.transform.position);
+        float distanza;
+
+        if (enemy != null)
+            distanza = Vector2.Distance(transform.position, enemy.transform.position);
 
         //Sto attaccando 
         IsAttacking = true;
@@ -258,8 +261,8 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
 
-         
-        HitEnemy();
+        
+            HitEnemy();
 
         //Aspetto che finisca l'animazione
         yield return new WaitForSeconds(0.3f); 
@@ -270,6 +273,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void HitEnemy()
     {
+        if (enemy == null)
+            return;
+
         Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
         enemyScript = enemy.GetComponent<Enemy1>();
 
@@ -355,11 +361,15 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ShieldCoroutine()
     {
-        enemyScript = enemy.GetComponent<Enemy1>();
-
         IsShielding = true;
 
-        if(IsShielding == true && enemyScript.IsAttackingSetGet == true)
+        bool EnemyIsAttacking = false;;
+
+        if(enemy != null)
+            enemyScript = enemy.GetComponent<Enemy1>();
+            EnemyIsAttacking = enemyScript.IsAttackingSetGet;
+
+        if(IsShielding == true && EnemyIsAttacking)
         {
             rb.velocity = Vector2.zero;
 
@@ -378,4 +388,5 @@ public class PlayerMovement : MonoBehaviour
 
         IsShielding = false;
     }
+
 }

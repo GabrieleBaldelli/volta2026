@@ -193,7 +193,7 @@ public class Enemy1 : MonoBehaviour
     {
         IsHurting = true;
 
-        LifeBar_Enemy LifebarScript = transform.Find("LifeBar/Canvas").GetComponent<LifeBar_Enemy>();
+        LifeBar_Enemy LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar_Enemy>();
 
         //rb.velocity = Vector2.zero;
 
