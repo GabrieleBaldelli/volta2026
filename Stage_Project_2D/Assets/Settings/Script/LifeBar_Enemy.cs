@@ -1,12 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnemyHealthBar : MonoBehaviour
+public class LifeBar_Enemy : MonoBehaviour
 {
 
-    private void UpdateLifeBar(float vita_attuale, float vita_massima)
+    public void UpdateLifeBar(float vita_attuale, float vita_massima)
     {
         Slider slider = GetComponent<Slider>();
         slider.value = vita_attuale / vita_massima;
+
+        
+
     }
 }

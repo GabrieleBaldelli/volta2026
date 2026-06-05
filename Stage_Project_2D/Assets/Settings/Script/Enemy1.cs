@@ -121,6 +121,10 @@ public class Enemy1 : MonoBehaviour
         aiPath.canMove = true;
         aiPath.maxSpeed = 3f; // oppure usa una variabile speed
 
+
+        if(vita <=1)
+            Destroy(gameObject);
+
     }
 
     private IEnumerator AttackCoroutine()
@@ -189,13 +193,15 @@ public class Enemy1 : MonoBehaviour
     {
         IsHurting = true;
 
+        LifeBar_Enemy LifebarScript = transform.Find("LifeBar/Canvas").GetComponent<LifeBar_Enemy>();
+
         //rb.velocity = Vector2.zero;
 
         PlayAnimation("Enemy_Attacco_Subito");
 
         vita -=danno;
 
-       //UpdateLifeBar(vita, vitaMassima);
+        LifebarScript.UpdateLifeBar(vita, vitaMassima);
 
         yield return new WaitForSeconds(0.35f);
 
@@ -203,5 +209,7 @@ public class Enemy1 : MonoBehaviour
 
         Debug.Log("viene colpito");
     }
+
+
 
 }
