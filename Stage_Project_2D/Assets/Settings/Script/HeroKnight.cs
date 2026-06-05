@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
     //Velocità del personaggio
     public float speed = 5f;
 
+    //Barra di vita
+    public Image HealthImage;
+
     //Vita del personaggio
     public float vita = 100f;
+    public const float vitaMassima = 100f;
 
     //Componenti del Player
     private Rigidbody2D rb;
@@ -297,13 +302,17 @@ public class PlayerMovement : MonoBehaviour
         IsShielding = false;
     }
 
-    public IEnumerator HurtCoroutine()
+    public IEnumerator HurtCoroutine(float danno)
     {
         IsHurting = true;
 
         //rb.velocity = Vector2.zero;
 
         anim.Play("Player_Attacco_Subito");
+
+         vita -=danno;
+
+        HealthImage.fillAmount = vita / vitaMassima;
 
         yield return new WaitForSeconds(0.3f);
 

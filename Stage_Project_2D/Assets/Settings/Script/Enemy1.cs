@@ -11,16 +11,17 @@ public class Enemy1 : MonoBehaviour
     private PlayerMovement playerScript;
 
     [Header("Enemy Stats")]
+    public float danno = 10f;
     public float stopDistance = 1f;
     public float chaseDistance = 4f;
     public float attackCooldown = 1f;
-    public float attackDuration = 0.6f;
+    public float attackDuration = 1f;
     public float attackHitDelay = 0.25f;
     public float knockbackForce = 7f;
     public float knockbackDuration = 0.15f;
 
     private AIPath aiPath;
-    private float nextAttackTime = 0f;
+    private float nextAttackTime = 0.5f;
     private Animator animator;
     private SpriteRenderer spriterenderer;
     private bool isAttacking = false;
@@ -127,7 +128,7 @@ public class Enemy1 : MonoBehaviour
 
         Debug.Log("Colpito");
 
-        StartCoroutine(playerScript.HurtCoroutine()); // Danno al giocatore, implamentato nella classe HeroKnight
+        StartCoroutine(playerScript.HurtCoroutine(danno)); // Danno al giocatore, implamentato nella classe HeroKnight
     }
 
     private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerScript)
