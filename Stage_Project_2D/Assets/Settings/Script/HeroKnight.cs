@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float comboResetTime = 0.8f;
     
     [Header("Knockback Settings")]
-    public float knockbackForce = 5f;
+    public float knockbackForce = 60f;
     public float knockbackDuration = 0.2f;
 
     //Componenti del Player
@@ -231,6 +231,8 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator AttackCoroutine(int attackIndex)
     {
+        float distanza = Vector2.Distance(transform.position, enemy.transform.position);
+
         //Sto attaccando 
         IsAttacking = true;
 
@@ -256,6 +258,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
 
+         
         HitEnemy();
 
         //Aspetto che finisca l'animazione
@@ -270,6 +273,11 @@ public class PlayerMovement : MonoBehaviour
         Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
         enemyScript = enemy.GetComponent<Enemy1>();
 
+        float distanza = Vector2.Distance(transform.position, enemy.transform.position);
+
+        if (distanza > 1.5f) // raggio attacco
+        return;
+
         StartCoroutine(KnockbackPlayer(enemyRb, enemyScript));
 
         Debug.Log("Nemico Colpito");
@@ -277,23 +285,28 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine(enemyScript.HurtCoroutine(danno)); // Danno al nemico, implamentato nella classe HeroKnight
     }
     
-    private IEnumerator KnockbackPlayer(Rigidbody2D enemyRb, Enemy1 enemyScript)
+    private IEnumerator KnockbackPlayer(Rigidbody2D enemyRb, Enemy1 enemyScript)                                         //Guardo
     {
         Transform e = enemy.transform;
         Vector2 knockbackDirection = (e.position - transform.position).normalized;
 
-        if (enemyScript != null)
-            enemyScript.enabled = false;
+        if (enemyScript != null && enemyScript.aiPath != null)
+        {
+            enemyScript.aiPath.canMove = false;
+            enemyScript.aiPath.enabled = false;
+        }
 
-        enemyRb.velocity = Vector2.zero;
-        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+        enemyRb.velocity = knockbackDirection * knockbackForce;
 
         yield return new WaitForSeconds(knockbackDuration);
 
         enemyRb.velocity = Vector2.zero;
 
-        if (enemyScript != null)
-            enemyScript.enabled = true;
+        if (enemyScript != null && enemyScript.aiPath != null)
+        {
+            enemyScript.aiPath.enabled = true;
+            enemyScript.aiPath.canMove = true;
+        }
     }
 
     public IEnumerator HurtCoroutine(float danno)

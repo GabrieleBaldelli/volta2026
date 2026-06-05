@@ -1674,13 +1674,14 @@ MonoBehaviour:
   player: {fileID: 933564138}
   vitaMassima: 50
   danno: 10
-  stopDistance: 1
+  stopDistance: 1.4
   chaseDistance: 7
   attackCooldown: 1.5
   attackDuration: 0.6
   attackHitDelay: 0.25
   knockbackForce: 12
   knockbackDuration: 0.15
+  aiPath: {fileID: 0}
   nextAttackTime: 0.5
 --- !u!212 &1253836701
 SpriteRenderer:
