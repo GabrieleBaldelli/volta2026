@@ -4,62 +4,58 @@ using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    //Velocità del personaggio
-    public float speed = 5f;
-
-    //Barra di vita
+    [Header("Life Bar")]
     public Image HealthImage;
 
-    //Vita del personaggio
-    public float vita = 100f;
+    [Header("Stats Player")]
     public const float vitaMassima = 100f;
+    private float vita = vitaMassima;
+    public float danno = 20f;
+    public float speed = 5f;
+    public float dashSpeed = 10f;
+    public float dashDuration = 0.15f;
+    public float comboResetTime = 0.8f;
+    
+    [Header("Knockback Settings")]
+    public float knockbackForce = 5f;
+    public float knockbackDuration = 0.2f;
 
     //Componenti del Player
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
    
-    //Stati del personaggio
+    [Header("Stati del Player")]
     private bool IsMoving;
     private bool IsAttacking;
     private bool IsDashing;
     private bool IsShielding;
-
-    public GameObject enemy;
-    private Enemy1 enemyScript;
-
-    public bool IsShildingSetGet
-        {
-            get 
-            { 
-                return IsShielding; 
-            }
-            set 
-            { 
-                IsShielding = value; 
-            }
-        }
-
     private bool IsHurting;
 
-    //Velocità del dash
-    public float dashSpeed = 10f;
+    public bool IsShildingSetGet
+    {
+        get 
+        { 
+            return IsShielding; 
+        }
+        set 
+        { 
+            IsShielding = value; 
+        }
+    }
 
-    //Durata del dash
-    public float dashDuration = 0.15f;
-
-    //Direzione del dash
+    [Header("Enemy References")]
+    public GameObject enemy;
+    private Enemy1 enemyScript;
+    
+    //Serve per memorizzare la direzione del movimento del player, per poi utilizzarla nel dash
     private Vector2 dashDirection;
-
 
     //Indica quale attaco della combo è il personaggio
     private int comboStep = 0;
 
     //Serve per capire se il player ha premuto in tempo per effettuare la combo
     private float comboTimer = 0f;
-
-    //Tempo massimo per continuare la combo
-    public float comboResetTime = 0.8f;
 
     //Movimenti del personaggio
     private float movementX;
@@ -260,6 +256,8 @@ public class PlayerMovement : MonoBehaviour
                 break;
         }
 
+        HitEnemy();
+
         //Aspetto che finisca l'animazione
         yield return new WaitForSeconds(0.3f); 
 
@@ -267,6 +265,55 @@ public class PlayerMovement : MonoBehaviour
         IsAttacking = false;
     }
 
+    private void HitEnemy()
+    {
+        Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
+        enemyScript = enemy.GetComponent<Enemy1>();
+
+        StartCoroutine(KnockbackPlayer(enemyRb, enemyScript));
+
+        Debug.Log("Nemico Colpito");
+
+        StartCoroutine(enemyScript.HurtCoroutine(danno)); // Danno al nemico, implamentato nella classe HeroKnight
+    }
+    
+    private IEnumerator KnockbackPlayer(Rigidbody2D enemyRb, Enemy1 enemyScript)
+    {
+        Transform e = enemy.transform;
+        Vector2 knockbackDirection = (e.position - transform.position).normalized;
+
+        if (enemyScript != null)
+            enemyScript.enabled = false;
+
+        enemyRb.velocity = Vector2.zero;
+        enemyRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
+
+        yield return new WaitForSeconds(knockbackDuration);
+
+        enemyRb.velocity = Vector2.zero;
+
+        if (enemyScript != null)
+            enemyScript.enabled = true;
+    }
+
+    public IEnumerator HurtCoroutine(float danno)
+    {
+        IsHurting = true;
+
+        //rb.velocity = Vector2.zero;
+
+        anim.Play("Player_Attacco_Subito");
+
+         vita -=danno;
+
+        HealthImage.fillAmount = vita / vitaMassima;
+
+        yield return new WaitForSeconds(0.3f);
+
+        IsHurting = false;
+
+        Debug.Log("viene colpito");
+    }
 
     private IEnumerator DashCoroutine()
     {
@@ -317,24 +364,5 @@ public class PlayerMovement : MonoBehaviour
         }
 
         IsShielding = false;
-    }
-
-    public IEnumerator HurtCoroutine(float danno)
-    {
-        IsHurting = true;
-
-        //rb.velocity = Vector2.zero;
-
-        anim.Play("Player_Attacco_Subito");
-
-         vita -=danno;
-
-        HealthImage.fillAmount = vita / vitaMassima;
-
-        yield return new WaitForSeconds(0.3f);
-
-        IsHurting = false;
-
-        Debug.Log("viene colpito");
     }
 }
