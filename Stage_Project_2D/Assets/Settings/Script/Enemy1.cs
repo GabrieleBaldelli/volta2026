@@ -20,7 +20,7 @@ public class Enemy1 : MonoBehaviour
 
     public float danno = 10f;
 
-    public float stopDistance = 1f;
+    public float stopDistance = 2f;
     public float chaseDistance = 4f;
     public float attackCooldown = 1f;
     public float attackDuration = 1f;
@@ -29,7 +29,7 @@ public class Enemy1 : MonoBehaviour
     public float knockbackForce = 7f;
     public float knockbackDuration = 0.15f;
 
-    private AIPath aiPath;
+    public AIPath aiPath;
     public float nextAttackTime = 0.5f;
     private Animator animator;
     private SpriteRenderer spriterenderer;
@@ -81,6 +81,7 @@ public class Enemy1 : MonoBehaviour
 
           if (IsHurting)
         {
+            aiPath.canMove = false;
             return;
         }
 
@@ -190,13 +191,13 @@ public class Enemy1 : MonoBehaviour
 
         //rb.velocity = Vector2.zero;
 
-        animator.Play("Enemy_Attacco_Subito");
+        PlayAnimation("Enemy_Attacco_Subito");
 
-         vita -=danno;
+        vita -=danno;
 
-        HealthImage.fillAmount = vita / vitaMassima;
+       //UpdateLifeBar(vita, vitaMassima);
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.35f);
 
         IsHurting = false;
 
