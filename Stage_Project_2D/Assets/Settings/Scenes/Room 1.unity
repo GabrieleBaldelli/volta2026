@@ -1731,6 +1731,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 9100000, guid: 390992f5294f440b39ca9835b74583a0, type: 2}
     - target: {fileID: 2954181336601895002, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: m_FlipX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2954181336601895002, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: m_FlipY
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2954181336601895002, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Color.b
       value: 1
       objectReference: {fileID: 0}
@@ -2119,7 +2127,7 @@ MonoBehaviour:
   HealthImage: {fileID: 0}
   player: {fileID: 933564138}
   vitaMassima: 50
-  danno: 10
+  danno: 50
   stopDistance: 1.4
   chaseDistance: 7
   attackCooldown: 1.5
