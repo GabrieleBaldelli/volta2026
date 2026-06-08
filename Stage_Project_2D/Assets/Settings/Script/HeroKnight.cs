@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     private bool IsAttacking;
     private bool IsDashing;
     private bool IsShielding;
+    private bool IsPerfectShielding;
     private bool IsHurting;
     private bool IsDying;
 
@@ -51,6 +52,17 @@ public class PlayerMovement : MonoBehaviour
         set 
         { 
             IsShielding = value; 
+        }
+    }
+    public bool IsPerfectShildingSetGet
+    {
+        get 
+        { 
+            return IsPerfectShielding; 
+        }
+        set 
+        { 
+            IsPerfectShielding = value; 
         }
     }
 
@@ -403,6 +415,12 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ShieldCoroutine()
     {
+        ShieldBar shieldBarScript = transform.Find("Canvas/Shield_Bar").GetComponent<ShieldBar>();
+        if(shieldBarScript.shieldSetGet  == 0)
+        {
+            yield break; // Esce dalla coroutine se lo scudo è esaurito
+        }
+
         IsShielding = true;
 
         bool EnemyIsAttacking = false;;
@@ -411,13 +429,17 @@ public class PlayerMovement : MonoBehaviour
             enemyScript = enemy.GetComponent<Enemy1>();
             EnemyIsAttacking = enemyScript.IsAttackingSetGet;
 
-        if(IsShielding == true && EnemyIsAttacking)
+        if(IsShielding && EnemyIsAttacking)
         {
+            IsPerfectShielding = true;
+
             rb.velocity = Vector2.zero;
 
             anim.Play("Player_PerfectShield");
 
             yield return new WaitForSeconds(0.3f);
+
+            IsPerfectShielding = false;
         }
         else
         {

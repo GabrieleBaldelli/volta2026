@@ -11,8 +11,25 @@ Input.GetMouseButtonDown(1) == true / false
 
 public class ShieldBar : MonoBehaviour
 {
-    public const int SHIELD_MAX = 5;
-    private int shield;
+    public const float SHIELD_MAX = 5f;
+    private float shield;
+
+    public float shieldSetGet
+    {
+        get
+        {
+            return shield;
+        }
+        set
+        {
+            shield = value;
+        }
+    }
+
+    private bool isConsumingAttack = false;
+
+    public GameObject player;
+    public GameObject enemy;
 
     public void Start()
     {
@@ -21,23 +38,33 @@ public class ShieldBar : MonoBehaviour
 
     public void Update()
     {
-        GameObject p = GameObject.Find("Player");
-        PlayerMovement playerScript = p.GetComponent<PlayerMovement>();
+        if(isConsumingAttack)
+            return;
 
-        GameObject e = GameObject.Find("Enemy1");
-        Enemy1 enemyScript = e.GetComponent<Enemy1>();
+        PlayerMovement playerScript = player.GetComponent<PlayerMovement>();
         
-        if(playerScript.IsShielding == true && enemyScript.IsAttacking && Input.GetMouseButtonDown(1) == false)
+        if(enemy == null)
+            return;
+        
+        Enemy1 enemyScript = enemy.GetComponent<Enemy1>();
+
+        if(enemyScript.IsAttackingSetGet && playerScript.IsPerfectShildingSetGet == false && playerScript.IsShildingSetGet)
         {
-            UpdateShieldBar();
+            StartCoroutine(UpdateShieldBar());
         }
     }
 
-    public void UpdateShieldBar()
+    public IEnumerator UpdateShieldBar()
     {
+        isConsumingAttack = true;
+
         shield--;
 
         Slider slider = GetComponent<Slider>();
         slider.value = shield / SHIELD_MAX;
+
+        yield return new WaitForSeconds(0.5f);
+
+        isConsumingAttack = false;
     }
 }

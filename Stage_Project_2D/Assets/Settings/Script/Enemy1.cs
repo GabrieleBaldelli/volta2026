@@ -33,10 +33,10 @@ public class Enemy1 : MonoBehaviour
     public float nextAttackTime = 0.5f;
     private Animator animator;
     private SpriteRenderer spriterenderer;
+
+    [Header("Stati dell'Enemy")]
     private bool IsAttacking = false;
     private bool IsHurting;
-
-    
 
     public bool IsAttackingSetGet
         {
