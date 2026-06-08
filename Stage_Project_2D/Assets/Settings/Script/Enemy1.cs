@@ -237,7 +237,7 @@ public class Enemy1 : MonoBehaviour
         IsHurting = true;
 
         //Recupera lo script che gestisce la barra della vita del nemico
-        LifeBar_Enemy LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar_Enemy>();
+        LifeBar LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar>();
 
         //rb.velocity = Vector2.zero;
 

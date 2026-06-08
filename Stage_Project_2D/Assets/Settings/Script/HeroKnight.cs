@@ -1,12 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Life Bar")]
-    public Image HealthImage;
-
     [Header("Stats Player")]
     public const float vitaMassima = 100f;
     private float vita = vitaMassima;
@@ -321,11 +318,19 @@ public class PlayerMovement : MonoBehaviour
 
         //rb.velocity = Vector2.zero;
 
+        //Recupera lo script che gestisce la barra della vita del nemico
+        LifeBar LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar>();
+
+        //rb.velocity = Vector2.zero;
+
+        // Riproduce l'animazione di danno subito
         anim.Play("Player_Attacco_Subito");
 
-         vita -=danno;
+        //Riduce la vita del nemico in base al danno ricevuto
+        vita -=danno;
 
-        HealthImage.fillAmount = vita / vitaMassima;
+        // Aggiorna la barra della vita visivamente
+        LifebarScript.UpdateLifeBar(vita, vitaMassima);
 
         yield return new WaitForSeconds(0.3f);
 
