@@ -10328,13 +10328,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1911253222}
   - component: {fileID: 1911253223}
-  - component: {fileID: 1911253229}
   - component: {fileID: 1911253227}
   - component: {fileID: 1911253226}
   - component: {fileID: 1911253225}
   - component: {fileID: 1911253224}
   - component: {fileID: 1911253230}
   - component: {fileID: 1911253231}
+  - component: {fileID: 1911253232}
   m_Layer: 6
   m_Name: HeavyBandit_0
   m_TagString: Enemy
@@ -10440,7 +10440,7 @@ MonoBehaviour:
   radius: 0.5
   height: 2
   canMove: 1
-  maxSpeed: 4
+  maxSpeed: 2.5
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2
@@ -10529,31 +10529,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.49246246
---- !u!114 &1911253229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1911253221}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 055a1785c56664380b8f80a6f9bb5e5a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HealthImage: {fileID: 2003494587}
-  player: {fileID: 933564138}
-  vitaMassima: 100
-  danno: 15
-  stopDistance: 1.7
-  chaseDistance: 4
-  attackCooldown: 1
-  attackDuration: 1
-  attackHitDelay: 0.25
-  knockbackForce: 7
-  knockbackDuration: 0.15
-  aiPath: {fileID: 0}
-  nextAttackTime: 0.5
 --- !u!95 &1911253230
 Animator:
   serializedVersion: 5
@@ -10602,6 +10577,31 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1911253232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911253221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fc7ebef210fd41a89659c63b0d09884, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HealthImage: {fileID: 2003494587}
+  player: {fileID: 933564138}
+  vitaMassima: 100
+  danno: 15
+  stopDistance: 1.5
+  chaseDistance: 5
+  attackCooldown: 1
+  attackDuration: 1
+  attackHitDelay: 0.25
+  knockbackForce: 7
+  knockbackDuration: 0.15
+  aiPath: {fileID: 0}
+  nextAttackTime: 0.5
 --- !u!1 &1932512943
 GameObject:
   m_ObjectHideFlags: 0

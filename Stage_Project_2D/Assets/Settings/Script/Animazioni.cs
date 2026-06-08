@@ -1,0 +1,62 @@
+using UnityEngine;
+
+public class Animazioni : MonoBehaviour
+{
+    [Header("Animazioni Nemico")]
+    public string idleAnimation = "Nemico1_Idle";
+    public string runAnimation = "Nemico1_Corsa";
+    public string attackAnimation = "Nemico1_Attacco";
+    public string hurtAnimation = "Enemy_Attacco_Subito";
+    public string deathAnimation = "";
+
+    private Animator animator;
+    private string currentAnimation;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
+
+        if (animator == null)
+            Debug.LogError("Animator mancante sul nemico o nei suoi figli", this);
+    }
+
+    public void Idle()
+    {
+        PlayAnimation(idleAnimation);
+    }
+
+    public void Corsa()
+    {
+        PlayAnimation(runAnimation);
+    }
+
+    public void Attacco()
+    {
+        PlayAnimation(attackAnimation);
+    }
+
+    public void Danno()
+    {
+        PlayAnimation(hurtAnimation);
+    }
+
+    public void Morte()
+    {
+        PlayAnimation(deathAnimation);
+    }
+
+    public void PlayAnimation(string animationName)
+    {
+        if (animator == null || string.IsNullOrEmpty(animationName))
+            return;
+
+        if (currentAnimation == animationName)
+            return;
+
+        currentAnimation = animationName;
+        animator.Play(animationName);
+    }
+}

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Pathfinding;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -326,28 +327,39 @@ public class PlayerMovement : MonoBehaviour
         foreach(Collider2D enemyCollider in enemiesHit)
         {
             Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
-            if(enemyScript == null)
+            Enemy2 enemy2Script = enemyCollider.GetComponent<Enemy2>();
+
+            if(enemyScript == null && enemy2Script == null)
                 continue;
 
             Rigidbody2D enemyRb = enemyCollider.GetComponent<Rigidbody2D>();
             if(enemyRb == null)
                 continue;
 
-            StartCoroutine(Knockback(enemyRb, enemyScript, enemyCollider.transform));
-            StartCoroutine(enemyScript.HurtCoroutine(danno));
+            if(enemyScript != null)
+            {
+                StartCoroutine(Knockback(enemyRb, enemyScript.aiPath, enemyCollider.transform));
+                StartCoroutine(enemyScript.HurtCoroutine(danno));
+            }
+
+            if(enemy2Script != null)
+            {
+                StartCoroutine(Knockback(enemyRb, enemy2Script.aiPath, enemyCollider.transform));
+                StartCoroutine(enemy2Script.HurtCoroutine(danno));
+            }
 
             Debug.Log("Nemico Colpito");
         }
     }
     
-    private IEnumerator Knockback(Rigidbody2D enemyRb, Enemy1 enemyScript, Transform e)                                         //Guardo
+    private IEnumerator Knockback(Rigidbody2D enemyRb, AIPath enemyPath, Transform e)                                         //Guardo
     {
         Vector2 knockbackDirection = (e.position - transform.position).normalized;
 
-        if (enemyScript != null && enemyScript.aiPath != null)
+        if (enemyPath != null)
         {
-            enemyScript.aiPath.canMove = false;
-            enemyScript.aiPath.enabled = false;
+            enemyPath.canMove = false;
+            enemyPath.enabled = false;
         }
 
         enemyRb.velocity = knockbackDirection * knockbackForce;
@@ -356,10 +368,10 @@ public class PlayerMovement : MonoBehaviour
 
         enemyRb.velocity = Vector2.zero;
 
-        if (enemyScript != null && enemyScript.aiPath != null)
+        if (enemyPath != null)
         {
-            enemyScript.aiPath.enabled = true;
-            enemyScript.aiPath.canMove = true;
+            enemyPath.enabled = true;
+            enemyPath.canMove = true;
         }
     }
 
@@ -475,8 +487,12 @@ public class PlayerMovement : MonoBehaviour
         foreach(Collider2D enemyCollider in enemiesNearPlayer)
         {
             Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
+            Enemy2 enemy2Script = enemyCollider.GetComponent<Enemy2>();
 
             if(enemyScript != null && enemyScript.IsAttackingSetGet)
+                return true;
+
+            if(enemy2Script != null && enemy2Script.IsAttackingSetGet)
                 return true;
         }
 
