@@ -28,11 +28,11 @@ public class ShieldBar : MonoBehaviour
 
     private bool isConsumingAttack = false;
 
-    public GameObject player;
-    public GameObject enemy;
+    private PlayerMovement playerScript;
 
     public void Start()
     {
+        playerScript = GetComponentInParent<PlayerMovement>();
         shield = SHIELD_MAX;
     }
 
@@ -41,14 +41,10 @@ public class ShieldBar : MonoBehaviour
         if(isConsumingAttack)
             return;
 
-        PlayerMovement playerScript = player.GetComponent<PlayerMovement>();
-        
-        if(enemy == null)
+        if(playerScript == null)
             return;
-        
-        Enemy1 enemyScript = enemy.GetComponent<Enemy1>();
 
-        if(enemyScript.IsAttackingSetGet && playerScript.IsPerfectShildingSetGet == false && playerScript.IsShildingSetGet)
+        if(playerScript.IsAnyEnemyAttacking() && playerScript.IsPerfectShildingSetGet == false && playerScript.IsShildingSetGet)
         {
             StartCoroutine(UpdateShieldBar());
         }

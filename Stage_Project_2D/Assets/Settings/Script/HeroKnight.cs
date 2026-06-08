@@ -24,6 +24,14 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 10f;
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
+
+    [Header("Attack Settings")]
+    public Transform attackPoint;
+    public float attackRange = 1.5f;
+    public LayerMask enemyLayer;
+
+    [Header("Shield Settings")]
+    public float shieldCheckRange = 2.5f;
     
     [Header("Knockback Settings")]
     public float knockbackForce = 60f;
@@ -66,10 +74,6 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    [Header("Enemy References")]
-    public GameObject enemy;
-    private Enemy1 enemyScript;
-    
     //Serve per memorizzare la direzione del movimento del player, per poi utilizzarla nel dash
     private Vector2 dashDirection;
 
@@ -89,6 +93,21 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if(anim == null)
+            anim = GetComponentInChildren<Animator>();
+
+        if(spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if(rb == null)
+            Debug.LogError("Rigidbody2D mancante sul Player", this);
+
+        if(anim == null)
+            Debug.LogError("Animator mancante sul Player o nei suoi figli", this);
+
+        if(spriteRenderer == null)
+            Debug.LogError("SpriteRenderer mancante sul Player o nei suoi figli", this);
     }
 
     void Update()
@@ -159,8 +178,8 @@ public class PlayerMovement : MonoBehaviour
         {
             HandleAttackInput();
         }
-
-        if (Input.GetMouseButtonDown(1) && IsShielding == false && IsAttacking == false && IsDashing == false)
+        //INPUT di parata con il tasto DX del mouse
+        if (Input.GetMouseButton(1) && IsShielding == false && IsAttacking == false && IsDashing == false)
         {
             StartCoroutine(ShieldCoroutine());
         }
@@ -262,11 +281,6 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator AttackCoroutine(int attackIndex)
     {
-        float distanza;
-
-        if (enemy != null)
-            distanza = Vector2.Distance(transform.position, enemy.transform.position);
-
         //Sto attaccando 
         IsAttacking = true;
 
@@ -304,28 +318,30 @@ public class PlayerMovement : MonoBehaviour
 
     private void HitEnemy()
     {
-        if (enemy == null)
+        if(attackPoint == null)
             return;
 
-        Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
-        enemyScript = enemy.GetComponent<Enemy1>();
+        Collider2D[] enemiesHit = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayer);
+        
+        foreach(Collider2D enemyCollider in enemiesHit)
+        {
+            Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
+            if(enemyScript == null)
+                continue;
 
-        float distanza = Vector2.Distance(transform.position, enemy.transform.position);
+            Rigidbody2D enemyRb = enemyCollider.GetComponent<Rigidbody2D>();
+            if(enemyRb == null)
+                continue;
 
-        if (distanza > 1.5f) // raggio attacco
-        return;
+            StartCoroutine(Knockback(enemyRb, enemyScript, enemyCollider.transform));
+            StartCoroutine(enemyScript.HurtCoroutine(danno));
 
-        StartCoroutine(KnockbackPlayer(enemyRb, enemyScript));
-
-        Debug.Log("Nemico Colpito");
-
-        StartCoroutine(enemyScript.HurtCoroutine(danno)); // Danno al nemico, implamentato nella classe HeroKnight
-    
+            Debug.Log("Nemico Colpito");
+        }
     }
     
-    private IEnumerator KnockbackPlayer(Rigidbody2D enemyRb, Enemy1 enemyScript)                                         //Guardo
+    private IEnumerator Knockback(Rigidbody2D enemyRb, Enemy1 enemyScript, Transform e)                                         //Guardo
     {
-        Transform e = enemy.transform;
         Vector2 knockbackDirection = (e.position - transform.position).normalized;
 
         if (enemyScript != null && enemyScript.aiPath != null)
@@ -415,19 +431,18 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator ShieldCoroutine()
     {
-        ShieldBar shieldBarScript = transform.Find("Canvas/Shield_Bar").GetComponent<ShieldBar>();
-        if(shieldBarScript.shieldSetGet  == 0)
+        ShieldBar shieldBarScript = GetComponentInChildren<ShieldBar>();
+        if(shieldBarScript != null && shieldBarScript.shieldSetGet  == 0)
         {
             yield break; // Esce dalla coroutine se lo scudo è esaurito
         }
 
+        if(rb == null || anim == null)
+            yield break;
+
         IsShielding = true;
 
-        bool EnemyIsAttacking = false;;
-
-        if(enemy != null)
-            enemyScript = enemy.GetComponent<Enemy1>();
-            EnemyIsAttacking = enemyScript.IsAttackingSetGet;
+        bool EnemyIsAttacking = IsAnyEnemyAttacking();
 
         if(IsShielding && EnemyIsAttacking)
         {
@@ -451,6 +466,21 @@ public class PlayerMovement : MonoBehaviour
         }
 
         IsShielding = false;
+    }
+
+    public bool IsAnyEnemyAttacking()
+    {
+        Collider2D[] enemiesNearPlayer = Physics2D.OverlapCircleAll(transform.position, shieldCheckRange, enemyLayer);
+
+        foreach(Collider2D enemyCollider in enemiesNearPlayer)
+        {
+            Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
+
+            if(enemyScript != null && enemyScript.IsAttackingSetGet)
+                return true;
+        }
+
+        return false;
     }
 
     public IEnumerator Die()
