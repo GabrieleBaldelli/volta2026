@@ -6,6 +6,7 @@ TagManager:
   tags:
   - cam 2
   - Enemy
+  - cam 3
   layers:
   - Default
   - TransparentFX
