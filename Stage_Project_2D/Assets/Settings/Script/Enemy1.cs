@@ -201,7 +201,8 @@ public class Enemy1 : MonoBehaviour
         Debug.Log("Colpito");
 
         //Infligge il danno al giocatore
-        StartCoroutine(playerScript.HurtCoroutine(danno)); // Danno al giocatore, implamentato nella classe HeroKnight
+            StartCoroutine(playerScript.HurtCoroutine(danno)); // Danno al giocatore, implamentato nella classe HeroKnight
+        
     }
 
     //Spinge il player all'indietro dopo un colpo

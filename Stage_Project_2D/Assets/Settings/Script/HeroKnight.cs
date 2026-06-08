@@ -1,12 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Stats Player")]
     public const float vitaMassima = 100f;
     private float vita = vitaMassima;
+    public float Vita 
+    {
+        get 
+        { 
+            return vita; 
+        }
+        set 
+        { 
+            vita = value; 
+        }
+    }
     public float danno = 20f;
     public float speed = 5f;
     public float dashSpeed = 10f;
@@ -28,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private bool IsDashing;
     private bool IsShielding;
     private bool IsHurting;
+    private bool IsDying;
 
     public bool IsShildingSetGet
     {
@@ -85,6 +98,10 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
+        if (IsDying)
+        {
+            return;
+        }
        
         //INPUT asse orizzontale (X)
         movementX = Input.GetAxisRaw("Horizontal");
@@ -171,6 +188,11 @@ public class PlayerMovement : MonoBehaviour
 
    private void Animazioni()
 {
+        if (IsDying)
+        {
+            return;
+        }
+
         if (IsHurting)
         {
             return;
@@ -286,6 +308,7 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log("Nemico Colpito");
 
         StartCoroutine(enemyScript.HurtCoroutine(danno)); // Danno al nemico, implamentato nella classe HeroKnight
+    
     }
     
     private IEnumerator KnockbackPlayer(Rigidbody2D enemyRb, Enemy1 enemyScript)                                         //Guardo
@@ -323,20 +346,34 @@ public class PlayerMovement : MonoBehaviour
 
         //rb.velocity = Vector2.zero;
 
-        // Riproduce l'animazione di danno subito
-        anim.Play("Player_Attacco_Subito");
-
         //Riduce la vita del nemico in base al danno ricevuto
         vita -=danno;
 
         // Aggiorna la barra della vita visivamente
         LifebarScript.UpdateLifeBar(vita, vitaMassima);
 
-        yield return new WaitForSeconds(0.3f);
+        if(vita <= 1)
+        {
+            StartCoroutine(Die());
+        }
+        else
+        {
 
-        IsHurting = false;
+            // Riproduce l'animazione di danno subito
+            anim.Play("Player_Attacco_Subito");
 
-        Debug.Log("viene colpito");
+
+            Debug.Log(vita);
+
+           
+
+            yield return new WaitForSeconds(0.3f);
+
+            IsHurting = false;
+
+            Debug.Log("viene colpito");
+
+        }
     }
 
     private IEnumerator DashCoroutine()
@@ -392,6 +429,25 @@ public class PlayerMovement : MonoBehaviour
         }
 
         IsShielding = false;
+    }
+
+    public IEnumerator Die()
+    {
+        IsDying = true;
+
+        Debug.Log("Morte");
+
+        transform.rotation = Quaternion.Euler(0, 0, -90);
+
+        anim.Play("Player_Death");
+
+        yield return new WaitForSeconds(1f);
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        IsDying = false;
+
+       
     }
 
 }
