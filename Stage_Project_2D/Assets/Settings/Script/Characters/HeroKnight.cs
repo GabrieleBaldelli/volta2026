@@ -375,7 +375,7 @@ public class PlayerMovement : MonoBehaviour
         //rb.velocity = Vector2.zero;
 
         //Recupera lo script che gestisce la barra della vita del nemico
-        LifeBar LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar>();
+        LifeBar LifebarScript = transform.Find("Life_Canvas/Life_Bar").GetComponent<LifeBar>();
 
         //rb.velocity = Vector2.zero;
 
