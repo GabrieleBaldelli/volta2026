@@ -12,6 +12,11 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene("Room 1");
     }
 
+    public void Settings()
+    {
+        SceneManager.LoadScene("Settings");
+    }
+
     public void QuitGame()
     {
         Debug.Log("Exit button clicked");
