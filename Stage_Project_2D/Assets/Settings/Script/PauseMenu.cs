@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -32,7 +33,8 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenu()
     {
-        //UnityEngine.SceneManagement.SceneManager.LoadScene("Scene 1");
-         EventSystem.current.SetSelectedGameObject(null);
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Main Menu");
+        EventSystem.current.SetSelectedGameObject(null);
     }
 }
