@@ -113,6 +113,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Time.timeScale == 0)
+            return;
+
         //Serve per dire che se sto dashando
         //Il return esce dall'update per far finire l'animazione
         if (IsDashing)
