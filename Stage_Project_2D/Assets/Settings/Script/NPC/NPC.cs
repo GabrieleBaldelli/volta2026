@@ -14,6 +14,7 @@ public class NPC : MonoBehaviour, Interactable
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
 
+    //Puoi interagirci solo se non è già attivo un dialogo con questo NPC
     public bool CanInteract()
     {
         return !isDialogueActive;

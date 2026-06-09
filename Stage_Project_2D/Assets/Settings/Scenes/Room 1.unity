@@ -6646,7 +6646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae110c2f0a23a493086918ce3fb7e63d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogueData: {fileID: 0}
+  dialogueData: {fileID: 11400000, guid: 1c8041f64034443b680fe4fd5419d8fe, type: 2}
   dialoguePanel: {fileID: 401861691}
   dialogueText: {fileID: 1198096027}
   nameText: {fileID: 222187360}

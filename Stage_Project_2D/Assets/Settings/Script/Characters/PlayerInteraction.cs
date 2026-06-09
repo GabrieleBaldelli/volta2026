@@ -8,77 +8,84 @@ public class PlayerInteraction : MonoBehaviour
     public LayerMask interactableLayers = ~0;
     public KeyCode interactKey = KeyCode.E;
 
+    // Oggetto interagibile più vicino trovato in questo frame.
     private Interactable currentInteractable;
-    private Interactable activeInteractable;
 
-    void Awake()
-    {
-        if(interactionArea == null)
-        {
-            Transform foundInteractionArea = transform.Find("Interaction Area");
-
-            if(foundInteractionArea != null)
-                interactionArea = foundInteractionArea;
-        }
-    }
+    // Oggetto con cui stiamo già interagendo, per continuare un dialogo già aperto
+    private Interactable activeInteractable;    // Anche quando CanInteract() torna false.
 
     void Update()
     {
+        // Se non siamo già dentro un'interazione, cerca l'oggetto interagibile più vicino.
         if(activeInteractable == null)
-            currentInteractable = FindBestInteractable();
+            currentInteractable = FindNearInteractable();
 
         if(Input.GetKeyDown(interactKey))
         {
+            // Se un'interazione è già iniziata, continua quella.
+            // Esempio: fa avanzare il dialogo dell'NPC alla prossima frase.
             if(activeInteractable != null)
             {
                 activeInteractable.Interact();
 
+                // Quando l'oggetto torna interagibile, considera l'interazione conclusa.
+                // Nel tuo NPC succede dopo EndDialogue().
                 if(activeInteractable.CanInteract())
                     activeInteractable = null;
 
                 return;
             }
 
+            // Se non c'è un'interazione attiva, prova a iniziarne una nuova.
             if(currentInteractable != null)
             {
                 activeInteractable = currentInteractable;
                 activeInteractable.Interact();
 
+                // Se l'interazione finisce subito, libera activeInteractable.
+                // Utile per oggetti semplici tipo leve, porte o casse.
                 if(activeInteractable.CanInteract())
                     activeInteractable = null;
             }
         }
     }
 
-    private Interactable FindBestInteractable()
+    private Interactable FindNearInteractable()
     {
+        // Usa Interaction Area se esiste, altrimenti usa la posizione del player.
         Vector2 center = interactionArea != null ? interactionArea.position : transform.position;
+
+        // Trova tutti i Collider2D dentro il cerchio, ma solo sui layer scelti.
         Collider2D[] colliders = Physics2D.OverlapCircleAll(center, interactionRadius, interactableLayers);
 
-        Interactable bestInteractable = null;
+        Interactable nearInteractable = null;
         float bestDistance = float.MaxValue;
 
-        foreach(Collider2D collider in colliders)
+        foreach(Collider2D c in colliders)
         {
-            Interactable interactable = GetInteractable(collider);
+            // Da ogni collider prova a recuperare uno script che implementa Interactable.
+            Interactable interactable = GetInteractable(c);
 
+            // Se non è interagibile, oppure non può interagire ora, lo salta.
             if(interactable == null || !interactable.CanInteract())
                 continue;
 
-            float distance = Vector2.Distance(center, collider.ClosestPoint(center));
+            // Sceglie l'oggetto più vicino al centro dell'Interaction Area.
+            float distance = Vector2.Distance(center, c.ClosestPoint(center));
 
             if(distance < bestDistance)
             {
                 bestDistance = distance;
-                bestInteractable = interactable;
+                nearInteractable = interactable;
             }
         }
 
-        return bestInteractable;
+        return nearInteractable;
     }
 
     private Interactable GetInteractable(Collider2D collider)
     {
+        // Cerca prima sullo stesso GameObject del collider.
         MonoBehaviour[] behaviours = collider.GetComponents<MonoBehaviour>();
 
         foreach(MonoBehaviour behaviour in behaviours)
@@ -87,6 +94,8 @@ public class PlayerInteraction : MonoBehaviour
                 return interactable;
         }
 
+        // Se il collider è su un figlio, cerca anche nei parent.
+        // Utile se il collider sta su un child ma lo script NPC sta sull'oggetto padre.
         behaviours = collider.GetComponentsInParent<MonoBehaviour>();
 
         foreach(MonoBehaviour behaviour in behaviours)
@@ -100,6 +109,7 @@ public class PlayerInteraction : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
+        // Disegna il cerchio di interazione nella Scene View quando selezioni il player.
         Vector3 center = interactionArea != null ? interactionArea.position : transform.position;
 
         Gizmos.color = Color.yellow;
