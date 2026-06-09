@@ -4549,6 +4549,7 @@ GameObject:
   - component: {fileID: 1056863137}
   - component: {fileID: 1056863136}
   - component: {fileID: 1056863134}
+  - component: {fileID: 1056863145}
   m_Layer: 6
   m_Name: LightBandit_1
   m_TagString: Enemy
@@ -4793,6 +4794,23 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 1056863137}
   nextAttackTime: 0.5
+--- !u!114 &1056863145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056863133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a778d21fb3ebd4c9c87a679b0d9bf5b3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  idleAnimation: Nemico1_Idle
+  runAnimation: Nemico1_Corsa
+  attackAnimation: Nemico1_Attacco
+  hurtAnimation: Enemy_Attacco_Subito
+  deathAnimation:
 --- !u!212 &1056863143
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5235,6 +5253,7 @@ GameObject:
   - component: {fileID: 1253836708}
   - component: {fileID: 1253836707}
   - component: {fileID: 1253836710}
+  - component: {fileID: 1253836711}
   m_Layer: 6
   m_Name: LightBandit_0
   m_TagString: Enemy
@@ -5267,6 +5286,23 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 1253836708}
   nextAttackTime: 0.5
+--- !u!114 &1253836711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253836699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a778d21fb3ebd4c9c87a679b0d9bf5b3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  idleAnimation: Nemico1_Idle
+  runAnimation: Nemico1_Corsa
+  attackAnimation: Nemico1_Attacco
+  hurtAnimation: Enemy_Attacco_Subito
+  deathAnimation:
 --- !u!212 &1253836701
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -17775,6 +17811,7 @@ GameObject:
   - component: {fileID: 1911253230}
   - component: {fileID: 1911253231}
   - component: {fileID: 1911253232}
+  - component: {fileID: 1911253233}
   m_Layer: 6
   m_Name: HeavyBandit_0
   m_TagString: Enemy
@@ -18026,7 +18063,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1911253221}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fc7ebef210fd41a89659c63b0d09884, type: 3}
+  m_Script: {fileID: 11500000, guid: 055a1785c56664380b8f80a6f9bb5e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   HealthImage: {fileID: 2003494587}
@@ -18042,6 +18079,23 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 0}
   nextAttackTime: 0.5
+--- !u!114 &1911253233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911253221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a778d21fb3ebd4c9c87a679b0d9bf5b3, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  idleAnimation: Nemico2_Idle
+  runAnimation: Nemico2_Corsa
+  attackAnimation: Nemico2_Attacco
+  hurtAnimation: Enemy2_Attacco_Subito
+  deathAnimation:
 --- !u!1 &1932512943
 GameObject:
   m_ObjectHideFlags: 0

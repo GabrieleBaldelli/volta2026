@@ -3,7 +3,8 @@ using UnityEngine;
 using Pathfinding;
 using UnityEngine.UI;
 
-public class Enemy2 : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D))]
+public class Enemy : MonoBehaviour
 {
     [Header("Life bar")]
     public Image HealthImage;
@@ -52,39 +53,44 @@ public class Enemy2 : MonoBehaviour
     void Start()
     {
         spriterenderer = GetComponent<SpriteRenderer>();
-        aiPath = GetComponent<AIPath>();
+        if(spriterenderer == null)
+            spriterenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if(aiPath == null)
+            aiPath = GetComponent<AIPath>();
+
         animazioni = GetComponent<Animazioni>();
 
         if (animazioni == null)
             animazioni = gameObject.AddComponent<Animazioni>();
-        
-        ConfiguraAnimazioniEnemy2();
 
-        p = player.transform;
-        playerScript = player.GetComponent<PlayerMovement>();
+        if(player != null)
+        {
+            p = player.transform;
+            playerScript = player.GetComponent<PlayerMovement>();
+        }
+        else
+        {
+            playerScript = FindObjectOfType<PlayerMovement>();
+
+            if(playerScript != null)
+            {
+                player = playerScript.gameObject;
+                p = player.transform;
+            }
+        }
 
         vita = vitaMassima;
-        aiPath.canMove = false;
-    }
 
-    private void ConfiguraAnimazioniEnemy2()
-    {
-        if (string.IsNullOrEmpty(animazioni.idleAnimation) || animazioni.idleAnimation == "Nemico1_Idle")
-            animazioni.idleAnimation = "Nemico2_Idle";
-
-        if (string.IsNullOrEmpty(animazioni.runAnimation) || animazioni.runAnimation == "Nemico1_Corsa")
-            animazioni.runAnimation = "Nemico2_Corsa";
-
-        if (string.IsNullOrEmpty(animazioni.attackAnimation) || animazioni.attackAnimation == "Nemico1_Attacco")
-            animazioni.attackAnimation = "Nemico2_Attacco";
-
-        if (string.IsNullOrEmpty(animazioni.hurtAnimation) || animazioni.hurtAnimation == "Enemy_Attacco_Subito" || animazioni.hurtAnimation == "Nemico2_Attacco_Subito")
-            animazioni.hurtAnimation = "Enemy2_Attacco_Subito";
+        if(aiPath != null)
+            aiPath.canMove = false;
+        else
+            Debug.LogError("AIPath mancante sul nemico", this);
     }
 
     void Update()
     {
-        if (p == null)
+        if (p == null || aiPath == null || animazioni == null)
             return;
 
         if (IsAttacking)
@@ -101,10 +107,8 @@ public class Enemy2 : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, p.position);
 
-        if (p.position.x > transform.position.x)
-            spriterenderer.flipX = true;
-        else
-            spriterenderer.flipX = false;
+        if (spriterenderer != null)
+            spriterenderer.flipX = p.position.x > transform.position.x;
 
         if (distance > chaseDistance)
         {
@@ -130,23 +134,27 @@ public class Enemy2 : MonoBehaviour
         aiPath.canMove = true;
         aiPath.maxSpeed = 3f;
 
-        if (vita <= 1)
+        if(vita <= 1)
             Destroy(gameObject);
     }
 
     private IEnumerator AttackCoroutine()
     {
+        if(player == null || p == null)
+            yield break;
+
         playerScript = player.GetComponent<PlayerMovement>();
 
         IsAttacking = true;
         nextAttackTime = Time.time + attackDuration + attackCooldown;
 
         aiPath.canMove = false;
+
         animazioni.Attacco();
 
         yield return new WaitForSeconds(attackHitDelay);
 
-        if (Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShildingSetGet == false)
+        if (playerScript != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShildingSetGet == false)
         {
             HitPlayer();
         }
@@ -161,10 +169,13 @@ public class Enemy2 : MonoBehaviour
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         playerScript = player.GetComponent<PlayerMovement>();
 
-        StartCoroutine(KnockbackPlayer(playerRb, playerScript));
+        if(playerRb != null)
+            StartCoroutine(KnockbackPlayer(playerRb, playerScript));
 
         Debug.Log("Colpito");
-        StartCoroutine(playerScript.HurtCoroutine(danno));
+
+        if(playerScript != null)
+            StartCoroutine(playerScript.HurtCoroutine(danno));
     }
 
     private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerScript)
@@ -189,12 +200,29 @@ public class Enemy2 : MonoBehaviour
     {
         IsHurting = true;
 
-        LifeBar LifebarScript = transform.Find("Canvas/Life_Bar").GetComponent<LifeBar>();
+        Transform lifeBarTransform = transform.Find("Canvas/Life_Bar");
+        LifeBar lifebarScript = null;
 
-        animazioni.Danno();
+        if(lifeBarTransform != null)
+            lifebarScript = lifeBarTransform.GetComponent<LifeBar>();
+
+        if(animazioni != null)
+            animazioni.Danno();
 
         vita -= danno;
-        LifebarScript.UpdateLifeBar(vita, vitaMassima);
+
+        if(lifebarScript != null)
+            lifebarScript.UpdateLifeBar(vita, vitaMassima);
+
+        if(vita <= 1)
+        {
+            if(animazioni != null)
+                animazioni.Morte();
+
+            yield return new WaitForSeconds(0.35f);
+            Destroy(gameObject);
+            yield break;
+        }
 
         yield return new WaitForSeconds(0.35f);
 

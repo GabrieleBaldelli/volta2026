@@ -1,8 +1,9 @@
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class Animazioni : MonoBehaviour
 {
-    [Header("Animazioni Nemico")]
+    [Header("Animation State Names")]
     public string idleAnimation = "Nemico1_Idle";
     public string runAnimation = "Nemico1_Corsa";
     public string attackAnimation = "Nemico1_Attacco";
@@ -46,6 +47,15 @@ public class Animazioni : MonoBehaviour
     public void Morte()
     {
         PlayAnimation(deathAnimation);
+    }
+
+    public void Configura(string idle, string run, string attack, string hurt, string death = "")
+    {
+        idleAnimation = idle;
+        runAnimation = run;
+        attackAnimation = attack;
+        hurtAnimation = hurt;
+        deathAnimation = death;
     }
 
     public void PlayAnimation(string animationName)

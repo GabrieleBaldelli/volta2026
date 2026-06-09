@@ -329,27 +329,17 @@ public class PlayerMovement : MonoBehaviour
         
         foreach(Collider2D enemyCollider in enemiesHit)
         {
-            Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
-            Enemy2 enemy2Script = enemyCollider.GetComponent<Enemy2>();
+            Enemy enemyScript = enemyCollider.GetComponent<Enemy>();
 
-            if(enemyScript == null && enemy2Script == null)
+            if(enemyScript == null)
                 continue;
 
             Rigidbody2D enemyRb = enemyCollider.GetComponent<Rigidbody2D>();
             if(enemyRb == null)
                 continue;
 
-            if(enemyScript != null)
-            {
-                StartCoroutine(Knockback(enemyRb, enemyScript.aiPath, enemyCollider.transform));
-                StartCoroutine(enemyScript.HurtCoroutine(danno));
-            }
-
-            if(enemy2Script != null)
-            {
-                StartCoroutine(Knockback(enemyRb, enemy2Script.aiPath, enemyCollider.transform));
-                StartCoroutine(enemy2Script.HurtCoroutine(danno));
-            }
+            StartCoroutine(Knockback(enemyRb, enemyScript.aiPath, enemyCollider.transform));
+            StartCoroutine(enemyScript.HurtCoroutine(danno));
 
             Debug.Log("Nemico Colpito");
         }
@@ -489,13 +479,9 @@ public class PlayerMovement : MonoBehaviour
 
         foreach(Collider2D enemyCollider in enemiesNearPlayer)
         {
-            Enemy1 enemyScript = enemyCollider.GetComponent<Enemy1>();
-            Enemy2 enemy2Script = enemyCollider.GetComponent<Enemy2>();
+            Enemy enemyScript = enemyCollider.GetComponent<Enemy>();
 
             if(enemyScript != null && enemyScript.IsAttackingSetGet)
-                return true;
-
-            if(enemy2Script != null && enemy2Script.IsAttackingSetGet)
                 return true;
         }
 
