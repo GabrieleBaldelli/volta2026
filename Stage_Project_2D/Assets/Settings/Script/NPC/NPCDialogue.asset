@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9180cc1661b6406ba216c72d5f9bbf3, type: 3}
   m_Name: NPCDialogue
   m_EditorClassIdentifier: 
-  npcName: 
+  npcName: NPC
   npcPortrait: {fileID: 0}
-  dialogueLines: []
-  autoProgressLines: 
+  dialogueLines:
+  - Salve Impavido Cavaliere!
+  - Qual buon vento ti porta nella mia dimora?
+  autoProgressLines: 0100
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}
