@@ -37,4 +37,10 @@ public class PauseMenu : MonoBehaviour
         SceneManager.LoadScene("Main Menu");
         EventSystem.current.SetSelectedGameObject(null);
     }
+
+    public void Settings()
+    {
+        SceneManager.LoadScene("Settings In Game", LoadSceneMode.Additive);
+        EventSystem.current.SetSelectedGameObject(null);
+    }
 }
