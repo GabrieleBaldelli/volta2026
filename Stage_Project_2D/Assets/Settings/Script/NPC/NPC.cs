@@ -22,7 +22,7 @@ public class NPC : MonoBehaviour, Interactable
 
     public void Interact()
     {
-        //if no dialogue data or game is paused and dialogue is active
+        //se manca il dialogueData oppure il gioco è in pausa perchè un dialogo è già attivo, non fare nulla
         if(dialogueData == null || (Time.timeScale == 0 && !isDialogueActive))
             return;
 
