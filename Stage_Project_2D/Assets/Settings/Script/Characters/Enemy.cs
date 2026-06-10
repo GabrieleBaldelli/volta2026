@@ -161,7 +161,7 @@ public class Enemy : MonoBehaviour
             yield break;
         }
 
-        if (playerScript != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShildingSetGet == false)
+        if (playerScript != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShieldingSetGet == false)
         {
             HitPlayer();
         }

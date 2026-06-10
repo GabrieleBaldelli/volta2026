@@ -9,16 +9,11 @@ public class PlayerMovement : MonoBehaviour
     [Header("Stats Player")]
     public const float vitaMassima = 100f;
     private float vita = vitaMassima;
+
     public float Vita 
     {
-        get 
-        { 
-            return vita; 
-        }
-        set 
-        { 
-            vita = value; 
-        }
+        get { return vita; }
+        set { vita = value; }
     }
     public float danno = 20f;
     public float speed = 5f;
@@ -52,27 +47,15 @@ public class PlayerMovement : MonoBehaviour
     private bool IsHurting;
     private bool IsDying;
 
-    public bool IsShildingSetGet
+    public bool IsShieldingSetGet
     {
-        get 
-        { 
-            return IsShielding; 
-        }
-        set 
-        { 
-            IsShielding = value; 
-        }
+        get { return IsShielding; }
+        set { IsShielding = value; }
     }
-    public bool IsPerfectShildingSetGet
+    public bool IsPerfectShieldingSetGet
     {
-        get 
-        { 
-            return IsPerfectShielding; 
-        }
-        set 
-        { 
-            IsPerfectShielding = value; 
-        }
+        get { return IsPerfectShielding; }
+        set { IsPerfectShielding = value; }
     }
 
     //Serve per memorizzare la direzione del movimento del player, per poi utilizzarla nel dash
@@ -116,27 +99,18 @@ public class PlayerMovement : MonoBehaviour
         if (Time.timeScale == 0)
             return;
 
-        //Serve per dire che se sto dashando
-        //Il return esce dall'update per far finire l'animazione
+        //Il return esce dall'update per far finire le animazioni
         if (IsDashing)
-            {
-                return;
-            }
-
+            return;
+        
         if (IsShielding)
-            {
-                return;
-            }
-
+            return;
+            
         if (IsHurting)
-        {
             return;
-        }
-
+        
         if (IsDying)
-        {
             return;
-        }
        
         //INPUT asse orizzontale (X)
         movementX = Input.GetAxisRaw("Horizontal");
@@ -150,9 +124,6 @@ public class PlayerMovement : MonoBehaviour
 
         //Movimento del player con il rigidbody
         rb.velocity = new Vector2(movementX * speed, movementY * speed);
-        
-        
-
        
         if (rb.velocity.x > 0 )
 
@@ -194,27 +165,15 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(DashCoroutine());
         }
 
-         //INPUT del dash con il tasto "Q"
-       /* if (Input.GetKeyDown(KeyCode.E))
-        {
-            StartCoroutine(DashCoroutine());
-        }*/
-        
-
         // TIMER DELLA COMBO
 
-        //Se il timer combo è attivo
-        if (comboTimer > 0)
+        
+        if (comboTimer > 0)     //Se il timer combo è attivo
         {
-            //Scala il tempo
-            comboTimer -= Time.deltaTime;
-
-            //Se il tempo è finito
-            if (comboTimer <= 0)
-            {
-                //Reset della combo
+            comboTimer -= Time.deltaTime;   //Scala il tempo
+            
+            if (comboTimer <= 0)    //Se il tempo è finito resetta la combo
                 comboStep = 0; 
-            }
         }
 
         //Gestione delle animazioni
@@ -223,33 +182,28 @@ public class PlayerMovement : MonoBehaviour
 
    private void Animazioni()
 {
-        if (IsDying)
-        {
-            return;
-        }
-
-        if (IsHurting)
-        {
-            return;
-        }
-
-        //Se attacca, non cambiare animazione
-        if (IsAttacking)
-        {
-            return;
-        }
-
-        if (IsShielding)
-        {
-            return;
-        }
-
-
-        //Se dasha, non cambiare animazione
-        if (IsDashing)
-        {
-            return;
-        }
+    if (IsDying)
+    {
+        return;
+    }
+    if (IsHurting)
+    {
+        return;
+    }
+    //Se attacca, non cambiare animazione
+    if (IsAttacking)
+    {
+        return;
+    }
+    if (IsShielding)
+    {
+        return;
+    }
+    //Se dasha, non cambiare animazione
+    if (IsDashing)
+    {
+        return;
+    }
 
     //Se il personaggio si muove
     if (IsMoving && IsHurting == false)
@@ -309,9 +263,8 @@ public class PlayerMovement : MonoBehaviour
                 anim.Play("Attacco3");
                 break;
         }
-
         
-            HitEnemy();
+        HitEnemy();
 
         //Aspetto che finisca l'animazione
         yield return new WaitForSeconds(0.3f); 
@@ -404,17 +357,13 @@ public class PlayerMovement : MonoBehaviour
             // Riproduce l'animazione di danno subito
             anim.Play("Player_Attacco_Subito");
 
-
             Debug.Log(vita);
-
-           
 
             yield return new WaitForSeconds(0.3f);
 
             IsHurting = false;
 
             Debug.Log("viene colpito");
-
         }
     }
 
@@ -493,7 +442,6 @@ public class PlayerMovement : MonoBehaviour
             if(enemyScript != null && enemyScript.IsAttackingSetGet)
                 return true;
         }
-
         return false;
     }
 
@@ -512,8 +460,5 @@ public class PlayerMovement : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         IsDying = false;
-
-       
     }
-
 }
