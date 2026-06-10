@@ -6553,6 +6553,8 @@ GameObject:
   - component: {fileID: 829370875}
   - component: {fileID: 829370877}
   - component: {fileID: 829370878}
+  - component: {fileID: 829370879}
+  - component: {fileID: 829370880}
   m_Layer: 7
   m_Name: Riven
   m_TagString: Untagged
@@ -6680,6 +6682,44 @@ CircleCollider2D:
   m_Offset: {x: -0.026500829, y: -0.037927542}
   serializedVersion: 2
   m_Radius: 0.3749529
+--- !u!95 &829370879
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829370874}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 40158847d60bf4377b6df91cad35539c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &829370880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829370874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a778d21fb3ebd4c9c87a679b0d9bf5b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleAnimation: Riven_Idle
+  runAnimation: 
+  attackAnimation: 
+  hurtAnimation: 
+  deathAnimation: 
 --- !u!1 &839410715
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,11 +4,11 @@ using UnityEngine;
 public class Animazioni : MonoBehaviour
 {
     [Header("Animation State Names")]
-    public string idleAnimation = "Nemico1_Idle";
-    public string runAnimation = "Nemico1_Corsa";
-    public string attackAnimation = "Nemico1_Attacco";
-    public string hurtAnimation = "Enemy_Attacco_Subito";
-    public string deathAnimation = "";
+    public string idleAnimation;
+    public string runAnimation;
+    public string attackAnimation;
+    public string hurtAnimation;
+    public string deathAnimation;
 
     private Animator animator;
     private string currentAnimation;
