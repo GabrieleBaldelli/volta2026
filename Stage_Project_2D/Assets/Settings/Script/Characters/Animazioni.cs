@@ -5,10 +5,12 @@ public class Animazioni : MonoBehaviour
 {
     [Header("Animation State Names")]
     public string idleAnimation;
+    public string ShadowAnimation;
     public string runAnimation;
     public string attackAnimation;
     public string hurtAnimation;
     public string deathAnimation;
+    
 
     private Animator animator;
     private string currentAnimation;
@@ -27,6 +29,11 @@ public class Animazioni : MonoBehaviour
     public void Idle()
     {
         PlayAnimation(idleAnimation);
+    }
+
+    public void Shadow()
+    {
+        PlayAnimation(ShadowAnimation);
     }
 
     public void Corsa()
