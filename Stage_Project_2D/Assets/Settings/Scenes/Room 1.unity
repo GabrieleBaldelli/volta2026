@@ -6644,6 +6644,7 @@ MonoBehaviour:
   dialogueText: {fileID: 1198096027}
   nameText: {fileID: 222187360}
   portraitImage: {fileID: 540886029}
+  player: {fileID: 933564138}
 --- !u!58 &829370878
 CircleCollider2D:
   m_ObjectHideFlags: 0
