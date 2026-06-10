@@ -24,7 +24,26 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Se non siamo già dentro un'interazione, cerca l'oggetto interagibile più vicino.
         if(activeInteractable == null)
+        {
             currentInteractable = FindNearInteractable(); //restituisce l'interactable + vicino
+        }
+        else 
+        // 
+        {
+            // Prendo la posizione dell' GameObject di activeInteractable
+            MonoBehaviour mb = activeInteractable as MonoBehaviour;
+            GameObject activeInteractableObject = mb.gameObject;
+            Transform interactableTransform = activeInteractableObject.transform;
+            float distance = Vector2.Distance(interactableTransform.position, transform.position);
+
+            if(!activeInteractable.CanInteract() && distance <= interactionRadius)
+                return;
+
+            activeInteractable = null;
+            activeInteractableObject.GetComponent<NPC>().EndDialogue();
+
+            Debug.Log("Interazione interrotta perché troppo lontano");
+        }
 
         if(Input.GetKeyDown(interactKey))
         {
@@ -86,7 +105,7 @@ public class PlayerInteraction : MonoBehaviour
                 nearInteractable = interactable;
             }
         }
-
+            
         return nearInteractable;
     }
 

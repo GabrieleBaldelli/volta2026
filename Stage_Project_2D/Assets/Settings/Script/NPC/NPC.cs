@@ -26,7 +26,7 @@ public class NPC : MonoBehaviour, Interactable
 
     public void Interact()
     {
-        //se manca il dialogueData oppure il gioco è in pausa perchè un dialogo è già attivo, non fare nulla
+        //se manca il dialogueData oppure il gioco è in pausa
         if(dialogueData == null || (Time.timeScale == 0 && !isDialogueActive))
             return;
 
@@ -49,7 +49,6 @@ public class NPC : MonoBehaviour, Interactable
         portraitImage.sprite = dialogueData.npcPortrait;
 
         dialoguePanel.SetActive(true);
-        Time.timeScale = 0;
 
         StartCoroutine(TypeLine());
     }
@@ -99,11 +98,5 @@ public class NPC : MonoBehaviour, Interactable
         isDialogueActive = false;
         dialogueText.SetText("");
         dialoguePanel.SetActive(false);
-        Time.timeScale = 1;
-
-        // rende nullo activeInteractable del player, così che, una volta terminato il dialogo
-        // con il bottone E, se l'npc non è più vicino il dialogo non può attivarsi
-        PlayerInteraction InteractionScript = player.GetComponent<PlayerInteraction>();
-        InteractionScript.activeInteractableSetGet = null;
     }
 }

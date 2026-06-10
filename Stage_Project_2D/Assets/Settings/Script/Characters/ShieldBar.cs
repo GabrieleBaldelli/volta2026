@@ -44,7 +44,7 @@ public class ShieldBar : MonoBehaviour
         if(playerScript == null)
             return;
 
-        if(playerScript.IsAnyEnemyAttacking() && playerScript.IsPerfectShildingSetGet == false && playerScript.IsShildingSetGet)
+        if(playerScript.IsAnyEnemyAttacking() && playerScript.IsPerfectShieldingSetGet == false && playerScript.IsShieldingSetGet)
         {
             StartCoroutine(UpdateShieldBar());
         }
