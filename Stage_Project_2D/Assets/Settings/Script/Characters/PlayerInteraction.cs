@@ -18,7 +18,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Se non siamo già dentro un'interazione, cerca l'oggetto interagibile più vicino.
         if(activeInteractable == null)
-            currentInteractable = FindNearInteractable();
+            currentInteractable = FindNearInteractable(); //restituisce l'interactable + vicino
 
         if(Input.GetKeyDown(interactKey))
         {
@@ -53,7 +53,7 @@ public class PlayerInteraction : MonoBehaviour
     private Interactable FindNearInteractable()
     {
         // Usa Interaction Area se esiste, altrimenti usa la posizione del player.
-        Vector2 center = interactionArea != null ? interactionArea.position : transform.position;
+        Vector2 center = interactionArea;
 
         // Trova tutti i Collider2D dentro il cerchio, ma solo sui layer scelti.
         Collider2D[] colliders = Physics2D.OverlapCircleAll(center, interactionRadius, interactableLayers);
@@ -61,17 +61,17 @@ public class PlayerInteraction : MonoBehaviour
         Interactable nearInteractable = null;
         float bestDistance = float.MaxValue;
 
-        foreach(Collider2D c in colliders)
+        foreach(Collider2D currentCollider in colliders)
         {
-            // Da ogni collider prova a recuperare uno script che implementa Interactable.
-            Interactable interactable = GetInteractable(c);
+// GetInteractable( Collider2D ) prende lo script solo se il suo oggetto possiede Interact() e CanInteract()
+            Interactable interactable = GetInteractable(currentCollider);
 
-            // Se non è interagibile, oppure non può interagire ora, lo salta.
+            // Se non non ha trovato le funzioni, oppure non può interagire ora, lo salta.
             if(interactable == null || !interactable.CanInteract())
                 continue;
 
             // Sceglie l'oggetto più vicino al centro dell'Interaction Area.
-            float distance = Vector2.Distance(center, c.ClosestPoint(center));
+            float distance = Vector2.Distance(center, currentCollider.ClosestPoint(center));
 
             if(distance < bestDistance)
             {
