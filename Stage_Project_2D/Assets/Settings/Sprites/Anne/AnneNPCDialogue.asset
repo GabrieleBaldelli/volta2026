@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9180cc1661b6406ba216c72d5f9bbf3, type: 3}
-  m_Name: DialogueDataRiven
+  m_Name: AnneNPCDialogue
   m_EditorClassIdentifier: 
-  npcName: Riven
-  npcPortrait: {fileID: 21300000, guid: c55d38eacf59947af8fb8641049e1f6d, type: 3}
+  npcName: Anne
+  npcPortrait: {fileID: 21300000, guid: f623e47e12f9d427784aa7a83d3b7a1b, type: 3}
   dialogueLines:
-  - Salve Impavido Cavaliere!
-  - Qual buon vento ti porta nella mia dimora?
-  autoProgressLines: 0100
+  - Ei come va?
+  - Sei un viandante di passaggio?
+  autoProgressLines: 01
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}

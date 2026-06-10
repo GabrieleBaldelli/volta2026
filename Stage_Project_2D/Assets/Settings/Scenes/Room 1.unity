@@ -1542,6 +1542,40 @@ Transform:
   - {fileID: 1122803322}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &178315486
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 178315487}
+  m_Layer: 0
+  m_Name: NPC
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &178315487
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178315486}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.1105013, y: 10.239202, z: 0.65227306}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2068351496}
+  - {fileID: 829370876}
+  - {fileID: 1782796942}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &185773725
 GameObject:
   m_ObjectHideFlags: 0
@@ -1823,7 +1857,7 @@ GameObject:
   - component: {fileID: 222187358}
   - component: {fileID: 222187359}
   - component: {fileID: 222187360}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: NPCNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2123,7 +2157,7 @@ GameObject:
   - component: {fileID: 265199879}
   - component: {fileID: 265199881}
   - component: {fileID: 265199880}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2276,7 +2310,7 @@ GameObject:
   - component: {fileID: 300458057}
   - component: {fileID: 300458059}
   - component: {fileID: 300458058}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3566,7 +3600,7 @@ GameObject:
   - component: {fileID: 401861692}
   - component: {fileID: 401861694}
   - component: {fileID: 401861693}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: DialoguePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4655,7 +4689,7 @@ GameObject:
   - component: {fileID: 522854953}
   - component: {fileID: 522854952}
   - component: {fileID: 522854951}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Tasto main menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4786,7 +4820,7 @@ GameObject:
   - component: {fileID: 540886031}
   - component: {fileID: 540886030}
   - component: {fileID: 540886029}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: DialogePortrait
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4861,7 +4895,7 @@ GameObject:
   - component: {fileID: 545243591}
   - component: {fileID: 545243590}
   m_Layer: 0
-  m_Name: AstarPath
+  m_Name: Enemy_AstarPath
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5720,7 +5754,7 @@ GameObject:
   - component: {fileID: 663159634}
   - component: {fileID: 663159633}
   - component: {fileID: 663159632}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6424,7 +6458,7 @@ GameObject:
   - component: {fileID: 717139026}
   - component: {fileID: 717139025}
   - component: {fileID: 717139024}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Tasto settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6556,7 +6590,7 @@ GameObject:
   - component: {fileID: 718793213}
   - component: {fileID: 718793212}
   - component: {fileID: 718793211}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Tasto resume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7449,7 +7483,7 @@ GameObject:
   - component: {fileID: 783823953}
   - component: {fileID: 783823952}
   - component: {fileID: 783823951}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: PauseMenuCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7919,9 +7953,9 @@ GameObject:
   - component: {fileID: 829370876}
   - component: {fileID: 829370875}
   - component: {fileID: 829370877}
+  - component: {fileID: 829370880}
   - component: {fileID: 829370878}
   - component: {fileID: 829370879}
-  - component: {fileID: 829370880}
   m_Layer: 7
   m_Name: Riven
   m_TagString: Untagged
@@ -7967,8 +8001,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1768746897
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 670322843, guid: 5a8d0664ebc0842b4ab7330b5b1e149f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -7989,12 +8023,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829370874}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.32, y: 13.33, z: 0}
-  m_LocalScale: {x: 1.4349992, y: 1.4349992, z: 1.4349992}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -3.3194985, y: 3.0907984, z: -0.65227306}
+  m_LocalScale: {x: 1.6281984, y: 1.6281984, z: 1.6281984}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 178315487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &829370877
 MonoBehaviour:
@@ -21237,7 +21271,7 @@ GameObject:
   - component: {fileID: 1198096025}
   - component: {fileID: 1198096026}
   - component: {fileID: 1198096027}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: DialogueText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21454,7 +21488,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1246449040}
   - component: {fileID: 1246449041}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: PauseMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21951,7 +21985,7 @@ GameObject:
   - component: {fileID: 1260702418}
   - component: {fileID: 1260702417}
   - component: {fileID: 1260702416}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ShadowAnimation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -21967,8 +22001,8 @@ Transform:
   m_GameObject: {fileID: 1260702414}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.038, y: -0.303, z: 0.015615343}
-  m_LocalScale: {x: 1.2439865, y: 0.9611877, z: 1}
+  m_LocalPosition: {x: -0.03799983, y: -0.30300003, z: 0.015615344}
+  m_LocalScale: {x: 1.2439864, y: 0.96118766, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2068351496}
@@ -24586,7 +24620,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1598488512}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -25885,7 +25919,7 @@ GameObject:
   - component: {fileID: 1769763368}
   - component: {fileID: 1769763370}
   - component: {fileID: 1769763369}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26043,10 +26077,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1782796942}
   - component: {fileID: 1782796941}
+  - component: {fileID: 1782796943}
   - component: {fileID: 1782796940}
   - component: {fileID: 1782796939}
   - component: {fileID: 1782796938}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Anne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26085,9 +26120,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.009578202}
+  m_Offset: {x: 0, y: -0.004723668}
   serializedVersion: 2
-  m_Radius: 0.21862744
+  m_Radius: 0.23804605
 --- !u!95 &1782796939
 Animator:
   serializedVersion: 5
@@ -26165,14 +26200,14 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1768746897
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c2d693903d4294378994495bd8ec107d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 2
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -26187,13 +26222,31 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1782796937}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.9707, y: 6.4847, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 10.081202, y: -3.7545013, z: -0.65227306}
   m_LocalScale: {x: 2.8, y: 2.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 178315487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1782796943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1782796937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae110c2f0a23a493086918ce3fb7e63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueData: {fileID: 11400000, guid: 675f663b60243402094347e7b3cf24f3, type: 2}
+  dialoguePanel: {fileID: 401861691}
+  dialogueText: {fileID: 1198096027}
+  nameText: {fileID: 222187360}
+  portraitImage: {fileID: 540886029}
+  player: {fileID: 933564138}
 --- !u!1 &1791145103
 GameObject:
   m_ObjectHideFlags: 0
@@ -27927,7 +27980,7 @@ GameObject:
   - component: {fileID: 1932512946}
   - component: {fileID: 1932512945}
   m_Layer: 0
-  m_Name: Interaction Area
+  m_Name: Attack Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28122,7 +28175,7 @@ GameObject:
   - component: {fileID: 1950939330}
   - component: {fileID: 1950939329}
   - component: {fileID: 1950939328}
-  m_Layer: 5
+  m_Layer: 7
   m_Name: CloseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28194,6 +28247,30 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 829370877}
+        m_TargetAssemblyTypeName: NPC, Assembly-CSharp
+        m_MethodName: EndDialogue
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1782796943}
+        m_TargetAssemblyTypeName: NPC, Assembly-CSharp
+        m_MethodName: EndDialogue
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2068351497}
         m_TargetAssemblyTypeName: NPC, Assembly-CSharp
         m_MethodName: EndDialogue
         m_Mode: 1
@@ -28699,10 +28776,11 @@ GameObject:
   m_Component:
   - component: {fileID: 2068351496}
   - component: {fileID: 2068351495}
+  - component: {fileID: 2068351497}
+  - component: {fileID: 2068351492}
   - component: {fileID: 2068351494}
   - component: {fileID: 2068351493}
-  - component: {fileID: 2068351492}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Eleonore
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28821,14 +28899,14 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1768746897
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 31108cc6e4abf42028ac53d48f53cf52, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 2
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -28844,13 +28922,31 @@ Transform:
   m_GameObject: {fileID: 2068351491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.95, y: 13.819999, z: 0}
+  m_LocalPosition: {x: 10.060501, y: 3.5807972, z: -0.65227306}
   m_LocalScale: {x: 2.8, y: 2.8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1260702415}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 178315487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2068351497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2068351491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae110c2f0a23a493086918ce3fb7e63d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogueData: {fileID: 11400000, guid: 1e087d53c61544b9dafce1e289225361, type: 2}
+  dialoguePanel: {fileID: 401861691}
+  dialogueText: {fileID: 1198096027}
+  nameText: {fileID: 222187360}
+  portraitImage: {fileID: 540886029}
+  player: {fileID: 933564138}
 --- !u!1 &2102790280
 GameObject:
   m_ObjectHideFlags: 0
@@ -29577,6 +29673,4 @@ SceneRoots:
   - {fileID: 1260432454}
   - {fileID: 707727399}
   - {fileID: 545243591}
-  - {fileID: 829370876}
-  - {fileID: 1782796942}
-  - {fileID: 2068351496}
+  - {fileID: 178315487}
