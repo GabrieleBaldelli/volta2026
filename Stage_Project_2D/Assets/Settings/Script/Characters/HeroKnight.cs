@@ -234,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Se attacca, non cambiare animazione
-        if (IsAttacking && !IsHurting)
+        if (IsAttacking)
         {
             return;
         }

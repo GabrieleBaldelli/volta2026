@@ -37,6 +37,7 @@ public class Enemy : MonoBehaviour
     [Header("Stati dell'Enemy")]
     private bool IsAttacking = false;
     private bool IsHurting;
+    private bool IsDying;
 
     public bool IsAttackingSetGet
     {
@@ -90,7 +91,7 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (p == null || aiPath == null || animazioni == null)
+        if (p == null || aiPath == null || animazioni == null || IsDying)
             return;
 
         if (IsAttacking)
@@ -140,7 +141,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator AttackCoroutine()
     {
-        if(player == null || p == null)
+        if(player == null || p == null || IsDying)
             yield break;
 
         playerScript = player.GetComponent<PlayerMovement>();
@@ -154,6 +155,12 @@ public class Enemy : MonoBehaviour
 
         yield return new WaitForSeconds(attackHitDelay);
 
+        if (IsDying)
+        {
+            IsAttacking = false;
+            yield break;
+        }
+
         if (playerScript != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShildingSetGet == false)
         {
             HitPlayer();
@@ -166,11 +173,14 @@ public class Enemy : MonoBehaviour
 
     private void HitPlayer()
     {
+        if(IsDying)
+            return;
+
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         playerScript = player.GetComponent<PlayerMovement>();
 
         if(playerRb != null)
-            StartCoroutine(KnockbackPlayer(playerRb, playerScript));
+            StartCoroutine(KnockbackPlayer(playerRb));
 
         Debug.Log("Colpito");
 
@@ -178,12 +188,9 @@ public class Enemy : MonoBehaviour
             StartCoroutine(playerScript.HurtCoroutine(danno));
     }
 
-    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb, PlayerMovement playerScript)
+    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb)
     {
         Vector2 knockbackDirection = (p.position - transform.position).normalized;
-
-        if (playerScript != null)
-            playerScript.enabled = false;
 
         playerRb.velocity = Vector2.zero;
         playerRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
@@ -191,9 +198,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSeconds(knockbackDuration);
 
         playerRb.velocity = Vector2.zero;
-
-        if (playerScript != null)
-            playerScript.enabled = true;
     }
 
     public IEnumerator HurtCoroutine(float danno)
@@ -216,6 +220,13 @@ public class Enemy : MonoBehaviour
 
         if(vita <= 1)
         {
+            IsDying = true;
+            IsAttacking = false;
+            IsHurting = false;
+
+            if(aiPath != null)
+                aiPath.canMove = false;
+
             if(animazioni != null)
                 animazioni.Morte();
 
