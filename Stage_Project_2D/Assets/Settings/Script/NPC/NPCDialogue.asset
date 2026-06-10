@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: NPCDialogue
   m_EditorClassIdentifier: 
   npcName: NPC
-  npcPortrait: {fileID: 0}
+  npcPortrait: {fileID: 21300000, guid: c55d38eacf59947af8fb8641049e1f6d, type: 3}
   dialogueLines:
   - Salve Impavido Cavaliere!
   - Qual buon vento ti porta nella mia dimora?
