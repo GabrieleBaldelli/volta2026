@@ -329,6 +329,9 @@ public class PlayerMovement : MonoBehaviour
         
         foreach(Collider2D enemyCollider in enemiesHit)
         {
+            if(enemyCollider == null)
+                continue;
+
             Enemy enemyScript = enemyCollider.GetComponent<Enemy>();
 
             if(enemyScript == null)
@@ -347,6 +350,9 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator Knockback(Rigidbody2D enemyRb, AIPath enemyPath, Transform e)                                         //Guardo
     {
+        if(enemyRb == null || e == null)
+            yield break;
+
         Vector2 knockbackDirection = (e.position - transform.position).normalized;
 
         if (enemyPath != null)
@@ -358,6 +364,9 @@ public class PlayerMovement : MonoBehaviour
         enemyRb.velocity = knockbackDirection * knockbackForce;
 
         yield return new WaitForSeconds(knockbackDuration);
+
+        if(enemyRb == null)
+            yield break;
 
         enemyRb.velocity = Vector2.zero;
 
