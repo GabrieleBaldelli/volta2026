@@ -14,6 +14,12 @@ public class PlayerInteraction : MonoBehaviour
     // Oggetto con cui stiamo già interagendo, per continuare un dialogo già aperto
     private Interactable activeInteractable;    // Anche quando CanInteract() torna false.
 
+    public Interactable activeInteractableSetGet
+    {
+        get { return activeInteractable; }
+        set { activeInteractable = value; }
+    }
+
     void Update()
     {
         // Se non siamo già dentro un'interazione, cerca l'oggetto interagibile più vicino.
@@ -30,8 +36,9 @@ public class PlayerInteraction : MonoBehaviour
 
                 // Quando l'oggetto torna interagibile, considera l'interazione conclusa.
                 // Nel tuo NPC succede dopo EndDialogue().
-                if(activeInteractable.CanInteract())
-                    activeInteractable = null;
+                if(activeInteractable != null)
+                    if(activeInteractable.CanInteract())
+                        activeInteractable = null;
 
                 return;
             }

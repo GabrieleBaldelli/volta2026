@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class NPC : MonoBehaviour, Interactable
 {
+    [Header("Dialogue")]
     public NPCDialogue dialogueData;
     public GameObject dialoguePanel;
     public TMP_Text dialogueText, nameText;
@@ -19,6 +20,9 @@ public class NPC : MonoBehaviour, Interactable
     {
         return !isDialogueActive;
     }
+
+    [Header("Player Interaction")]
+    [SerializeField] private GameObject player;
 
     public void Interact()
     {
@@ -96,5 +100,10 @@ public class NPC : MonoBehaviour, Interactable
         dialogueText.SetText("");
         dialoguePanel.SetActive(false);
         Time.timeScale = 1;
+
+        // rende nullo activeInteractable del player, così che, una volta terminato il dialogo
+        // con il bottone E, se l'npc non è più vicino il dialogo non può attivarsi
+        PlayerInteraction InteractionScript = player.GetComponent<PlayerInteraction>();
+        InteractionScript.activeInteractableSetGet = null;
     }
 }
