@@ -53,7 +53,7 @@ public class PlayerInteraction : MonoBehaviour
     private Interactable FindNearInteractable()
     {
         // Usa Interaction Area se esiste, altrimenti usa la posizione del player.
-        Vector2 center = interactionArea;
+        Vector2 center = new Vector2(interactionArea.position.x, interactionArea.position.y);
 
         // Trova tutti i Collider2D dentro il cerchio, ma solo sui layer scelti.
         Collider2D[] colliders = Physics2D.OverlapCircleAll(center, interactionRadius, interactableLayers);
@@ -63,7 +63,7 @@ public class PlayerInteraction : MonoBehaviour
 
         foreach(Collider2D currentCollider in colliders)
         {
-// GetInteractable( Collider2D ) prende lo script solo se il suo oggetto possiede Interact() e CanInteract()
+// GetInteractable( Collider2D ) prende lo script solo se il suo oggetto ha un layer Interactable
             Interactable interactable = GetInteractable(currentCollider);
 
             // Se non non ha trovato le funzioni, oppure non può interagire ora, lo salta.
