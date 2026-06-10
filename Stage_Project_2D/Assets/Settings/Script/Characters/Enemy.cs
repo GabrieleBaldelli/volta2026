@@ -202,6 +202,9 @@ public class Enemy : MonoBehaviour
 
     public IEnumerator HurtCoroutine(float danno)
     {
+        if(IsDying)
+            yield break;
+
         IsHurting = true;
 
         Transform lifeBarTransform = transform.Find("Canvas/Life_Bar");
@@ -231,11 +234,18 @@ public class Enemy : MonoBehaviour
                 animazioni.Morte();
 
             yield return new WaitForSeconds(0.35f);
+
+            if(this == null)
+                yield break;
+
             Destroy(gameObject);
             yield break;
         }
 
         yield return new WaitForSeconds(0.35f);
+
+        if(IsDying)
+            yield break;
 
         IsHurting = false;
 
