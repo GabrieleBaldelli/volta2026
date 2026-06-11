@@ -51,12 +51,12 @@ TagManager:
   - name: Enemy
     uniqueID: 975740573
     locked: 0
-  - name: Player
-    uniqueID: 1768746897
-    locked: 0
   - name: ground
     uniqueID: 717087989
     locked: 0
   - name: wall
     uniqueID: 404989929
+    locked: 0
+  - name: Player
+    uniqueID: 1768746897
     locked: 0
