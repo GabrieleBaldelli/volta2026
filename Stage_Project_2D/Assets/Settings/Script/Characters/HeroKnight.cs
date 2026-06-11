@@ -37,6 +37,11 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip grassRunSound;
+    public AudioClip swordSwingSound;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -77,6 +82,8 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if(audioSource == null)
+            audioSource = GetComponent<AudioSource>();
 
         if(anim == null)
             anim = GetComponentInChildren<Animator>();
@@ -97,20 +104,35 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (Time.timeScale == 0)
+        {
+            StopGrassRunSound();
             return;
+        }
 
         //Il return esce dall'update per far finire le animazioni
         if (IsDashing)
+        {
+            StopGrassRunSound();
             return;
+        }
         
         if (IsShielding)
+        {
+            StopGrassRunSound();
             return;
+        }
             
         if (IsHurting)
+        {
+            StopGrassRunSound();
             return;
+        }
         
         if (IsDying)
+        {
+            StopGrassRunSound();
             return;
+        }
        
         //INPUT asse orizzontale (X)
         movementX = Input.GetAxisRaw("Horizontal");
@@ -148,6 +170,8 @@ public class PlayerMovement : MonoBehaviour
             IsMoving = false;
         }
 
+        HandleGrassRunSound();
+
         //INPUT di attacco con il tasto SX del mouse
         if (Input.GetMouseButtonDown(0) && IsAttacking == false)
         {
@@ -176,8 +200,44 @@ public class PlayerMovement : MonoBehaviour
                 comboStep = 0; 
         }
 
+
+
         //Gestione delle animazioni
         Animazioni();
+    }
+
+    private void HandleGrassRunSound()
+    {
+        if (IsMoving && !IsAttacking && !IsDashing && !IsShielding && !IsHurting && !IsDying)
+        {
+            if (audioSource != null && grassRunSound != null && !audioSource.isPlaying)
+            {
+                audioSource.clip = grassRunSound;
+                audioSource.loop = true;
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            StopGrassRunSound();
+        }
+    }
+
+    private void StopGrassRunSound()
+    {
+        if (audioSource != null && audioSource.clip == grassRunSound && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+    }
+
+    private void PlaySwordSwingSound()
+    {
+        if (audioSource != null && swordSwingSound != null)
+        {
+            audioSource.PlayOneShot(swordSwingSound);
+        }
     }
 
    private void Animazioni()
