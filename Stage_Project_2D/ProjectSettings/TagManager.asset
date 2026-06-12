@@ -45,18 +45,21 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: GameObject
-    uniqueID: 2502950459
+  - name: Ground
+    uniqueID: 3511831145
     locked: 0
-  - name: Enemy
-    uniqueID: 975740573
+  - name: WalkInfront
+    uniqueID: 55142473
     locked: 0
-  - name: ground
-    uniqueID: 717087989
-    locked: 0
-  - name: wall
-    uniqueID: 404989929
+  - name: Collision
+    uniqueID: 1422137095
     locked: 0
   - name: Player
-    uniqueID: 1768746897
+    uniqueID: 3313132685
+    locked: 0
+  - name: WalkBehind
+    uniqueID: 566981691
+    locked: 0
+  - name: Decor
+    uniqueID: 2021017489
     locked: 0
