@@ -38,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+
+    // Script unico che contiene tutti i clip e i volumi audio del personaggio.
+    // I suoni non vengono piu' assegnati direttamente qui, ma nel CharacterAudioController.
     private CharacterAudioController characterAudio;
    
     [Header("Stati del Player")]
@@ -79,8 +82,11 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Prende il controller audio collegato all'HeroKnight.
         characterAudio = GetComponent<CharacterAudioController>();
 
+        // Se manca, lo aggiunge automaticamente per evitare errori quando si chiamano i suoni.
         if(characterAudio == null)
             characterAudio = gameObject.AddComponent<CharacterAudioController>();
 
@@ -206,44 +212,57 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleGrassRunSound()
     {
+        // Se il player si sta muovendo e non e' bloccato da altre azioni, avvia il suono di corsa.
         if (IsMoving && !IsAttacking && !IsDashing && !IsShielding && !IsHurting && !IsDying)
+        {
             characterAudio.PlayRunSound();
+        }
         else
+        {
+            // Se il player si ferma, attacca, para, dasha o prende danno, ferma la corsa.
             StopGrassRunSound();
+        }
     }
 
     private void StopGrassRunSound()
     {
+        // Ferma solo il loop della corsa gestito dal CharacterAudioController.
         characterAudio.StopRunSound();
     }
 
     private void PlaySwordSwingSound()
     {
+        // Suono della lama/spadata quando parte l'attacco.
         characterAudio.PlaySwordSwingSound();
     }
 
     private void PlayAttackEffortSound()
     {
+        // Suono della voce/sforzo dell'HeroKnight quando attacca.
         characterAudio.PlayAttackEffortSound();
     }
 
     private void PlayHurtSound()
     {
+        // Suono riprodotto quando l'HeroKnight subisce danno.
         characterAudio.PlayHurtSound();
     }
 
     private void PlayShieldSound()
     {
+        // Suono della parata normale.
         characterAudio.PlayShieldSound();
     }
 
     private void PlayPerfectShieldSound()
     {
+        // Suono della parata perfetta.
         characterAudio.PlayPerfectShieldSound();
     }
 
     private void PlayDeathSound()
     {
+        // Suono riprodotto quando l'HeroKnight muore.
         characterAudio.PlayDeathSound();
     }
 

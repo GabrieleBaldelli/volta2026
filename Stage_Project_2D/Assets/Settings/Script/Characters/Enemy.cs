@@ -34,6 +34,9 @@ public class Enemy : MonoBehaviour
     public float nextAttackTime = 0.5f;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
+
+    // Script unico che contiene i clip e i volumi audio del nemico.
+    // Ogni bandit puo' avere clip diversi assegnati nel suo CharacterAudioController.
     private CharacterAudioController characterAudio;
 
     [Header("Stati dell'Enemy")]
@@ -67,8 +70,10 @@ public class Enemy : MonoBehaviour
         if (animazioni == null)
             animazioni = gameObject.AddComponent<Animazioni>();
 
+        // Prende il controller audio del bandit.
         characterAudio = GetComponent<CharacterAudioController>();
 
+        // Se manca, lo aggiunge automaticamente per evitare NullReferenceException.
         if(characterAudio == null)
             characterAudio = gameObject.AddComponent<CharacterAudioController>();
 
@@ -98,28 +103,33 @@ public class Enemy : MonoBehaviour
 
     private void PlayRunSound()
     {
+        // Avvia il suono in loop della corsa/inseguimento del bandit.
         characterAudio.PlayRunSound();
     }
 
     private void StopRunSound()
     {
+        // Ferma il suono di corsa quando il bandit e' fermo, attacca o prende danno.
         characterAudio.StopRunSound();
     }
 
     private void PlayAttackSound()
     {
+        // Prima ferma la corsa, poi riproduce il suono del colpo.
         StopRunSound();
         characterAudio.PlayAttackSound();
     }
 
     private void PlayAttackEffortSound()
     {
+        // Suono della voce/sforzo del bandit durante l'attacco.
         StopRunSound();
         characterAudio.PlayAttackEffortSound();
     }
 
     private void PlayHurtSound()
     {
+        // Quando il bandit subisce danno, ferma la corsa e riproduce il suono di dolore.
         StopRunSound();
         characterAudio.PlayHurtSound();
     }
