@@ -21892,7 +21892,7 @@ MonoBehaviour:
   HealthImage: {fileID: 2003494587}
   player: {fileID: 933564138}
   vitaMassima: 100
-  danno: 15
+  danno: 100
   stopDistance: 1.5
   chaseDistance: 5
   attackCooldown: 1
