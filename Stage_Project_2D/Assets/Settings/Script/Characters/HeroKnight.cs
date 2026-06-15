@@ -37,11 +37,16 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
+    private AudioSource swordAudioSource;
 
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip grassRunSound;
     public AudioClip swordSwingSound;
+    [Range(0f, 3f)]
+    public float grassRunVolume = 1f;
+    [Range(0f, 3f)]
+    public float swordSwingVolume = 2f;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -84,6 +89,20 @@ public class PlayerMovement : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         if(audioSource == null)
             audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
+        if (audioSource != null)
+        {
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 0f;
+        }
+
+        swordAudioSource = gameObject.AddComponent<AudioSource>();
+        swordAudioSource.playOnAwake = false;
+        swordAudioSource.loop = false;
+        swordAudioSource.spatialBlend = 0f;
 
         if(anim == null)
             anim = GetComponentInChildren<Animator>();
@@ -214,6 +233,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 audioSource.clip = grassRunSound;
                 audioSource.loop = true;
+                audioSource.volume = grassRunVolume;
                 audioSource.Play();
             }
         }
@@ -234,9 +254,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlaySwordSwingSound()
     {
-        if (audioSource != null && swordSwingSound != null)
+        if (swordAudioSource != null && swordSwingSound != null)
         {
-            audioSource.PlayOneShot(swordSwingSound);
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(swordSwingSound, swordSwingVolume);
         }
     }
 
@@ -304,6 +325,8 @@ public class PlayerMovement : MonoBehaviour
 
         //Immobilizza il mio personaggio
         rb.velocity = Vector2.zero;
+
+        PlaySwordSwingSound();
 
         //resetta il timer della combo
         comboTimer = comboResetTime; // reset finestra combo
