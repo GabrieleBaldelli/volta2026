@@ -6,6 +6,11 @@ using UnityEngine.EventSystems;
 
 public class SettingsInGame : MonoBehaviour
 {
+   public void SetCharacterVolume(float volume)
+   {
+        CharacterAudioController.SetCharacterVolume(volume);
+   }
+
    public void MainMenu()
    {
         Time.timeScale = 1;

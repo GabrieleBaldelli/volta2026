@@ -7289,6 +7289,38 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: runSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d2b5d049f93d45b3b1abd2a26b14192, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: hurtSound
+      value: 
+      objectReference: {fileID: 8300000, guid: c15c6eaf2d9474e7c9957b7fe18ad96f, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: deathSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 67348dc683abf4f18b850304ebe7444d, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: shieldSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 979c90cc6561941ea9e173dcad226d20, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: swordSwingSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 84e7fbf7673b14b85ae2991470c78fb9, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: swordSwingVolume
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: attackEffortSound
+      value: 
+      objectReference: {fileID: 8300000, guid: da6b19b76f6f342e0a41a028a04b788a, type: 3}
+    - target: {fileID: 3349658317098649071, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: perfectShieldSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 1a4d58f05df16489cb621f119a27f854, type: 3}
     - target: {fileID: 6323719953710832613, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_Name
       value: HeroKnight
@@ -9087,6 +9119,7 @@ GameObject:
   - component: {fileID: 1056863136}
   - component: {fileID: 1056863134}
   - component: {fileID: 1056863145}
+  - component: {fileID: 1056863146}
   m_Layer: 6
   m_Name: LightBandit_1
   m_TagString: Enemy
@@ -9331,14 +9364,6 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 1056863137}
   nextAttackTime: 0.5
-  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
-  attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
-  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
-  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
-  runVolume: 2.5
-  attackVolume: 1.5
-  attackEffortVolume: 1
-  hurtVolume: 0.7
 --- !u!212 &1056863143
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -9425,6 +9450,36 @@ MonoBehaviour:
   attackAnimation: Nemico1_Attacco
   hurtAnimation: Enemy_Attacco_Subito
   deathAnimation: 
+--- !u!114 &1056863146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056863133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2e617a7b2b4ac8a2b7f9e4f3e41d52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loopAudioSource: {fileID: 0}
+  oneShotAudioSource: {fileID: 0}
+  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
+  runVolume: 3
+  swordSwingSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackSound: {fileID: 0}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
+  swordSwingVolume: 1
+  attackVolume: 1
+  attackEffortVolume: 2
+  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
+  deathSound: {fileID: 0}
+  hurtVolume: 1
+  deathVolume: 1
+  shieldSound: {fileID: 0}
+  perfectShieldSound: {fileID: 0}
+  shieldVolume: 1
+  perfectShieldVolume: 1
 --- !u!1 &1099476052
 GameObject:
   m_ObjectHideFlags: 0
@@ -10538,6 +10593,7 @@ GameObject:
   - component: {fileID: 1253836707}
   - component: {fileID: 1253836710}
   - component: {fileID: 1253836711}
+  - component: {fileID: 1253836712}
   m_Layer: 6
   m_Name: LightBandit_0
   m_TagString: Enemy
@@ -10570,14 +10626,6 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 1253836708}
   nextAttackTime: 0.5
-  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
-  attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
-  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
-  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
-  runVolume: 2.5
-  attackVolume: 1.5
-  attackEffortVolume: 1
-  hurtVolume: 0.7
 --- !u!212 &1253836701
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -10876,6 +10924,36 @@ MonoBehaviour:
   attackAnimation: Nemico1_Attacco
   hurtAnimation: Enemy_Attacco_Subito
   deathAnimation: 
+--- !u!114 &1253836712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253836699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2e617a7b2b4ac8a2b7f9e4f3e41d52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loopAudioSource: {fileID: 0}
+  oneShotAudioSource: {fileID: 0}
+  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
+  runVolume: 3
+  swordSwingSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackSound: {fileID: 0}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
+  swordSwingVolume: 1
+  attackVolume: 1
+  attackEffortVolume: 2
+  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
+  deathSound: {fileID: 0}
+  hurtVolume: 1
+  deathVolume: 1
+  shieldSound: {fileID: 0}
+  perfectShieldSound: {fileID: 0}
+  shieldVolume: 1
+  perfectShieldVolume: 1
 --- !u!1 &1260432453
 GameObject:
   m_ObjectHideFlags: 0
@@ -21652,6 +21730,7 @@ GameObject:
   - component: {fileID: 1911253231}
   - component: {fileID: 1911253232}
   - component: {fileID: 1911253233}
+  - component: {fileID: 1911253234}
   m_Layer: 6
   m_Name: HeavyBandit_0
   m_TagString: Enemy
@@ -21919,14 +21998,6 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 0}
   nextAttackTime: 0.5
-  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
-  attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
-  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
-  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
-  runVolume: 1
-  attackVolume: 1
-  attackEffortVolume: 1
-  hurtVolume: 1
 --- !u!114 &1911253233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21945,6 +22016,36 @@ MonoBehaviour:
   attackAnimation: Nemico2_Attacco
   hurtAnimation: Enemy2_Attacco_Subito
   deathAnimation: 
+--- !u!114 &1911253234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1911253221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2e617a7b2b4ac8a2b7f9e4f3e41d52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loopAudioSource: {fileID: 0}
+  oneShotAudioSource: {fileID: 0}
+  runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
+  runVolume: 3
+  swordSwingSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackSound: {fileID: 0}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
+  swordSwingVolume: 1
+  attackVolume: 1
+  attackEffortVolume: 2
+  hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
+  deathSound: {fileID: 0}
+  hurtVolume: 1
+  deathVolume: 1
+  shieldSound: {fileID: 0}
+  perfectShieldSound: {fileID: 0}
+  shieldVolume: 1
+  perfectShieldVolume: 1
 --- !u!1 &1921646689 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3067587326924003671, guid: a0a66c9b152e801409fc26c4ca493d18, type: 3}

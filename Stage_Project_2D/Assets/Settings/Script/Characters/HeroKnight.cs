@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Pathfinding;
 
+[RequireComponent(typeof(CharacterAudioController))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Stats Player")]
@@ -37,31 +38,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private SpriteRenderer spriteRenderer;
-    private AudioSource swordAudioSource;
-
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip grassRunSound;
-    public AudioClip swordSwingSound;
-    public AudioClip attackEffortSound;
-    public AudioClip hurtSound;
-    public AudioClip shieldSound;
-    public AudioClip perfectShieldSound;
-    public AudioClip deathSound;
-    [Range(0f, 3f)]
-    public float grassRunVolume = 1f;
-    [Range(0f, 3f)]
-    public float swordSwingVolume = 2f;
-    [Range(0f, 3f)]
-    public float attackEffortVolume = 1f;
-    [Range(0f, 3f)]
-    public float hurtVolume = 2f;
-    [Range(0f, 3f)]
-    public float shieldVolume = 2f;
-    [Range(0f, 3f)]
-    public float perfectShieldVolume = 2f;
-    [Range(0f, 2f)]
-    public float deathVolume = 1f;
+    private CharacterAudioController characterAudio;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -102,22 +79,10 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        if(audioSource == null)
-            audioSource = GetComponent<AudioSource>();
+        characterAudio = GetComponent<CharacterAudioController>();
 
-        if (audioSource == null)
-            audioSource = gameObject.AddComponent<AudioSource>();
-
-        if (audioSource != null)
-        {
-            audioSource.playOnAwake = false;
-            audioSource.spatialBlend = 0f;
-        }
-
-        swordAudioSource = gameObject.AddComponent<AudioSource>();
-        swordAudioSource.playOnAwake = false;
-        swordAudioSource.loop = false;
-        swordAudioSource.spatialBlend = 0f;
+        if(characterAudio == null)
+            characterAudio = gameObject.AddComponent<CharacterAudioController>();
 
         if(anim == null)
             anim = GetComponentInChildren<Animator>();
@@ -242,82 +207,44 @@ public class PlayerMovement : MonoBehaviour
     private void HandleGrassRunSound()
     {
         if (IsMoving && !IsAttacking && !IsDashing && !IsShielding && !IsHurting && !IsDying)
-        {
-            if (audioSource != null && grassRunSound != null && !audioSource.isPlaying)
-            {
-                audioSource.clip = grassRunSound;
-                audioSource.loop = true;
-                audioSource.volume = grassRunVolume;
-                audioSource.Play();
-            }
-        }
+            characterAudio.PlayRunSound();
         else
-        {
             StopGrassRunSound();
-        }
     }
 
     private void StopGrassRunSound()
     {
-        if (audioSource != null && audioSource.clip == grassRunSound && audioSource.isPlaying)
-        {
-            audioSource.Stop();
-            audioSource.loop = false;
-        }
+        characterAudio.StopRunSound();
     }
 
     private void PlaySwordSwingSound()
     {
-        if (swordAudioSource != null && swordSwingSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(swordSwingSound, swordSwingVolume);
-        }
+        characterAudio.PlaySwordSwingSound();
     }
 
     private void PlayAttackEffortSound()
     {
-        if (swordAudioSource != null && attackEffortSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(attackEffortSound, attackEffortVolume);
-        }
+        characterAudio.PlayAttackEffortSound();
     }
 
     private void PlayHurtSound()
     {
-        if (swordAudioSource != null && hurtSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(hurtSound, hurtVolume);
-        }
+        characterAudio.PlayHurtSound();
     }
 
     private void PlayShieldSound()
     {
-        if (swordAudioSource != null && shieldSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(shieldSound, shieldVolume);
-        }
+        characterAudio.PlayShieldSound();
     }
 
     private void PlayPerfectShieldSound()
     {
-        if (swordAudioSource != null && perfectShieldSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(perfectShieldSound, perfectShieldVolume);
-        }
+        characterAudio.PlayPerfectShieldSound();
     }
 
     private void PlayDeathSound()
     {
-        if(swordAudioSource != null && deathSound != null)
-        {
-            swordAudioSource.volume = 1f;
-            swordAudioSource.PlayOneShot(deathSound, deathVolume);
-        }
+        characterAudio.PlayDeathSound();
     }
 
    private void Animazioni()

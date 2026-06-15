@@ -4,6 +4,7 @@ using Pathfinding;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CharacterAudioController))]
 public class Enemy : MonoBehaviour
 {
     [Header("Life bar")]
@@ -33,21 +34,7 @@ public class Enemy : MonoBehaviour
     public float nextAttackTime = 0.5f;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
-    private AudioSource enemyAudioSource;
-
-    [Header("Audio")]
-    public AudioClip runSound;
-    public AudioClip attackSound;
-    public AudioClip attackEffortSound;
-    public AudioClip hurtSound;
-    [Range(0f, 3f)]
-    public float runVolume = 1f;
-    [Range(0f, 3f)]
-    public float attackVolume = 1f;
-    [Range(0f, 3f)]
-    public float attackEffortVolume = 1f;
-    [Range(0f, 3f)]
-    public float hurtVolume = 1f;
+    private CharacterAudioController characterAudio;
 
     [Header("Stati dell'Enemy")]
     private bool IsAttacking = false;
@@ -80,14 +67,10 @@ public class Enemy : MonoBehaviour
         if (animazioni == null)
             animazioni = gameObject.AddComponent<Animazioni>();
 
-        enemyAudioSource = GetComponent<AudioSource>();
+        characterAudio = GetComponent<CharacterAudioController>();
 
-        if(enemyAudioSource == null)
-            enemyAudioSource = gameObject.AddComponent<AudioSource>();
-
-        enemyAudioSource.playOnAwake = false;
-        enemyAudioSource.loop = false;
-        enemyAudioSource.spatialBlend = 0f;
+        if(characterAudio == null)
+            characterAudio = gameObject.AddComponent<CharacterAudioController>();
 
         if(player != null)
         {
@@ -115,53 +98,30 @@ public class Enemy : MonoBehaviour
 
     private void PlayRunSound()
     {
-        if(enemyAudioSource != null && runSound != null && enemyAudioSource.isPlaying == false)
-        {
-            enemyAudioSource.clip = runSound;
-            enemyAudioSource.loop = true;
-            enemyAudioSource.volume = runVolume;
-            enemyAudioSource.Play();
-        }
+        characterAudio.PlayRunSound();
     }
 
     private void StopRunSound()
     {
-        if(enemyAudioSource != null && enemyAudioSource.clip == runSound && enemyAudioSource.isPlaying)
-        {
-            enemyAudioSource.Stop();
-            enemyAudioSource.loop = false;
-            enemyAudioSource.clip = null;
-        }
+        characterAudio.StopRunSound();
     }
 
     private void PlayAttackSound()
     {
-        if(enemyAudioSource != null && attackSound != null)
-        {
-            StopRunSound();
-            enemyAudioSource.volume = 1f;
-            enemyAudioSource.PlayOneShot(attackSound, attackVolume);
-        }
+        StopRunSound();
+        characterAudio.PlayAttackSound();
     }
 
     private void PlayAttackEffortSound()
     {
-        if(enemyAudioSource != null && attackEffortSound != null)
-        {
-            StopRunSound();
-            enemyAudioSource.volume = 1f;
-            enemyAudioSource.PlayOneShot(attackEffortSound, attackEffortVolume);
-        }
+        StopRunSound();
+        characterAudio.PlayAttackEffortSound();
     }
 
     private void PlayHurtSound()
     {
-        if(enemyAudioSource != null && hurtSound != null)
-        {
-            StopRunSound();
-            enemyAudioSource.volume = 1f;
-            enemyAudioSource.PlayOneShot(hurtSound, hurtVolume);
-        }
+        StopRunSound();
+        characterAudio.PlayHurtSound();
     }
 
     void Update()
