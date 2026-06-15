@@ -4,6 +4,7 @@ using Pathfinding;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(CharacterAudioController))]
 public class Enemy : MonoBehaviour
 {
     [Header("Life bar")]
@@ -33,6 +34,10 @@ public class Enemy : MonoBehaviour
     public float nextAttackTime = 0.5f;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
+
+    // Script unico che contiene i clip e i volumi audio del nemico.
+    // Ogni bandit puo' avere clip diversi assegnati nel suo CharacterAudioController.
+    private CharacterAudioController characterAudio;
 
     [Header("Stati dell'Enemy")]
     private bool IsAttacking = false;
@@ -65,6 +70,13 @@ public class Enemy : MonoBehaviour
         if (animazioni == null)
             animazioni = gameObject.AddComponent<Animazioni>();
 
+        // Prende il controller audio del bandit.
+        characterAudio = GetComponent<CharacterAudioController>();
+
+        // Se manca, lo aggiunge automaticamente per evitare NullReferenceException.
+        if(characterAudio == null)
+            characterAudio = gameObject.AddComponent<CharacterAudioController>();
+
         if(player != null)
         {
             p = player.transform;
@@ -89,19 +101,57 @@ public class Enemy : MonoBehaviour
             Debug.LogError("AIPath mancante sul nemico", this);
     }
 
+    private void PlayRunSound()
+    {
+        // Avvia il suono in loop della corsa/inseguimento del bandit.
+        characterAudio.PlayRunSound();
+    }
+
+    private void StopRunSound()
+    {
+        // Ferma il suono di corsa quando il bandit e' fermo, attacca o prende danno.
+        characterAudio.StopRunSound();
+    }
+
+    private void PlayAttackSound()
+    {
+        // Prima ferma la corsa, poi riproduce il suono del colpo.
+        StopRunSound();
+        characterAudio.PlayAttackSound();
+    }
+
+    private void PlayAttackEffortSound()
+    {
+        // Suono della voce/sforzo del bandit durante l'attacco.
+        StopRunSound();
+        characterAudio.PlayAttackEffortSound();
+    }
+
+    private void PlayHurtSound()
+    {
+        // Quando il bandit subisce danno, ferma la corsa e riproduce il suono di dolore.
+        StopRunSound();
+        characterAudio.PlayHurtSound();
+    }
+
     void Update()
     {
         if (p == null || aiPath == null || animazioni == null || IsDying)
+        {
+            StopRunSound();
             return;
+        }
 
         if (IsAttacking)
         {
+            StopRunSound();
             aiPath.canMove = false;
             return;
         }
 
         if (IsHurting)
         {
+            StopRunSound();
             aiPath.canMove = false;
             return;
         }
@@ -113,6 +163,7 @@ public class Enemy : MonoBehaviour
 
         if (distance > chaseDistance)
         {
+            StopRunSound();
             aiPath.canMove = false;
             animazioni.Idle();
             return;
@@ -120,6 +171,7 @@ public class Enemy : MonoBehaviour
 
         if (distance <= stopDistance)
         {
+            StopRunSound();
             aiPath.canMove = false;
 
             if (Time.time >= nextAttackTime)
@@ -131,12 +183,16 @@ public class Enemy : MonoBehaviour
         }
 
         animazioni.Corsa();
+        PlayRunSound();
 
         aiPath.canMove = true;
         aiPath.maxSpeed = 3f;
 
         if(vita <= 1)
+        {
+            StopRunSound();
             Destroy(gameObject);
+        }
     }
 
     private IEnumerator AttackCoroutine()
@@ -152,6 +208,8 @@ public class Enemy : MonoBehaviour
         aiPath.canMove = false;
 
         animazioni.Attacco();
+        PlayAttackSound();
+        PlayAttackEffortSound();
 
         yield return new WaitForSeconds(attackHitDelay);
 
@@ -216,6 +274,8 @@ public class Enemy : MonoBehaviour
         if(animazioni != null)
             animazioni.Danno();
 
+        PlayHurtSound();
+
         vita -= danno;
 
         if(lifebarScript != null)
@@ -229,6 +289,8 @@ public class Enemy : MonoBehaviour
 
             if(aiPath != null)
                 aiPath.canMove = false;
+
+            StopRunSound();
 
             if(animazioni != null)
                 animazioni.Morte();

@@ -9,6 +9,11 @@ public class Settings : MonoBehaviour
    public AudioSource buttonAudioSource;
    public float sceneChangeDelay = 0.1f;
 
+   public void SetCharacterVolume(float volume)
+   {
+        CharacterAudioController.SetCharacterVolume(volume);
+   }
+
    public void MainMenu()
    {
         StartCoroutine(MainMenuCoroutine());
