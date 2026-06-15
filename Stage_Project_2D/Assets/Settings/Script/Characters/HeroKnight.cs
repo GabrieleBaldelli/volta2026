@@ -46,6 +46,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip hurtSound;
     public AudioClip shieldSound;
     public AudioClip perfectShieldSound;
+    public AudioClip deathSound;
     [Range(0f, 3f)]
     public float grassRunVolume = 1f;
     [Range(0f, 3f)]
@@ -56,6 +57,8 @@ public class PlayerMovement : MonoBehaviour
     public float shieldVolume = 2f;
     [Range(0f, 3f)]
     public float perfectShieldVolume = 2f;
+    [Range(0f, 2f)]
+    public float deathVolume = 1f;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -144,12 +147,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         
-        if (IsShielding)
-        {
-            StopGrassRunSound();
-            return;
-        }
-            
         if (IsHurting)
         {
             StopGrassRunSound();
@@ -157,6 +154,12 @@ public class PlayerMovement : MonoBehaviour
         }
         
         if (IsDying)
+        {
+            StopGrassRunSound();
+            return;
+        }
+
+        if (IsShielding)
         {
             StopGrassRunSound();
             return;
@@ -207,7 +210,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //INPUT di parata con il tasto DX del mouse
-        if (Input.GetMouseButton(1) && IsShielding == false && IsAttacking == false && IsDashing == false)
+        if (Input.GetMouseButtonDown(1) && IsShielding == false && IsAttacking == false && IsDashing == false && IsHurting == false && IsDying == false)
         {
             StartCoroutine(ShieldCoroutine());
         }
@@ -293,6 +296,15 @@ public class PlayerMovement : MonoBehaviour
         {
             swordAudioSource.volume = 1f;
             swordAudioSource.PlayOneShot(perfectShieldSound, perfectShieldVolume);
+        }
+    }
+
+    private void PlayDeathSound()
+    {
+        if(swordAudioSource != null && deathSound != null)
+        {
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(deathSound, deathVolume);
         }
     }
 
@@ -451,6 +463,8 @@ public class PlayerMovement : MonoBehaviour
     public IEnumerator HurtCoroutine(float danno)
     {
         IsHurting = true;
+        IsShielding = false;
+        IsPerfectShielding = false;
 
         //rb.velocity = Vector2.zero;
 
@@ -515,7 +529,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator ShieldCoroutine()
     {
         ShieldBar shieldBarScript = GetComponentInChildren<ShieldBar>();
-        if(shieldBarScript != null && shieldBarScript.shieldSetGet  == 0)
+        if(shieldBarScript != null && shieldBarScript.shieldSetGet <= 0)
         {
             yield break; // Esce dalla coroutine se lo scudo è esaurito
         }
@@ -539,6 +553,19 @@ public class PlayerMovement : MonoBehaviour
 
             yield return new WaitForSeconds(0.3f);
 
+            if(IsHurting || IsDying)
+            {
+                IsShielding = false;
+                IsPerfectShielding = false;
+                yield break;
+            }
+
+            while(IsAnyEnemyAttacking() && Input.GetMouseButton(1) && !IsHurting && !IsDying)
+            {
+                rb.velocity = Vector2.zero;
+                yield return null;
+            }
+
             IsPerfectShielding = false;
         }
         else
@@ -548,11 +575,24 @@ public class PlayerMovement : MonoBehaviour
             PlayShieldSound();
 
             anim.Play("Player_Shield");
+        }
 
-            yield return new WaitForSeconds(0.5f);
+        if(Input.GetMouseButton(1) && shieldBarScript != null && shieldBarScript.shieldSetGet > 0 && !IsHurting && !IsDying)
+        {
+            anim.Play("Player_Shield");
+        }
+
+        while(Input.GetMouseButton(1) && !IsAttacking && !IsDashing && !IsHurting && !IsDying)
+        {
+            if(shieldBarScript != null && shieldBarScript.shieldSetGet <= 0)
+                break;
+
+            rb.velocity = Vector2.zero;
+            yield return null;
         }
 
         IsShielding = false;
+        IsPerfectShielding = false;
     }
 
     public bool IsAnyEnemyAttacking()
@@ -566,6 +606,7 @@ public class PlayerMovement : MonoBehaviour
             if(enemyScript != null && enemyScript.IsAttackingSetGet)
                 return true;
         }
+
         return false;
     }
 
@@ -575,7 +616,9 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.Log("Morte");
 
-        transform.rotation = Quaternion.Euler(0, 0, -90);
+        transform.rotation = Quaternion.Euler(0, 0, 90);
+
+        PlayDeathSound();
 
         anim.Play("Player_Death");
 

@@ -59,7 +59,10 @@ public class ShieldBar : MonoBehaviour
         Slider slider = GetComponent<Slider>();
         slider.value = shield / SHIELD_MAX;
 
-        yield return new WaitForSeconds(0.5f);
+        while(playerScript != null && playerScript.IsAnyEnemyAttacking() && playerScript.IsShieldingSetGet)
+        {
+            yield return null;
+        }
 
         isConsumingAttack = false;
     }
