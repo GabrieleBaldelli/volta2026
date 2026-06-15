@@ -33,6 +33,18 @@ public class Enemy : MonoBehaviour
     public float nextAttackTime = 0.5f;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
+    private AudioSource enemyAudioSource;
+
+    [Header("Audio")]
+    public AudioClip runSound;
+    public AudioClip attackSound;
+    public AudioClip hurtSound;
+    [Range(0f, 3f)]
+    public float runVolume = 1f;
+    [Range(0f, 3f)]
+    public float attackVolume = 1f;
+    [Range(0f, 3f)]
+    public float hurtVolume = 1f;
 
     [Header("Stati dell'Enemy")]
     private bool IsAttacking = false;
@@ -65,6 +77,15 @@ public class Enemy : MonoBehaviour
         if (animazioni == null)
             animazioni = gameObject.AddComponent<Animazioni>();
 
+        enemyAudioSource = GetComponent<AudioSource>();
+
+        if(enemyAudioSource == null)
+            enemyAudioSource = gameObject.AddComponent<AudioSource>();
+
+        enemyAudioSource.playOnAwake = false;
+        enemyAudioSource.loop = false;
+        enemyAudioSource.spatialBlend = 0f;
+
         if(player != null)
         {
             p = player.transform;
@@ -89,19 +110,65 @@ public class Enemy : MonoBehaviour
             Debug.LogError("AIPath mancante sul nemico", this);
     }
 
+    private void PlayRunSound()
+    {
+        if(enemyAudioSource != null && runSound != null && enemyAudioSource.isPlaying == false)
+        {
+            enemyAudioSource.clip = runSound;
+            enemyAudioSource.loop = true;
+            enemyAudioSource.volume = runVolume;
+            enemyAudioSource.Play();
+        }
+    }
+
+    private void StopRunSound()
+    {
+        if(enemyAudioSource != null && enemyAudioSource.clip == runSound && enemyAudioSource.isPlaying)
+        {
+            enemyAudioSource.Stop();
+            enemyAudioSource.loop = false;
+            enemyAudioSource.clip = null;
+        }
+    }
+
+    private void PlayAttackSound()
+    {
+        if(enemyAudioSource != null && attackSound != null)
+        {
+            StopRunSound();
+            enemyAudioSource.volume = 1f;
+            enemyAudioSource.PlayOneShot(attackSound, attackVolume);
+        }
+    }
+
+    private void PlayHurtSound()
+    {
+        if(enemyAudioSource != null && hurtSound != null)
+        {
+            StopRunSound();
+            enemyAudioSource.volume = 1f;
+            enemyAudioSource.PlayOneShot(hurtSound, hurtVolume);
+        }
+    }
+
     void Update()
     {
         if (p == null || aiPath == null || animazioni == null || IsDying)
+        {
+            StopRunSound();
             return;
+        }
 
         if (IsAttacking)
         {
+            StopRunSound();
             aiPath.canMove = false;
             return;
         }
 
         if (IsHurting)
         {
+            StopRunSound();
             aiPath.canMove = false;
             return;
         }
@@ -113,6 +180,7 @@ public class Enemy : MonoBehaviour
 
         if (distance > chaseDistance)
         {
+            StopRunSound();
             aiPath.canMove = false;
             animazioni.Idle();
             return;
@@ -120,6 +188,7 @@ public class Enemy : MonoBehaviour
 
         if (distance <= stopDistance)
         {
+            StopRunSound();
             aiPath.canMove = false;
 
             if (Time.time >= nextAttackTime)
@@ -131,12 +200,16 @@ public class Enemy : MonoBehaviour
         }
 
         animazioni.Corsa();
+        PlayRunSound();
 
         aiPath.canMove = true;
         aiPath.maxSpeed = 3f;
 
         if(vita <= 1)
+        {
+            StopRunSound();
             Destroy(gameObject);
+        }
     }
 
     private IEnumerator AttackCoroutine()
@@ -152,6 +225,7 @@ public class Enemy : MonoBehaviour
         aiPath.canMove = false;
 
         animazioni.Attacco();
+        PlayAttackSound();
 
         yield return new WaitForSeconds(attackHitDelay);
 
@@ -216,6 +290,8 @@ public class Enemy : MonoBehaviour
         if(animazioni != null)
             animazioni.Danno();
 
+        PlayHurtSound();
+
         vita -= danno;
 
         if(lifebarScript != null)
@@ -229,6 +305,8 @@ public class Enemy : MonoBehaviour
 
             if(aiPath != null)
                 aiPath.canMove = false;
+
+            StopRunSound();
 
             if(animazioni != null)
                 animazioni.Morte();
