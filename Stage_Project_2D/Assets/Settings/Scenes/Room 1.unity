@@ -7414,6 +7414,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9043920546160527475, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: attackEffortSound
+      value: 
+      objectReference: {fileID: 8300000, guid: da6b19b76f6f342e0a41a028a04b788a, type: 3}
+    - target: {fileID: 9043920546160527475, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: enemyLayer.m_Bits
       value: 64
       objectReference: {fileID: 0}
@@ -9329,9 +9333,11 @@ MonoBehaviour:
   nextAttackTime: 0.5
   runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
   attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
   hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
   runVolume: 2.5
   attackVolume: 1.5
+  attackEffortVolume: 1
   hurtVolume: 0.7
 --- !u!212 &1056863143
 SpriteRenderer:
@@ -10566,9 +10572,11 @@ MonoBehaviour:
   nextAttackTime: 0.5
   runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
   attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
   hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
   runVolume: 2.5
   attackVolume: 1.5
+  attackEffortVolume: 1
   hurtVolume: 0.7
 --- !u!212 &1253836701
 SpriteRenderer:
@@ -21913,9 +21921,11 @@ MonoBehaviour:
   nextAttackTime: 0.5
   runSound: {fileID: 8300000, guid: dee655b61fb20428d8c8f0c261d5327c, type: 3}
   attackSound: {fileID: 8300000, guid: 8f299be2f2dd74bc38371a2ba295c3af, type: 3}
+  attackEffortSound: {fileID: 8300000, guid: ca723297344b444e48a46277e7d81554, type: 3}
   hurtSound: {fileID: 8300000, guid: 4214ec14fe0f541ec934981cb7e7cfc4, type: 3}
   runVolume: 1
   attackVolume: 1
+  attackEffortVolume: 1
   hurtVolume: 1
 --- !u!114 &1911253233
 MonoBehaviour:

@@ -43,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip grassRunSound;
     public AudioClip swordSwingSound;
+    public AudioClip attackEffortSound;
     public AudioClip hurtSound;
     public AudioClip shieldSound;
     public AudioClip perfectShieldSound;
@@ -51,6 +52,8 @@ public class PlayerMovement : MonoBehaviour
     public float grassRunVolume = 1f;
     [Range(0f, 3f)]
     public float swordSwingVolume = 2f;
+    [Range(0f, 3f)]
+    public float attackEffortVolume = 1f;
     [Range(0f, 3f)]
     public float hurtVolume = 2f;
     [Range(0f, 3f)]
@@ -272,6 +275,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void PlayAttackEffortSound()
+    {
+        if (swordAudioSource != null && attackEffortSound != null)
+        {
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(attackEffortSound, attackEffortVolume);
+        }
+    }
+
     private void PlayHurtSound()
     {
         if (swordAudioSource != null && hurtSound != null)
@@ -374,6 +386,7 @@ public class PlayerMovement : MonoBehaviour
         rb.velocity = Vector2.zero;
 
         PlaySwordSwingSound();
+        PlayAttackEffortSound();
 
         //resetta il timer della combo
         comboTimer = comboResetTime; // reset finestra combo

@@ -38,11 +38,14 @@ public class Enemy : MonoBehaviour
     [Header("Audio")]
     public AudioClip runSound;
     public AudioClip attackSound;
+    public AudioClip attackEffortSound;
     public AudioClip hurtSound;
     [Range(0f, 3f)]
     public float runVolume = 1f;
     [Range(0f, 3f)]
     public float attackVolume = 1f;
+    [Range(0f, 3f)]
+    public float attackEffortVolume = 1f;
     [Range(0f, 3f)]
     public float hurtVolume = 1f;
 
@@ -141,6 +144,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void PlayAttackEffortSound()
+    {
+        if(enemyAudioSource != null && attackEffortSound != null)
+        {
+            StopRunSound();
+            enemyAudioSource.volume = 1f;
+            enemyAudioSource.PlayOneShot(attackEffortSound, attackEffortVolume);
+        }
+    }
+
     private void PlayHurtSound()
     {
         if(enemyAudioSource != null && hurtSound != null)
@@ -226,6 +239,7 @@ public class Enemy : MonoBehaviour
 
         animazioni.Attacco();
         PlayAttackSound();
+        PlayAttackEffortSound();
 
         yield return new WaitForSeconds(attackHitDelay);
 
