@@ -6,9 +6,28 @@ using UnityEngine.EventSystems;
 
 public class Settings : MonoBehaviour
 {
+   public AudioSource buttonAudioSource;
+   public float sceneChangeDelay = 0.1f;
+
    public void MainMenu()
    {
+        StartCoroutine(MainMenuCoroutine());
+   }
+
+   private IEnumerator MainMenuCoroutine()
+   {
+        if (buttonAudioSource != null)
+        {
+            buttonAudioSource.Play();
+        }
+
+        yield return new WaitForSecondsRealtime(sceneChangeDelay);
+
         SceneManager.LoadScene("Main Menu");
-        EventSystem.current.SetSelectedGameObject(null);
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
    }
 }

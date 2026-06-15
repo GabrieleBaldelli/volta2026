@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(AudioSource))]
 public class BackgroundMusicManager : MonoBehaviour
@@ -38,6 +39,24 @@ public class BackgroundMusicManager : MonoBehaviour
         audioSource.loop = true;
         audioSource.playOnAwake = false;
         audioSource.volume = musicVolume;
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Main Menu")
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void PlayMusic(AudioClip music)
