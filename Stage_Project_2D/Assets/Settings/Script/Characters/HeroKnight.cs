@@ -44,12 +44,18 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip grassRunSound;
     public AudioClip swordSwingSound;
     public AudioClip hurtSound;
+    public AudioClip shieldSound;
+    public AudioClip perfectShieldSound;
     [Range(0f, 3f)]
     public float grassRunVolume = 1f;
     [Range(0f, 3f)]
     public float swordSwingVolume = 2f;
     [Range(0f, 3f)]
     public float hurtVolume = 2f;
+    [Range(0f, 3f)]
+    public float shieldVolume = 2f;
+    [Range(0f, 3f)]
+    public float perfectShieldVolume = 2f;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -199,6 +205,7 @@ public class PlayerMovement : MonoBehaviour
         {
             HandleAttackInput();
         }
+
         //INPUT di parata con il tasto DX del mouse
         if (Input.GetMouseButton(1) && IsShielding == false && IsAttacking == false && IsDashing == false)
         {
@@ -212,8 +219,6 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // TIMER DELLA COMBO
-
-        
         if (comboTimer > 0)     //Se il timer combo è attivo
         {
             comboTimer -= Time.deltaTime;   //Scala il tempo
@@ -270,6 +275,24 @@ public class PlayerMovement : MonoBehaviour
         {
             swordAudioSource.volume = 1f;
             swordAudioSource.PlayOneShot(hurtSound, hurtVolume);
+        }
+    }
+
+    private void PlayShieldSound()
+    {
+        if (swordAudioSource != null && shieldSound != null)
+        {
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(shieldSound, shieldVolume);
+        }
+    }
+
+    private void PlayPerfectShieldSound()
+    {
+        if (swordAudioSource != null && perfectShieldSound != null)
+        {
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(perfectShieldSound, perfectShieldVolume);
         }
     }
 
@@ -510,6 +533,8 @@ public class PlayerMovement : MonoBehaviour
 
             rb.velocity = Vector2.zero;
 
+            PlayPerfectShieldSound();
+
             anim.Play("Player_PerfectShield");
 
             yield return new WaitForSeconds(0.3f);
@@ -519,6 +544,8 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.velocity = Vector2.zero;
+
+            PlayShieldSound();
 
             anim.Play("Player_Shield");
 
