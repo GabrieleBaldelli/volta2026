@@ -927,6 +927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonAudioSource: {fileID: 1307728108}
+  buttonVolume: 1
   sceneChangeDelay: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -9,7 +9,7 @@ public class MainMenuAudio : MonoBehaviour
     public float buttonClickVolume = 1f;
 
     private static MainMenuAudio instance;
-    private AudioSource audioSource;
+    private AudioSource buttonAudioSource;
 
     private void Awake()
     {
@@ -29,7 +29,11 @@ public class MainMenuAudio : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
 
-        audioSource = GetComponent<AudioSource>();
+        buttonAudioSource = gameObject.AddComponent<AudioSource>();
+        buttonAudioSource.playOnAwake = false;
+        buttonAudioSource.loop = false;
+        buttonAudioSource.spatialBlend = 0f;
+        buttonAudioSource.volume = buttonClickVolume;
     }
 
     private void OnEnable()
@@ -60,9 +64,10 @@ public class MainMenuAudio : MonoBehaviour
 
     public void PlayButtonClick()
     {
-        if (audioSource != null && buttonClickSound != null)
+        if (buttonAudioSource != null && buttonClickSound != null)
         {
-            audioSource.PlayOneShot(buttonClickSound, buttonClickVolume);
+            buttonAudioSource.volume = buttonClickVolume;
+            buttonAudioSource.PlayOneShot(buttonClickSound);
         }
     }
 }

@@ -7,6 +7,10 @@ using UnityEngine.EventSystems;
 public class Settings : MonoBehaviour
 {
    public AudioSource buttonAudioSource;
+
+   [Range(0f, 1f)]
+   public float buttonVolume = 1f;
+
    public float sceneChangeDelay = 0.1f;
 
    public void MainMenu()
@@ -16,9 +20,10 @@ public class Settings : MonoBehaviour
 
    private IEnumerator MainMenuCoroutine()
    {
-        if (buttonAudioSource != null)
+        if (buttonAudioSource != null && buttonAudioSource.clip != null)
         {
-            buttonAudioSource.Play();
+            buttonAudioSource.volume = buttonVolume;
+            buttonAudioSource.PlayOneShot(buttonAudioSource.clip);
         }
 
         yield return new WaitForSecondsRealtime(sceneChangeDelay);

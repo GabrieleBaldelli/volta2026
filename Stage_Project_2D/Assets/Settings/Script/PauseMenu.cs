@@ -7,6 +7,12 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
    public GameObject container;
+   public AudioSource buttonAudioSource;
+
+   [Range(0f, 1f)]
+   public float buttonVolume = 1f;
+
+   public float actionDelay = 0.1f;
 
     void Start()
     {
@@ -26,21 +32,62 @@ public class PauseMenu : MonoBehaviour
 
     public void ResumeButton()
     {
-        container.SetActive(false);
-        Time.timeScale = 1;
-        EventSystem.current.SetSelectedGameObject(null);
+        StartCoroutine(ResumeCoroutine());
     }
 
     public void MainMenu()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("Main Menu");
-        EventSystem.current.SetSelectedGameObject(null);
+        StartCoroutine(MainMenuCoroutine());
     }
 
     public void Settings()
     {
+        StartCoroutine(SettingsCoroutine());
+    }
+
+    private IEnumerator ResumeCoroutine()
+    {
+        PlayButtonSound();
+        yield return new WaitForSecondsRealtime(actionDelay);
+
+        container.SetActive(false);
+        Time.timeScale = 1;
+        ClearSelectedObject();
+    }
+
+    private IEnumerator MainMenuCoroutine()
+    {
+        PlayButtonSound();
+        yield return new WaitForSecondsRealtime(actionDelay);
+
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Main Menu");
+        ClearSelectedObject();
+    }
+
+    private IEnumerator SettingsCoroutine()
+    {
+        PlayButtonSound();
+        yield return new WaitForSecondsRealtime(actionDelay);
+
         SceneManager.LoadScene("Settings In Game", LoadSceneMode.Additive);
-        EventSystem.current.SetSelectedGameObject(null);
+        ClearSelectedObject();
+    }
+
+    private void PlayButtonSound()
+    {
+        if (buttonAudioSource != null && buttonAudioSource.clip != null)
+        {
+            buttonAudioSource.volume = buttonVolume;
+            buttonAudioSource.PlayOneShot(buttonAudioSource.clip);
+        }
+    }
+
+    private void ClearSelectedObject()
+    {
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 }
