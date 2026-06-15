@@ -11198,6 +11198,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 84e7fbf7673b14b85ae2991470c78fb9, type: 3}
     - target: {fileID: 9043920546160527475, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      propertyPath: hurtSound
+      value: 
+      objectReference: {fileID: 8300000, guid: c15c6eaf2d9474e7c9957b7fe18ad96f, type: 3}
+    - target: {fileID: 9043920546160527475, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: enemyLayer.m_Bits
       value: 64
       objectReference: {fileID: 0}

@@ -43,10 +43,13 @@ public class PlayerMovement : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip grassRunSound;
     public AudioClip swordSwingSound;
+    public AudioClip hurtSound;
     [Range(0f, 3f)]
     public float grassRunVolume = 1f;
     [Range(0f, 3f)]
     public float swordSwingVolume = 2f;
+    [Range(0f, 3f)]
+    public float hurtVolume = 2f;
    
     [Header("Stati del Player")]
     private bool IsMoving;
@@ -261,6 +264,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void PlayHurtSound()
+    {
+        if (swordAudioSource != null && hurtSound != null)
+        {
+            swordAudioSource.volume = 1f;
+            swordAudioSource.PlayOneShot(hurtSound, hurtVolume);
+        }
+    }
+
    private void Animazioni()
 {
     if (IsDying)
@@ -426,6 +438,8 @@ public class PlayerMovement : MonoBehaviour
 
         //Riduce la vita del nemico in base al danno ricevuto
         vita -=danno;
+
+        PlayHurtSound();
 
         // Aggiorna la barra della vita visivamente
         LifebarScript.UpdateLifeBar(vita, vitaMassima);
