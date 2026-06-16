@@ -12,12 +12,12 @@ public class Enemy : MonoBehaviour
 
     [Header("Player References")]
     public GameObject player;
-    private Transform p;
-    private PlayerMovement playerScript;
+    protected Transform p;
+    protected PlayerMovement playerScript;
 
     [Header("Enemy Stats")]
     public float vitaMassima = 50f;
-    private float vita;
+    protected float vita;
     public float xp = 100f;
     
     public float danno = 10f;
@@ -34,17 +34,18 @@ public class Enemy : MonoBehaviour
     public AIPath aiPath;
     public float nextAttackTime = 0.5f;
     private bool invertFlipX = false;
-    private SpriteRenderer spriterenderer;
-    private Animazioni animazioni;
+    protected Rigidbody2D rb;
+    protected SpriteRenderer spriterenderer;
+    protected Animazioni animazioni;
 
     // Script unico che contiene i clip e i volumi audio del nemico.
     // Ogni bandit puo' avere clip diversi assegnati nel suo CharacterAudioController.
-    private CharacterAudioController characterAudio;
+    protected CharacterAudioController characterAudio;
 
     [Header("Stati dell'Enemy")]
-    private bool IsAttacking = false;
-    private bool IsHurting;
-    private bool IsDying;
+    protected bool IsAttacking = false;
+    protected bool IsHurting;
+    protected bool IsDying;
     private bool hasGivenXP;
 
     public virtual bool IsAttackingSetGet
@@ -59,8 +60,15 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    protected Transform PlayerTransform
+    {
+        get { return p; }
+    }
+
     protected virtual void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
+
         spriterenderer = GetComponent<SpriteRenderer>();
         if(spriterenderer == null)
             spriterenderer = GetComponentInChildren<SpriteRenderer>();
@@ -102,41 +110,46 @@ public class Enemy : MonoBehaviour
 
         if(aiPath != null)
             aiPath.canMove = false;
-        else
-            Debug.LogError("AIPath mancante sul nemico", this);
+
     }
 
-    private void PlayRunSound()
+    protected void PlayRunSound()
     {
         // Avvia il suono in loop della corsa/inseguimento del bandit.
         characterAudio.PlayRunSound();
     }
 
-    private void StopRunSound()
+    protected void StopRunSound()
     {
         // Ferma il suono di corsa quando il bandit e' fermo, attacca o prende danno.
         characterAudio.StopRunSound();
     }
 
-    private void PlayAttackSound()
+    protected void PlayAttackSound()
     {
         // Prima ferma la corsa, poi riproduce il suono del colpo.
         StopRunSound();
         characterAudio.PlayAttackSound();
     }
 
-    private void PlayAttackEffortSound()
+    protected void PlayAttackEffortSound()
     {
         // Suono della voce/sforzo del bandit durante l'attacco.
         StopRunSound();
         characterAudio.PlayAttackEffortSound();
     }
 
-    private void PlayHurtSound()
+    protected void PlayHurtSound()
     {
         // Quando il bandit subisce danno, ferma la corsa e riproduce il suono di dolore.
         StopRunSound();
         characterAudio.PlayHurtSound();
+    }
+
+    protected void PlayDeathSound()
+    {
+        StopRunSound();
+        characterAudio.PlayDeathSound();
     }
 
     protected virtual void Update()
@@ -171,11 +184,7 @@ public class Enemy : MonoBehaviour
 
         float distance = Vector2.Distance(transform.position, p.position);
 
-        if (spriterenderer != null)
-        {
-            bool flipTowardPlayer = p.position.x > transform.position.x;
-            spriterenderer.flipX = invertFlipX ? !flipTowardPlayer : flipTowardPlayer;
-        }
+        FacePlayer();
 
         if (distance > chaseDistance)
         {
@@ -235,34 +244,47 @@ public class Enemy : MonoBehaviour
             yield break;
         }
 
-        if (playerScript != null && Vector2.Distance(transform.position, p.position) <= stopDistance + 0.4f && playerScript.IsShieldingSetGet == false)
-        {
-            HitPlayer();
-        }
+        DamagePlayerIfNear(stopDistance + 0.4f);
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - attackHitDelay));
 
         IsAttacking = false;
     }
 
-    private void HitPlayer()
+    protected void DamagePlayerIfNear(float radius)
     {
-        if(IsDying)
+        if(IsDying || player == null || p == null)
+            return;
+
+        playerScript = player.GetComponent<PlayerMovement>();
+        if(playerScript == null)
+            return;
+
+        if(Vector2.Distance(transform.position, p.position) > radius)
+            return;
+
+        if(playerScript.IsShieldingSetGet)
             return;
 
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-        playerScript = player.GetComponent<PlayerMovement>();
-
         if(playerRb != null)
             StartCoroutine(KnockbackPlayer(playerRb));
 
         Debug.Log("Colpito");
 
-        if(playerScript != null)
-            StartCoroutine(playerScript.HurtCoroutine(danno));
+        StartCoroutine(playerScript.HurtCoroutine(danno));
     }
 
-    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb)
+    protected void FacePlayer()
+    {
+        if(spriterenderer == null || p == null)
+            return;
+
+        bool flipTowardPlayer = p.position.x > transform.position.x;
+        spriterenderer.flipX = invertFlipX ? !flipTowardPlayer : flipTowardPlayer;
+    }
+
+    protected IEnumerator KnockbackPlayer(Rigidbody2D playerRb)
     {
         Vector2 knockbackDirection = (p.position - transform.position).normalized;
 
@@ -331,7 +353,7 @@ public class Enemy : MonoBehaviour
         Debug.Log("viene colpito");
     }
 
-    private void TryFindPlayer()
+    protected void TryFindPlayer()
     {
         playerScript = FindObjectOfType<PlayerMovement>();
         if(playerScript == null)
@@ -342,7 +364,7 @@ public class Enemy : MonoBehaviour
         SetAIDestinationTarget();
     }
 
-    private void GiveXPOnce()
+    protected void GiveXPOnce()
     {
         if(hasGivenXP)
             return;
@@ -357,10 +379,19 @@ public class Enemy : MonoBehaviour
         hasGivenXP = true;
     }
 
-    private void SetAIDestinationTarget()
+    protected void SetAIDestinationTarget()
     {
         AIDestinationSetter destinationSetter = GetComponent<AIDestinationSetter>();
         if(destinationSetter != null)
             destinationSetter.target = p;
+    }
+
+    protected void StopMovement()
+    {
+        if(rb != null)
+            rb.velocity = Vector2.zero;
+
+        if(aiPath != null)
+            aiPath.canMove = false;
     }
 }
