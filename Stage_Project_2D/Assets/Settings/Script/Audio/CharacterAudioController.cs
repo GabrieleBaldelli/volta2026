@@ -104,6 +104,12 @@ public class CharacterAudioController : MonoBehaviour
             oneShotAudioSource = gameObject.AddComponent<AudioSource>();
         }
 
+        if(oneShotAudioSource.outputAudioMixerGroup == null && loopAudioSource.outputAudioMixerGroup != null)
+        {
+            // Se la source dei loop passa da un mixer, usa lo stesso gruppo anche per i suoni brevi.
+            oneShotAudioSource.outputAudioMixerGroup = loopAudioSource.outputAudioMixerGroup;
+        }
+
         // Configura la source dei suoni continui.
         SetupAudioSource(loopAudioSource);
 

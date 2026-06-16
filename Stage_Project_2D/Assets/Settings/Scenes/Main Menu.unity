@@ -759,7 +759,7 @@ AudioSource:
   m_GameObject: {fileID: 931184199}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 3435449326898089138, guid: 234ef01f2fddb4919ae47acb724c1ff3, type: 2}
   m_audioClip: {fileID: 8300000, guid: d943a88f337b84ed5bbe6cc5eed2c5a2, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -1215,7 +1215,7 @@ AudioSource:
   m_GameObject: {fileID: 1981799962}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -2795279899303039786, guid: 234ef01f2fddb4919ae47acb724c1ff3, type: 2}
   m_audioClip: {fileID: 8300000, guid: 806c0f32dd7014296af2ce8d3fbed668, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.2
@@ -1331,6 +1331,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonClickSound: {fileID: 8300000, guid: d943a88f337b84ed5bbe6cc5eed2c5a2, type: 3}
   buttonClickVolume: 1
+  audioMixer: {fileID: 24100000, guid: 234ef01f2fddb4919ae47acb724c1ff3, type: 2}
+  buttonOutputGroup: {fileID: 3435449326898089138, guid: 234ef01f2fddb4919ae47acb724c1ff3, type: 2}
+  masterVolumeParameter: MasterVol
+  musicVolumeParameter: MusicVol
+  sfxVolumeParameter: SFXVol
 --- !u!1 &2011429057
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
    public GameObject container;
+   public AudioSource buttonAudioSource;
+   public float sceneChangeDelay = 0.1f;
 
     void Start()
     {
@@ -26,21 +28,68 @@ public class PauseMenu : MonoBehaviour
 
     public void ResumeButton()
     {
-        container.SetActive(false);
-        Time.timeScale = 1;
-        EventSystem.current.SetSelectedGameObject(null);
+        StartCoroutine(ResumeCoroutine());
     }
 
     public void MainMenu()
     {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("Main Menu");
-        EventSystem.current.SetSelectedGameObject(null);
+        StartCoroutine(MainMenuCoroutine());
     }
 
     public void Settings()
     {
+        StartCoroutine(SettingsCoroutine());
+    }
+
+    private IEnumerator ResumeCoroutine()
+    {
+        PlayButtonClick();
+
+        yield return new WaitForSecondsRealtime(sceneChangeDelay);
+
+        container.SetActive(false);
+        Time.timeScale = 1;
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
+
+    private IEnumerator MainMenuCoroutine()
+    {
+        PlayButtonClick();
+
+        yield return new WaitForSecondsRealtime(sceneChangeDelay);
+
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Main Menu");
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
+
+    private IEnumerator SettingsCoroutine()
+    {
+        PlayButtonClick();
+
+        yield return new WaitForSecondsRealtime(sceneChangeDelay);
+
         SceneManager.LoadScene("Settings In Game", LoadSceneMode.Additive);
-        EventSystem.current.SetSelectedGameObject(null);
+
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+    }
+
+    private void PlayButtonClick()
+    {
+        if (buttonAudioSource != null)
+        {
+            buttonAudioSource.Play();
+        }
     }
 }

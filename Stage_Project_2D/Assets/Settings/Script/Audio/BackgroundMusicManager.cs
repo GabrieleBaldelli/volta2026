@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 // Richiede automaticamente un AudioSource sull'oggetto che usa questo script.
@@ -8,7 +9,10 @@ public class BackgroundMusicManager : MonoBehaviour
 {
     // Volume generale della musica di gioco, regolabile dall'Inspector.
     [Range(0f, 1f)]
-    public float musicVolume = 0.1f;
+    public float musicVolume = 0.4f;
+
+    [Header("Audio Mixer")]
+    public AudioMixer audioMixer;
 
     // Riferimento statico all'unico BackgroundMusicManager attivo.
     private static BackgroundMusicManager instance;
@@ -63,6 +67,9 @@ public class BackgroundMusicManager : MonoBehaviour
 
         // Imposta il volume iniziale scelto dall'Inspector.
         audioSource.volume = musicVolume;
+
+        // Applica i volumi salvati anche se si avvia direttamente una scena di gioco.
+        ApplySavedMixerVolumes();
     }
 
     private void OnEnable()
@@ -126,5 +133,10 @@ public class BackgroundMusicManager : MonoBehaviour
             if (source.isPlaying && source.loop && source.clip != music)
                 source.Stop();
         }
+    }
+
+    private void ApplySavedMixerVolumes()
+    {
+        AudioSettingsStore.ApplySavedVolumes(audioMixer);
     }
 }
