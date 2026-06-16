@@ -16,6 +16,10 @@ public class Lock_Enemy : MonoBehaviour
                 if(enemy == null)
                     continue;
 
+                Enemy enemyScript = enemy.GetComponent<Enemy>();
+                if(enemyScript != null)
+                    enemyScript.PrepareForRoomLock();
+
                 enemy.SetActive(false);
             }
         }

@@ -91,6 +91,11 @@ public class Animazioni : MonoBehaviour
         animator.Play(animationName);
     }
 
+    public void ResetCurrentAnimation()
+    {
+        currentAnimation = "";
+    }
+
     private void EnsureDefaultAttackAnimation()
     {
         if (!string.IsNullOrEmpty(attackAnimation1))

@@ -65,6 +65,22 @@ public class Enemy : MonoBehaviour
         get { return p; }
     }
 
+    protected virtual void OnEnable()
+    {
+        PrepareForRoomUnlock();
+    }
+
+    protected virtual void OnDisable()
+    {
+        if(rb != null)
+            rb.velocity = Vector2.zero;
+
+        if(aiPath != null)
+            aiPath.canMove = false;
+
+        StopRunSound();
+    }
+
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -116,12 +132,18 @@ public class Enemy : MonoBehaviour
     protected void PlayRunSound()
     {
         // Avvia il suono in loop della corsa/inseguimento del bandit.
+        if(characterAudio == null)
+            return;
+
         characterAudio.PlayRunSound();
     }
 
     protected void StopRunSound()
     {
         // Ferma il suono di corsa quando il bandit e' fermo, attacca o prende danno.
+        if(characterAudio == null)
+            return;
+
         characterAudio.StopRunSound();
     }
 
@@ -393,5 +415,34 @@ public class Enemy : MonoBehaviour
 
         if(aiPath != null)
             aiPath.canMove = false;
+    }
+
+    public void PrepareForRoomLock()
+    {
+        IsAttacking = false;
+        IsHurting = false;
+
+        StopMovement();
+        StopRunSound();
+
+        if(animazioni != null)
+            animazioni.ResetCurrentAnimation();
+    }
+
+    public void PrepareForRoomUnlock()
+    {
+        IsAttacking = false;
+        IsHurting = false;
+
+        if(animazioni != null)
+            animazioni.ResetCurrentAnimation();
+
+        if(aiPath != null)
+            aiPath.canMove = false;
+
+        if(p == null)
+            TryFindPlayer();
+        else
+            SetAIDestinationTarget();
     }
 }

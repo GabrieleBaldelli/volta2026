@@ -16,6 +16,10 @@ public class Unlock_Enemy : MonoBehaviour
                     continue;
                 
                 enemy.SetActive(true);
+
+                Enemy enemyScript = enemy.GetComponent<Enemy>();
+                if(enemyScript != null)
+                    enemyScript.PrepareForRoomUnlock();
             }
         }
     }
