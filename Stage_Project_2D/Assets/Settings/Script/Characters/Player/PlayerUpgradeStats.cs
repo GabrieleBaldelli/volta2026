@@ -19,11 +19,6 @@ public class PlayerUpgradeStats : MonoBehaviour
     public int maxShieldLevel = 5;
     public float shieldMaxIncrease = 1f;
 
-    [Header("Character")]
-    public int speedLevel = 1;
-    public int maxSpeedLevel = 5;
-    public float speedIncrease = 0.5f;
-
     public float SwordDamage => player != null ? player.danno : 0f;
     public float MoveSpeed => player != null ? player.speed : 0f;
     public float ShieldMax => shieldBar != null ? shieldBar.maxShield : 0f;
@@ -57,17 +52,6 @@ public class PlayerUpgradeStats : MonoBehaviour
         upgradePoints--;
         shieldLevel++;
         shieldBar.IncreaseMaxShield(shieldMaxIncrease, true);
-        return true;
-    }
-
-    public bool UpgradeSpeed()
-    {
-        if(!CanUpgrade(speedLevel, maxSpeedLevel) || player == null)
-            return false;
-
-        upgradePoints--;
-        speedLevel++;
-        player.speed += speedIncrease;
         return true;
     }
 
