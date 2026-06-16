@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Stats")]
     public float vitaMassima = 50f;
     private float vita;
+    public float xp = 10f;
 
     public float danno = 10f;
 
@@ -32,6 +33,7 @@ public class Enemy : MonoBehaviour
 
     public AIPath aiPath;
     public float nextAttackTime = 0.5f;
+    public bool invertFlipX = false;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
 
@@ -81,6 +83,7 @@ public class Enemy : MonoBehaviour
         {
             p = player.transform;
             playerScript = player.GetComponent<PlayerMovement>();
+            SetAIDestinationTarget();
         }
         else
         {
@@ -90,6 +93,7 @@ public class Enemy : MonoBehaviour
             {
                 player = playerScript.gameObject;
                 p = player.transform;
+                SetAIDestinationTarget();
             }
         }
 
@@ -136,6 +140,12 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
+        if(IsDying)
+            playerScript.AddXP(xp);
+        
+        if(p == null)
+            TryFindPlayer();
+
         if (p == null || aiPath == null || animazioni == null || IsDying)
         {
             StopRunSound();
@@ -159,7 +169,10 @@ public class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, p.position);
 
         if (spriterenderer != null)
-            spriterenderer.flipX = p.position.x > transform.position.x;
+        {
+            bool flipTowardPlayer = p.position.x > transform.position.x;
+            spriterenderer.flipX = invertFlipX ? !flipTowardPlayer : flipTowardPlayer;
+        }
 
         if (distance > chaseDistance)
         {
@@ -312,5 +325,23 @@ public class Enemy : MonoBehaviour
         IsHurting = false;
 
         Debug.Log("viene colpito");
+    }
+
+    private void TryFindPlayer()
+    {
+        playerScript = FindObjectOfType<PlayerMovement>();
+        if(playerScript == null)
+            return;
+
+        player = playerScript.gameObject;
+        p = player.transform;
+        SetAIDestinationTarget();
+    }
+
+    private void SetAIDestinationTarget()
+    {
+        AIDestinationSetter destinationSetter = GetComponent<AIDestinationSetter>();
+        if(destinationSetter != null)
+            destinationSetter.target = p;
     }
 }

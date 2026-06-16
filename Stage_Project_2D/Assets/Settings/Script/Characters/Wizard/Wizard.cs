@@ -18,6 +18,8 @@ public class Wizard : Enemy
     public float summonDelay = 0.35f;
     public float summonRadius = 2.5f;
     public float summonDamageRadius = 2f;
+    public float summonPointRandomOffset = 1f;
+    public bool useWizardChaseDistanceForSummons = true;
     public Transform enemyAstarPathParent;
     public string enemyAstarPathObjectName = "Enemy_AstarPath";
 
@@ -29,7 +31,23 @@ public class Wizard : Enemy
     public float minTeleportDistanceFromPlayer = 6f;
     public float maxTeleportDistanceFromPlayer = 10f;
     public int teleportSearchAttempts = 16;
+    public float teleportPointRandomOffset = 1f;
+    public bool teleportAfterMeleeAttack = true;
     public LayerMask teleportBlockedLayers;
+
+    [Header("Timing")]
+    public float initialIdleDelay = 1.5f;
+    public float idleDelayAfterAction = 1f;
+    public float idleDelayAfterTeleport = 1.2f;
+    public float hurtAnimationCooldown = 0.8f;
+
+    [Header("Distance Gizmos")]
+    public bool drawDistanceGizmos = true;
+    public bool drawOnlyWhenSelected = false;
+    public Color meleeAttackGizmoColor = new Color(1f, 0.2f, 0.2f, 0.8f);
+    public Color summonDamageGizmoColor = new Color(1f, 0.55f, 0f, 0.8f);
+    public Color teleportGizmoColor = new Color(0.35f, 0.65f, 1f, 0.8f);
+    public Color summonGizmoColor = new Color(0.65f, 0.25f, 1f, 0.8f);
 
     [Header("Wizard Shield")]
     public Slider shieldSlider;
@@ -55,6 +73,10 @@ public class Wizard : Enemy
     private float lastDamageTime;
     private float damageTakenSinceTeleport;
     private float nextTeleportTime;
+    private float nextSummonTime;
+    private float nextMeleeTime;
+    private float nextActionTime;
+    private float lastHurtAnimationTime = -999f;
 
     private bool isAttacking;
     private bool isHurting;
@@ -62,6 +84,9 @@ public class Wizard : Enemy
     private bool isTeleporting;
     private bool shieldBroken;
     private bool missingEnemyParentWarningShown;
+    private Transform lastTeleportPoint;
+    private Vector3 lastTeleportPosition;
+    private bool hasLastTeleportPosition;
 
     public override bool IsAttackingSetGet
     {
@@ -97,6 +122,9 @@ public class Wizard : Enemy
         vita = vitaMassima;
         shield = shieldMassimo;
         lastDamageTime = Time.time;
+        nextActionTime = Time.time + initialIdleDelay;
+        nextSummonTime = nextActionTime;
+        nextMeleeTime = nextActionTime;
 
         UpdateLifeBar();
         UpdateShieldBar();
@@ -121,9 +149,19 @@ public class Wizard : Enemy
 
         FacePlayer();
 
-        if(Time.time >= nextAttackTime && distance <= stopDistance)
+        if(Time.time < nextActionTime)
         {
-            StartCoroutine(MeleeAttackCoroutine());
+            animazioni.Idle();
+            return;
+        }
+
+        if(distance <= stopDistance)
+        {
+            if(Time.time >= nextMeleeTime)
+                StartCoroutine(MeleeAttackCoroutine());
+            else
+                animazioni.Idle();
+
             return;
         }
 
@@ -133,19 +171,27 @@ public class Wizard : Enemy
             return;
         }
 
-        if(Time.time < nextAttackTime)
+        if(distance <= chaseDistance)
+        {
+            if(Time.time >= nextSummonTime)
+                StartCoroutine(SummonAttackCoroutine());
+            else
+                animazioni.Idle();
+
+            return;
+        }
+
+        if(Time.time >= nextTeleportTime && damageTakenSinceTeleport >= damageBeforeTeleport)
+        {
+            StartCoroutine(TeleportCoroutine());
+            return;
+        }
+
+        if(distance > chaseDistance)
         {
             animazioni.Idle();
             return;
         }
-
-        if(distance <= chaseDistance)
-        {
-            StartCoroutine(SummonAttackCoroutine());
-            return;
-        }
-
-        animazioni.Idle();
     }
 
     private void FindPlayer()
@@ -203,7 +249,8 @@ public class Wizard : Enemy
             yield break;
 
         isAttacking = true;
-        nextAttackTime = Time.time + attackDuration + summonCooldown;
+        nextSummonTime = Time.time + attackDuration + summonCooldown;
+        nextActionTime = Time.time + attackDuration + idleDelayAfterAction;
 
         StopMovement();
         animazioni.Attacco1();
@@ -224,6 +271,7 @@ public class Wizard : Enemy
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - summonDelay));
 
         isAttacking = false;
+        nextActionTime = Mathf.Max(nextActionTime, Time.time + idleDelayAfterAction);
     }
 
     private IEnumerator MeleeAttackCoroutine()
@@ -232,7 +280,8 @@ public class Wizard : Enemy
             yield break;
 
         isAttacking = true;
-        nextAttackTime = Time.time + attackDuration + attackCooldown;
+        nextMeleeTime = Time.time + attackDuration + attackCooldown;
+        nextActionTime = Time.time + attackDuration + idleDelayAfterAction;
 
         StopMovement();
         animazioni.Attacco2();
@@ -247,6 +296,14 @@ public class Wizard : Enemy
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - attackHitDelay));
 
         isAttacking = false;
+
+        if(teleportAfterMeleeAttack && !isDying)
+        {
+            StartCoroutine(TeleportCoroutine());
+            yield break;
+        }
+
+        nextActionTime = Mathf.Max(nextActionTime, Time.time + idleDelayAfterAction);
     }
 
     private void DamagePlayerIfNear(float radius)
@@ -313,7 +370,16 @@ public class Wizard : Enemy
 
             Enemy enemyScript = summonedEnemy.GetComponent<Enemy>();
             if(enemyScript != null)
+            {
                 enemyScript.player = player;
+
+                if(useWizardChaseDistanceForSummons)
+                    enemyScript.chaseDistance = Mathf.Max(enemyScript.chaseDistance, chaseDistance);
+            }
+
+            AIDestinationSetter destinationSetter = summonedEnemy.GetComponent<AIDestinationSetter>();
+            if(destinationSetter != null)
+                destinationSetter.target = playerTransform;
         }
     }
 
@@ -344,14 +410,14 @@ public class Wizard : Enemy
         {
             Transform point = summonPoints[index % summonPoints.Length];
             if(point != null)
-                return point.position;
+                return point.position + GetRandomOffset(summonPointRandomOffset);
         }
 
-        Vector2 offset = Random.insideUnitCircle;
+        Vector2 offset = Random.insideUnitCircle * summonRadius;
         if(offset.sqrMagnitude < 0.01f)
             offset = Vector2.right;
 
-        return transform.position + (Vector3)(offset.normalized * summonRadius);
+        return transform.position + (Vector3)offset;
     }
 
     private void RemoveMissingSummonedEnemies()
@@ -367,6 +433,8 @@ public class Wizard : Enemy
     {
         if(isDying)
             yield break;
+
+        bool canPlayHurtFeedback = !isHurting && Time.time >= lastHurtAnimationTime + hurtAnimationCooldown;
 
         lastDamageTime = Time.time;
         damageTakenSinceTeleport += danno;
@@ -389,10 +457,16 @@ public class Wizard : Enemy
             yield break;
         }
 
-        if(animazioni != null)
+        if(canPlayHurtFeedback && animazioni != null)
+        {
+            isHurting = true;
+            StopMovement();
             animazioni.Danno();
+            lastHurtAnimationTime = Time.time;
+        }
 
-        characterAudio.PlayHurtSound();
+        if(canPlayHurtFeedback)
+            characterAudio.PlayHurtSound();
 
         if(damageTakenSinceTeleport >= damageBeforeTeleport && Time.time >= nextTeleportTime)
         {
@@ -400,8 +474,8 @@ public class Wizard : Enemy
             yield break;
         }
 
-        isHurting = true;
-        StopMovement();
+        if(!canPlayHurtFeedback)
+            yield break;
 
         yield return new WaitForSeconds(0.25f);
 
@@ -461,6 +535,7 @@ public class Wizard : Enemy
             spriteRenderer.color = Color.white;
 
         isTeleporting = false;
+        nextActionTime = Time.time + idleDelayAfterTeleport;
         animazioni.Idle();
     }
 
@@ -468,24 +543,37 @@ public class Wizard : Enemy
     {
         if(teleportPoints != null && teleportPoints.Length > 0)
         {
-            Transform bestPoint = null;
-            float bestDistance = float.MinValue;
+            List<Vector3> candidatePositions = new List<Vector3>();
+            List<Transform> candidatePoints = new List<Transform>();
 
             foreach(Transform point in teleportPoints)
             {
-                if(point == null || !IsTeleportPositionFree(point.position))
+                if(point == null)
                     continue;
 
-                float distance = playerTransform == null ? 0f : Vector2.Distance(point.position, playerTransform.position);
-                if(distance > bestDistance)
+                if(point == lastTeleportPoint && teleportPoints.Length > 1)
+                    continue;
+
+                int attempts = teleportPointRandomOffset > 0f ? 4 : 1;
+                for(int i = 0; i < attempts; i++)
                 {
-                    bestDistance = distance;
-                    bestPoint = point;
+                    Vector3 candidate = point.position + GetRandomOffset(teleportPointRandomOffset);
+                    if(IsFarEnoughFromPlayer(candidate) && IsTeleportPositionFree(candidate))
+                    {
+                        candidatePositions.Add(candidate);
+                        candidatePoints.Add(point);
+                    }
                 }
             }
 
-            if(bestPoint != null)
-                return bestPoint.position;
+            if(candidatePositions.Count > 0)
+            {
+                int index = Random.Range(0, candidatePositions.Count);
+                lastTeleportPoint = candidatePoints[index];
+                lastTeleportPosition = candidatePositions[index];
+                hasLastTeleportPosition = true;
+                return candidatePositions[index];
+            }
         }
 
         if(playerTransform == null)
@@ -500,15 +588,24 @@ public class Wizard : Enemy
             float distance = Random.Range(minTeleportDistanceFromPlayer, maxTeleportDistanceFromPlayer);
             Vector3 candidate = playerTransform.position + (Vector3)(direction * distance);
 
-            if(IsTeleportPositionFree(candidate))
+            if(IsTeleportPositionFree(candidate) && !IsSameAsLastTeleport(candidate))
+            {
+                lastTeleportPoint = null;
+                lastTeleportPosition = candidate;
+                hasLastTeleportPosition = true;
                 return candidate;
+            }
         }
 
         Vector3 fallbackDirection = (transform.position - playerTransform.position).normalized;
         if(fallbackDirection.sqrMagnitude < 0.01f)
             fallbackDirection = Vector3.right;
 
-        return playerTransform.position + fallbackDirection * minTeleportDistanceFromPlayer;
+        Vector3 fallback = playerTransform.position + fallbackDirection * minTeleportDistanceFromPlayer;
+        lastTeleportPoint = null;
+        lastTeleportPosition = fallback;
+        hasLastTeleportPosition = true;
+        return fallback;
     }
 
     private bool IsTeleportPositionFree(Vector3 position)
@@ -517,6 +614,30 @@ public class Wizard : Enemy
             return true;
 
         return Physics2D.OverlapCircle(position, 0.4f, teleportBlockedLayers) == null;
+    }
+
+    private bool IsFarEnoughFromPlayer(Vector3 position)
+    {
+        if(playerTransform == null)
+            return true;
+
+        return Vector2.Distance(position, playerTransform.position) >= minTeleportDistanceFromPlayer;
+    }
+
+    private bool IsSameAsLastTeleport(Vector3 position)
+    {
+        if(!hasLastTeleportPosition)
+            return false;
+
+        return Vector2.Distance(position, lastTeleportPosition) < 0.75f;
+    }
+
+    private Vector3 GetRandomOffset(float radius)
+    {
+        if(radius <= 0f)
+            return Vector3.zero;
+
+        return (Vector3)(Random.insideUnitCircle * radius);
     }
 
     private IEnumerator DieCoroutine()
@@ -563,5 +684,50 @@ public class Wizard : Enemy
     {
         if(shieldSlider != null)
             shieldSlider.value = shieldMassimo <= 0f ? 0f : shield / shieldMassimo;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if(drawOnlyWhenSelected)
+            return;
+
+        DrawDistanceGizmos();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        DrawDistanceGizmos();
+    }
+
+    private void DrawDistanceGizmos()
+    {
+        if(!drawDistanceGizmos)
+            return;
+
+        Vector3 position = transform.position;
+
+        DrawWireCircle(position, stopDistance, meleeAttackGizmoColor);
+        DrawWireCircle(position, summonDamageRadius, summonDamageGizmoColor);
+        DrawWireCircle(position, playerTooCloseDistance, teleportGizmoColor);
+        DrawWireCircle(position, chaseDistance, summonGizmoColor);
+
+        Transform targetPlayer = playerTransform;
+        if(targetPlayer == null && player != null)
+            targetPlayer = player.transform;
+
+        if(targetPlayer != null)
+        {
+            DrawWireCircle(targetPlayer.position, minTeleportDistanceFromPlayer, teleportGizmoColor);
+            DrawWireCircle(targetPlayer.position, maxTeleportDistanceFromPlayer, teleportGizmoColor);
+        }
+    }
+
+    private void DrawWireCircle(Vector3 center, float radius, Color color)
+    {
+        if(radius <= 0f)
+            return;
+
+        Gizmos.color = color;
+        Gizmos.DrawWireSphere(center, radius);
     }
 }
