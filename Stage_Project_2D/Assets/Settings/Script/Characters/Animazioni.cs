@@ -7,7 +7,8 @@ public class Animazioni : MonoBehaviour
     public string idleAnimation;
     public string ShadowAnimation;
     public string runAnimation;
-    public string attackAnimation;
+    public string attackAnimation1;
+    public string attackAnimation2;
     public string hurtAnimation;
     public string deathAnimation;
     
@@ -41,9 +42,14 @@ public class Animazioni : MonoBehaviour
         PlayAnimation(runAnimation);
     }
 
-    public void Attacco()
+    public void Attacco1()
     {
-        PlayAnimation(attackAnimation);
+        PlayAnimation(attackAnimation1);
+    }
+
+    public void Attacco2()
+    {
+        PlayAnimation(attackAnimation2);
     }
 
     public void Danno()
@@ -56,11 +62,12 @@ public class Animazioni : MonoBehaviour
         PlayAnimation(deathAnimation);
     }
 
-    public void Configura(string idle, string run, string attack, string hurt, string death = "")
+    public void Configura(string idle, string run, string attack1, string attack2, string hurt, string death = "")
     {
         idleAnimation = idle;
         runAnimation = run;
-        attackAnimation = attack;
+        attackAnimation1 = attack1;
+        attackAnimation2 = attack2;
         hurtAnimation = hurt;
         deathAnimation = death;
     }

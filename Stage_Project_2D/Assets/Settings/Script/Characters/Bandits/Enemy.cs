@@ -207,7 +207,7 @@ public class Enemy : MonoBehaviour
 
         aiPath.canMove = false;
 
-        animazioni.Attacco();
+        animazioni.Attacco1();
         PlayAttackSound();
         PlayAttackEffortSound();
 
