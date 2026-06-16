@@ -165,7 +165,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
             return;
 
         if(upgradePointsText != null)
-            upgradePointsText.text = "Punti: " + playerStats.upgradePoints;
+            upgradePointsText.text = "Livello: " + playerStats.PlayerLevel + "   Punti: " + playerStats.upgradePoints;
 
         if(swordStatsText != null)
         {

@@ -21,17 +21,50 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 10f;
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
-    private float xp;
+    [Header("Level")]
+    [SerializeField] private float xp;
+    [SerializeField] private float xpPerLivello = 100f;
+    [SerializeField] private int livelloAttuale = 1;
+
     public float AddXp
     {
-        get { return ; }
-        set { xp = value; }
+        get { return xp; }
+        set { AddXP(value); }
     }
 
-    private float livello;
     public float livello
     {
-        get { return ;}
+        get { return livelloAttuale; }
+    }
+
+    public void AddXP(float xpToAdd)
+    {
+        if(xpToAdd <= 0f)
+            return;
+
+        if(xpPerLivello <= 0f)
+            xpPerLivello = 100f;
+
+        xp += xpToAdd;
+
+        int livelliGuadagnati = 0;
+
+        while(xp >= xpPerLivello)
+        {
+            livelloAttuale++;
+            livelliGuadagnati++;
+            xp -= xpPerLivello;
+        }
+
+        if(livelliGuadagnati > 0)
+        {
+            PlayerUpgradeStats upgradeStats = GetComponent<PlayerUpgradeStats>();
+
+            if(upgradeStats != null)
+                upgradeStats.upgradePoints += livelliGuadagnati;
+        }
+
+        Debug.Log("XP +" + xpToAdd + " | Livello: " + livelloAttuale + " | XP: " + xp + "/" + xpPerLivello, this);
     }
 
 
@@ -121,12 +154,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if(xp == 100)
-        {
-            livello++;
-            xp = 0;
-        }
-
         if (Time.timeScale == 0)
         {
             StopGrassRunSound();

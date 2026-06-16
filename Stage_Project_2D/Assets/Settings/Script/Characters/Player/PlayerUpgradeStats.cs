@@ -27,6 +27,7 @@ public class PlayerUpgradeStats : MonoBehaviour
     public float SwordDamage => player != null ? player.danno : 0f;
     public float MoveSpeed => player != null ? player.speed : 0f;
     public float ShieldMax => shieldBar != null ? shieldBar.maxShield : 0f;
+    public int PlayerLevel => player != null ? Mathf.FloorToInt(player.livello) : 0;
 
     private void Awake()
     {

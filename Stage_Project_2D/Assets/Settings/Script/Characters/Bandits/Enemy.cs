@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Stats")]
     public float vitaMassima = 50f;
     private float vita;
-    public float xp = 10f;
+    public float xp = 100f;
 
     public float danno = 10f;
 
@@ -45,6 +45,7 @@ public class Enemy : MonoBehaviour
     private bool IsAttacking = false;
     private bool IsHurting;
     private bool IsDying;
+    private bool hasGivenXP;
 
     public virtual bool IsAttackingSetGet
     {
@@ -60,6 +61,9 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
+        if(xp <= 0f)
+            xp = 100f;
+
         spriterenderer = GetComponent<SpriteRenderer>();
         if(spriterenderer == null)
             spriterenderer = GetComponentInChildren<SpriteRenderer>();
@@ -141,7 +145,10 @@ public class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         if(IsDying)
-            playerScript.AddXP(xp);
+        {
+            GiveXPOnce();
+            return;
+        }
         
         if(p == null)
             TryFindPlayer();
@@ -204,6 +211,7 @@ public class Enemy : MonoBehaviour
         if(vita <= 1)
         {
             StopRunSound();
+            GiveXPOnce();
             Destroy(gameObject);
         }
     }
@@ -299,6 +307,7 @@ public class Enemy : MonoBehaviour
             IsDying = true;
             IsAttacking = false;
             IsHurting = false;
+            GiveXPOnce();
 
             if(aiPath != null)
                 aiPath.canMove = false;
@@ -336,6 +345,21 @@ public class Enemy : MonoBehaviour
         player = playerScript.gameObject;
         p = player.transform;
         SetAIDestinationTarget();
+    }
+
+    private void GiveXPOnce()
+    {
+        if(hasGivenXP)
+            return;
+
+        if(playerScript == null)
+            TryFindPlayer();
+
+        if(playerScript == null)
+            return;
+
+        playerScript.AddXP(xp);
+        hasGivenXP = true;
     }
 
     private void SetAIDestinationTarget()
