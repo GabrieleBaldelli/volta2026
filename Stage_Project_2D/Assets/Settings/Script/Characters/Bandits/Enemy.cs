@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
     public float vitaMassima = 50f;
     private float vita;
     public float xp = 100f;
-
+    
     public float danno = 10f;
 
     public float stopDistance = 2f;
@@ -143,7 +143,6 @@ public class Enemy : MonoBehaviour
     {
         if(IsDying)
         {
-            GiveXPOnce();
             return;
         }
         

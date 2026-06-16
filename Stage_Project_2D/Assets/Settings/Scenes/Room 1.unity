@@ -5734,7 +5734,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &300430001
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10068,9 +10068,6 @@ MonoBehaviour:
   shieldLevel: 1
   maxShieldLevel: 5
   shieldMaxIncrease: 1
-  speedLevel: 1
-  maxSpeedLevel: 5
-  speedIncrease: 0.5
 --- !u!1001 &1011977542
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10885,7 +10882,7 @@ MonoBehaviour:
   HealthImage: {fileID: 1124285969}
   player: {fileID: 933564138}
   vitaMassima: 50
-  xp: 10
+  xp: 100
   danno: 5
   stopDistance: 1.4
   chaseDistance: 7
@@ -12082,7 +12079,7 @@ MonoBehaviour:
   HealthImage: {fileID: 337225687}
   player: {fileID: 933564138}
   vitaMassima: 50
-  xp: 10
+  xp: 100
   danno: 5
   stopDistance: 1.4
   chaseDistance: 7
@@ -23558,7 +23555,7 @@ MonoBehaviour:
   HealthImage: {fileID: 2003494587}
   player: {fileID: 933564138}
   vitaMassima: 100
-  xp: 10
+  xp: 100
   danno: 15
   stopDistance: 1.5
   chaseDistance: 5

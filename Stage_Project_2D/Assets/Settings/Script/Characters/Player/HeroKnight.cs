@@ -33,16 +33,36 @@ public class PlayerMovement : MonoBehaviour
     {
         get { return livelloAttuale; }
     }
+    private float LivelloSuccessivo = 1f;
 
     public void AddXP(float xpToAdd)
     {
+        if(xpToAdd <= 0f)
+            return;
+
         xp += xpToAdd;
 
-        while(xp >= 100f)
+        Debug.Log("xp attuale: " + xp);
+
+        while(xp >= 100f * LivelloSuccessivo)
         {
             livelloAttuale++;
             xp -= 100f;
+            AddUpgradePoints(2);
+
+            LivelloSuccessivo += 0.2f;
+
+            Debug.Log("livello attuale: " + livelloAttuale);
+            Debug.Log("xp rimanente: " + xp);
         }
+    }
+
+    private void AddUpgradePoints(int points)
+    {
+        PlayerUpgradeStats upgradeStats = GetComponent<PlayerUpgradeStats>();
+
+        if(upgradeStats != null)
+            upgradeStats.upgradePoints += points;
     }
 
 

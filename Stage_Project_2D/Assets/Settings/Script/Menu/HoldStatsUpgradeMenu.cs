@@ -86,6 +86,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(menuPanel == null)
             CreateRuntimeUI();
 
+        HideSpeedUpgradeButton();
         AssignFallbackFonts();
 
         if(!Application.isPlaying)
@@ -96,6 +97,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void OnValidate()
     {
+        HideSpeedUpgradeButton();
         AssignFallbackFonts();
     }
 
@@ -137,11 +139,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeSpeed()
     {
-        if(playerStats != null)
-        {
-            playerStats.UpgradeSpeed();
-            Refresh();
-        }
+        HideSpeedUpgradeButton();
     }
 
     private void SetMenuOpen(bool open)
@@ -192,7 +190,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         SetButtonInteractable(upgradeSwordButton, playerStats.upgradePoints > 0 && playerStats.swordLevel < playerStats.maxSwordLevel);
         SetButtonInteractable(upgradeShieldButton, playerStats.upgradePoints > 0 && playerStats.shieldLevel < playerStats.maxShieldLevel);
-        SetButtonInteractable(upgradeSpeedButton, playerStats.upgradePoints > 0 && playerStats.speedLevel < playerStats.maxSpeedLevel);
+        HideSpeedUpgradeButton();
     }
 
     private void SetButtonInteractable(Button button, bool interactable)
@@ -250,8 +248,6 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         characterStatsText = CreateText("CharacterStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(characterStatsText.rectTransform, new Vector2(18f, -204f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
-        upgradeSpeedButton = CreateButton("UpgradeSpeedButton", menuPanel.transform, defaultFont, "Velocita' +", new Vector2(-18f, -214f));
-        upgradeSpeedButton.onClick.AddListener(UpgradeSpeed);
 
         Text hintText = CreateText("Hint", menuPanel.transform, defaultFont, "Tieni premuto G", 13, TextAnchor.MiddleCenter);
         hintText.color = new Color(0.8f, 0.84f, 0.9f, 1f);
@@ -306,6 +302,12 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         rectTransform.anchoredPosition = anchoredPosition;
         rectTransform.sizeDelta = sizeDelta;
+    }
+
+    private void HideSpeedUpgradeButton()
+    {
+        if(upgradeSpeedButton != null)
+            upgradeSpeedButton.gameObject.SetActive(false);
     }
 
     private void EnsureEventSystemExists()
