@@ -56,10 +56,10 @@ public class PlayerMovement : MonoBehaviour
         while(xp >= 100f * LivelloSuccessivo)
         {
             livelloAttuale++;
-            xp -= 100f;
+            xp -= 100f * LivelloSuccessivo;
             AddUpgradePoints(2);
 
-            LivelloSuccessivo += 0.2f;
+            LivelloSuccessivo += 0.3f;
 
             Debug.Log("livello attuale: " + livelloAttuale);
             Debug.Log("xp rimanente: " + xp);
@@ -639,5 +639,18 @@ public class PlayerMovement : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         IsDying = false;
+    }
+
+    public void ResetStats()
+    {
+        if(IsDying)
+        {
+            xp = 0;
+            livelloAttuale = 1;
+            LivelloSuccessivo = 1f;
+            PlayerUpgradeStats upgradeStats = GetComponent<PlayerUpgradeStats>();
+            upgradeStats.upgradePoints = 0;
+
+        }
     }
 }

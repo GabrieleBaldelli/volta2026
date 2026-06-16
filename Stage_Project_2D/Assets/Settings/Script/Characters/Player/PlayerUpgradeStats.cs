@@ -10,12 +10,12 @@ public class PlayerUpgradeStats : MonoBehaviour
     public int upgradePoints = 0;
 
     [Header("Sword")]
-    public int swordLevel = 1;
+    public int swordLevel = 0;
     public int maxSwordLevel = 20;
     public float swordDamageIncrease = 0.5f;
 
     [Header("Shield")]
-    public int shieldLevel = 1;
+    public int shieldLevel = 0;
     public int maxShieldLevel = 20;
     public float shieldMaxIncrease = 0.5f;
 
@@ -55,6 +55,16 @@ public class PlayerUpgradeStats : MonoBehaviour
         shieldLevel++;
         shieldBar.IncreaseMaxShield(shieldMaxIncrease, true);
         return true;
+    }
+
+    public void Reset()
+    {
+        if(player == null)
+        {
+            swordLevel = 1;
+            shieldLevel = 1;
+
+        }
     }
 
     private bool CanUpgrade(int currentLevel, int maxLevel)
