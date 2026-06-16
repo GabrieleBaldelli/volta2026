@@ -11,18 +11,20 @@ public class PlayerUpgradeStats : MonoBehaviour
 
     [Header("Sword")]
     public int swordLevel = 1;
-    public int maxSwordLevel = 5;
-    public float swordDamageIncrease = 5f;
+    public int maxSwordLevel = 20;
+    public float swordDamageIncrease = 0.5f;
 
     [Header("Shield")]
     public int shieldLevel = 1;
-    public int maxShieldLevel = 5;
-    public float shieldMaxIncrease = 1f;
+    public int maxShieldLevel = 20;
+    public float shieldMaxIncrease = 0.5f;
 
     public float SwordDamage => player != null ? player.danno : 0f;
     public float MoveSpeed => player != null ? player.speed : 0f;
     public float ShieldMax => shieldBar != null ? shieldBar.maxShield : 0f;
     public int PlayerLevel => player != null ? Mathf.FloorToInt(player.livello) : 0;
+    public int CurrentXP => player != null ? Mathf.FloorToInt(player.XpAttuale) : 0;
+    public int NextLevelXP => player != null ? Mathf.CeilToInt(player.XpProssimoLivello) : 0;
 
     private void Awake()
     {

@@ -34,6 +34,15 @@ public class PlayerMovement : MonoBehaviour
         get { return livelloAttuale; }
     }
     private float LivelloSuccessivo = 1f;
+    public float XpAttuale
+    {
+        get { return xp; }
+    }
+
+    public float XpProssimoLivello
+    {
+        get { return 100f * LivelloSuccessivo; }
+    }
 
     public void AddXP(float xpToAdd)
     {

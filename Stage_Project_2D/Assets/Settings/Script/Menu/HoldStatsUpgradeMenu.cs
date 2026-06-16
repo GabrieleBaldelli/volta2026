@@ -163,7 +163,11 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
             return;
 
         if(upgradePointsText != null)
-            upgradePointsText.text = "Livello: " + playerStats.PlayerLevel + "   Punti: " + playerStats.upgradePoints;
+        {
+            upgradePointsText.text =
+                "Livello: " + playerStats.PlayerLevel + "   Punti: " + playerStats.upgradePoints + "\n" +
+                "XP: " + playerStats.CurrentXP + "/" + playerStats.NextLevelXP;
+        }
 
         if(swordStatsText != null)
         {
@@ -234,7 +238,8 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         SetRect(titleText.rectTransform, new Vector2(18f, -20f), new Vector2(324f, 30f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
         upgradePointsText = CreateText("UpgradePoints", menuPanel.transform, defaultFont, "", 16, TextAnchor.MiddleRight);
-        SetRect(upgradePointsText.rectTransform, new Vector2(18f, -20f), new Vector2(324f, 30f), new Vector2(0f, 1f), new Vector2(0f, 1f));
+        upgradePointsText.fontSize = 14;
+        SetRect(upgradePointsText.rectTransform, new Vector2(18f, -26f), new Vector2(324f, 44f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
         swordStatsText = CreateText("SwordStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(swordStatsText.rectTransform, new Vector2(18f, -64f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
