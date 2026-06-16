@@ -11,7 +11,7 @@ Input.GetMouseButtonDown(1) == true / false
 
 public class ShieldBar : MonoBehaviour
 {
-    public const float SHIELD_MAX = 5f;
+    public float maxShield = 5f;
     private float shield;
 
     public float shieldSetGet
@@ -33,7 +33,8 @@ public class ShieldBar : MonoBehaviour
     public void Start()
     {
         playerScript = GetComponentInParent<PlayerMovement>();
-        shield = SHIELD_MAX;
+        shield = maxShield;
+        UpdateShieldVisual();
     }
 
     public void Update()
@@ -56,8 +57,7 @@ public class ShieldBar : MonoBehaviour
 
         shield--;
 
-        Slider slider = GetComponent<Slider>();
-        slider.value = shield / SHIELD_MAX;
+        UpdateShieldVisual();
 
         while(playerScript != null && playerScript.IsAnyEnemyAttacking() && playerScript.IsShieldingSetGet)
         {
@@ -65,5 +65,31 @@ public class ShieldBar : MonoBehaviour
         }
 
         isConsumingAttack = false;
+    }
+
+    public void IncreaseMaxShield(float amount, bool refillShield)
+    {
+        maxShield += amount;
+
+        if(refillShield)
+        {
+            shield = maxShield;
+        }
+        else
+        {
+            shield = Mathf.Min(shield, maxShield);
+        }
+
+        UpdateShieldVisual();
+    }
+
+    private void UpdateShieldVisual()
+    {
+        Slider slider = GetComponent<Slider>();
+
+        if(slider != null && maxShield > 0)
+        {
+            slider.value = shield / maxShield;
+        }
     }
 }

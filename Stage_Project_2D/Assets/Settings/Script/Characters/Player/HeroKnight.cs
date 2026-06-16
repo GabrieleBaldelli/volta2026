@@ -21,6 +21,19 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 10f;
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
+    private float xp;
+    public float AddXp
+    {
+        get { return ; }
+        set { xp = value; }
+    }
+
+    private float livello;
+    public float livello
+    {
+        get { return ;}
+    }
+
 
     [Header("Attack Settings")]
     public Transform attackPoint;
@@ -108,6 +121,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if(xp == 100)
+        {
+            livello++;
+            xp = 0;
+        }
+
         if (Time.timeScale == 0)
         {
             StopGrassRunSound();
