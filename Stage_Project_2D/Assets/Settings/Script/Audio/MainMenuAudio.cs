@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
 // Gestisce gli audio del menu principale, soprattutto il click dei pulsanti.
@@ -10,6 +11,10 @@ public class MainMenuAudio : MonoBehaviour
     // Volume del click dei pulsanti.
     [Range(0f, 1f)]
     public float buttonClickVolume = 1f;
+
+    [Header("Audio Mixer")]
+    public AudioMixer audioMixer;
+    public AudioMixerGroup buttonOutputGroup;
 
     // Riferimento statico all'unico audio manager del menu.
     private static MainMenuAudio instance;
@@ -56,6 +61,12 @@ public class MainMenuAudio : MonoBehaviour
 
         // Imposta il volume iniziale del click.
         buttonAudioSource.volume = buttonClickVolume;
+
+        // Manda i click del menu nel gruppo SFX del mixer, se assegnato.
+        buttonAudioSource.outputAudioMixerGroup = buttonOutputGroup;
+
+        // Applica i volumi salvati anche quando si apre direttamente il menu principale.
+        ApplySavedMixerVolumes();
     }
 
     private void OnEnable()
@@ -100,5 +111,10 @@ public class MainMenuAudio : MonoBehaviour
             // Riproduce il click una volta.
             buttonAudioSource.PlayOneShot(buttonClickSound);
         }
+    }
+
+    private void ApplySavedMixerVolumes()
+    {
+        AudioSettingsStore.ApplySavedVolumes(audioMixer);
     }
 }
