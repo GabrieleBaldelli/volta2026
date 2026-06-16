@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
     private bool IsHurting;
     private bool IsDying;
 
-    public bool IsAttackingSetGet
+    public virtual bool IsAttackingSetGet
     {
         get
         {
@@ -56,7 +56,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Start()
+    protected virtual void Start()
     {
         spriterenderer = GetComponent<SpriteRenderer>();
         if(spriterenderer == null)
@@ -134,7 +134,7 @@ public class Enemy : MonoBehaviour
         characterAudio.PlayHurtSound();
     }
 
-    void Update()
+    protected virtual void Update()
     {
         if (p == null || aiPath == null || animazioni == null || IsDying)
         {
@@ -258,7 +258,7 @@ public class Enemy : MonoBehaviour
         playerRb.velocity = Vector2.zero;
     }
 
-    public IEnumerator HurtCoroutine(float danno)
+    public virtual IEnumerator HurtCoroutine(float danno)
     {
         if(IsDying)
             yield break;
