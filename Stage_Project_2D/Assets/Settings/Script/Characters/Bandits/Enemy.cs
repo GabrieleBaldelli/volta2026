@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
 
     public AIPath aiPath;
     public float nextAttackTime = 0.5f;
-    public bool invertFlipX = false;
+    private bool invertFlipX = false;
     private SpriteRenderer spriterenderer;
     private Animazioni animazioni;
 

@@ -12335,6 +12335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ac2276d6d124268a4c915a03e4fb28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxShield: 5
 --- !u!114 &1235895168
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12722,6 +12723,7 @@ MonoBehaviour:
   HealthImage: {fileID: 0}
   player: {fileID: 1586416858}
   vitaMassima: 200
+  xp: 100
   danno: 12
   stopDistance: 3.02
   chaseDistance: 10
@@ -12785,8 +12787,6 @@ MonoBehaviour:
   summonDamageGizmoColor: {r: 1, g: 0.55, b: 0, a: 0.8}
   teleportGizmoColor: {r: 0.35, g: 0.65, b: 1, a: 0.8}
   summonGizmoColor: {r: 0.65, g: 0.25, b: 1, a: 0.8}
-  idleGizmoColor: {r: 0.35, g: 1, b: 0.45, a: 0.8}
-  shieldRegenGizmoColor: {r: 0.1, g: 0.9, b: 1, a: 0.8}
   shieldSlider: {fileID: 1698963873}
   shieldMassimo: 60
   shieldRegenDelay: 5
@@ -13916,6 +13916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32ac2276d6d124268a4c915a03e4fb28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxShield: 5
 --- !u!114 &1698963873
 MonoBehaviour:
   m_ObjectHideFlags: 0
