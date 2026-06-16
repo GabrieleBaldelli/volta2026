@@ -63,19 +63,12 @@ public class Wizard : Enemy
     public bool regenerateShieldOnlyWhenFar = true;
     public float shieldRegenMinPlayerDistance = 5f;
 
-    // Cache dei componenti e riferimenti runtime. Sono separati da Enemy perche' molti campi base sono private.
-    private Transform playerTransform;
-    private PlayerMovement playerScript;
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
-    private Animazioni animazioni;
-    private CharacterAudioController characterAudio;
+    // Riferimenti specifici del wizard. Player, vita, animazioni, audio e movimento arrivano da Enemy.
     private LifeBar lifeBar;
 
     private readonly List<GameObject> summonedEnemies = new List<GameObject>();
 
     // Stato interno del boss: cooldown, vita/shield e blocchi anti-spam per coroutine e animazioni.
-    private float vita;
     private float shield;
     private float lastDamageTime;
     private float damageTakenSinceTeleport;
@@ -85,9 +78,6 @@ public class Wizard : Enemy
     private float nextActionTime;
     private float lastHurtAnimationTime = -999f;
 
-    private bool isAttacking;
-    private bool isHurting;
-    private bool isDying;
     private bool isTeleporting;
     private bool shieldBroken;
     private bool missingEnemyParentWarningShown;
@@ -95,39 +85,13 @@ public class Wizard : Enemy
     private Vector3 lastTeleportPosition;
     private bool hasLastTeleportPosition;
 
-    public override bool IsAttackingSetGet
-    {
-        get { return isAttacking; }
-        set { isAttacking = value; }
-    }
-
     protected override void Start()
     {
-        // Setup iniziale: componenti locali, player, barre UI e parent per i nemici evocati.
-        rb = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if(spriteRenderer == null)
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
-        animazioni = GetComponent<Animazioni>();
-        if(animazioni == null)
-            animazioni = gameObject.AddComponent<Animazioni>();
-
-        characterAudio = GetComponent<CharacterAudioController>();
-        if(characterAudio == null)
-            characterAudio = gameObject.AddComponent<CharacterAudioController>();
-
-        if(aiPath == null)
-            aiPath = GetComponent<AIPath>();
-
-        if(aiPath != null)
-            aiPath.canMove = false;
-
-        FindPlayer();
+        // Setup iniziale: Enemy prepara componenti/player/vita; il wizard aggiunge barre, summon e shield.
+        base.Start();
         FindBars();
         FindEnemyAstarPathParent();
 
-        vita = vitaMassima;
         shield = shieldMassimo;
         lastDamageTime = Time.time;
         nextActionTime = Time.time + initialIdleDelay;
@@ -141,21 +105,24 @@ public class Wizard : Enemy
     protected override void Update()
     {
         // Ciclo decisionale del wizard: idle, melee, teleport, summon o rigenerazione shield.
-        if(isDying)
+        if(IsDying)
             return;
 
-        FindPlayer();
+        if(PlayerTransform == null)
+            TryFindPlayer();
 
-        if(playerTransform == null || animazioni == null)
+        if(PlayerTransform == null || animazioni == null)
             return;
 
+        // Lo shield si rigenera passivamente quando il boss non subisce danni da un po' e quando il player e' lontano.
         RegenerateShield();
 
-        if(isAttacking || isHurting || isTeleporting)
+        if(IsAttacking || IsHurting || isTeleporting)
             return;
 
-        float distance = Vector2.Distance(transform.position, playerTransform.position);
+        float distance = Vector2.Distance(transform.position, PlayerTransform.position);
 
+        // Il wizard guarda sempre il player, ma attacca o si muove solo se e' abbastanza vicino e se i cooldown lo permettono.
         FacePlayer();
 
         if(Time.time < nextActionTime)
@@ -203,24 +170,6 @@ public class Wizard : Enemy
         }
     }
 
-    private void FindPlayer()
-    {
-        // Mantiene aggiornato il riferimento al player anche se non e' stato assegnato nel prefab.
-        if(player != null)
-        {
-            playerTransform = player.transform;
-            playerScript = player.GetComponent<PlayerMovement>();
-            return;
-        }
-
-        playerScript = FindObjectOfType<PlayerMovement>();
-        if(playerScript == null)
-            return;
-
-        player = playerScript.gameObject;
-        playerTransform = player.transform;
-    }
-
     private void FindBars()
     {
         // Cerca le barre con i nomi usati nei prefab/scena, poi ripiega sui figli del wizard.
@@ -248,33 +197,26 @@ public class Wizard : Enemy
         }
     }
 
-    private void FacePlayer()
-    {
-        // Orienta lo sprite verso il player senza usare la logica di movimento di Enemy.
-        if(spriteRenderer != null && playerTransform != null)
-            spriteRenderer.flipX = playerTransform.position.x > transform.position.x;
-    }
-
     private IEnumerator SummonAttackCoroutine()
     {
         // Attack1: resta fermo, aspetta il frame di impatto, danneggia vicino e poi evoca.
-        if(isDying || playerTransform == null)
+        if(IsDying || PlayerTransform == null)
             yield break;
 
-        isAttacking = true;
+        IsAttacking = true;
         nextSummonTime = Time.time + attackDuration + summonCooldown;
         nextActionTime = Time.time + attackDuration + idleDelayAfterAction;
 
         StopMovement();
         animazioni.Attacco1();
-        characterAudio.PlayAttackSound();
-        characterAudio.PlayAttackEffortSound();
+        PlayAttackSound();
+        PlayAttackEffortSound();
 
         yield return new WaitForSeconds(summonDelay);
 
-        if(isDying)
+        if(IsDying)
         {
-            isAttacking = false;
+            IsAttacking = false;
             yield break;
         }
 
@@ -283,81 +225,41 @@ public class Wizard : Enemy
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - summonDelay));
 
-        isAttacking = false;
+        IsAttacking = false;
         nextActionTime = Mathf.Max(nextActionTime, Time.time + idleDelayAfterAction);
     }
 
     private IEnumerator MeleeAttackCoroutine()
     {
         // Attack2: colpo ravvicinato, poi opzionalmente si teletrasporta per allontanarsi.
-        if(isDying || playerTransform == null)
+        if(IsDying || PlayerTransform == null)
             yield break;
 
-        isAttacking = true;
+        IsAttacking = true;
         nextMeleeTime = Time.time + attackDuration + attackCooldown;
         nextActionTime = Time.time + attackDuration + idleDelayAfterAction;
 
         StopMovement();
         animazioni.Attacco2();
-        characterAudio.PlayAttackSound();
-        characterAudio.PlayAttackEffortSound();
+        PlayAttackSound();
+        PlayAttackEffortSound();
 
         yield return new WaitForSeconds(attackHitDelay);
 
-        if(!isDying)
+        if(!IsDying)
             DamagePlayerIfNear(stopDistance + 0.4f);
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - attackHitDelay));
 
-        isAttacking = false;
+        IsAttacking = false;
 
-        if(teleportAfterMeleeAttack && !isDying)
+        if(teleportAfterMeleeAttack && !IsDying)
         {
             StartCoroutine(TeleportCoroutine());
             yield break;
         }
 
         nextActionTime = Mathf.Max(nextActionTime, Time.time + idleDelayAfterAction);
-    }
-
-    private void DamagePlayerIfNear(float radius)
-    {
-        // Usato da entrambi gli attacchi: applica danno e knockback solo se il player e' nel raggio.
-        if(player == null || playerTransform == null)
-            return;
-
-        playerScript = player.GetComponent<PlayerMovement>();
-        if(playerScript == null)
-            return;
-
-        if(Vector2.Distance(transform.position, playerTransform.position) > radius)
-            return;
-
-        if(playerScript.IsShieldingSetGet)
-            return;
-
-        Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
-        if(playerRb != null)
-            StartCoroutine(KnockbackPlayer(playerRb));
-
-        StartCoroutine(playerScript.HurtCoroutine(danno));
-    }
-
-    private IEnumerator KnockbackPlayer(Rigidbody2D playerRb)
-    {
-        // Versione locale del knockback, duplicata perche' quella di Enemy oggi e' privata.
-        if(playerTransform == null)
-            yield break;
-
-        Vector2 knockbackDirection = (playerTransform.position - transform.position).normalized;
-
-        playerRb.velocity = Vector2.zero;
-        playerRb.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse);
-
-        yield return new WaitForSeconds(knockbackDuration);
-
-        if(playerRb != null)
-            playerRb.velocity = Vector2.zero;
     }
 
     private void SummonEnemies()
@@ -396,7 +298,7 @@ public class Wizard : Enemy
 
             AIDestinationSetter destinationSetter = summonedEnemy.GetComponent<AIDestinationSetter>();
             if(destinationSetter != null)
-                destinationSetter.target = playerTransform;
+                destinationSetter.target = PlayerTransform;
         }
     }
 
@@ -452,10 +354,10 @@ public class Wizard : Enemy
     public override IEnumerator HurtCoroutine(float danno)
     {
         // Prima consuma lo shield, poi la vita. L'animazione Hit ha un cooldown anti-spam.
-        if(isDying)
+        if(IsDying)
             yield break;
 
-        bool canPlayHurtFeedback = !isHurting && Time.time >= lastHurtAnimationTime + hurtAnimationCooldown;
+        bool canPlayHurtFeedback = !IsHurting && Time.time >= lastHurtAnimationTime + hurtAnimationCooldown;
 
         lastDamageTime = Time.time;
         damageTakenSinceTeleport += danno;
@@ -480,14 +382,14 @@ public class Wizard : Enemy
 
         if(canPlayHurtFeedback && animazioni != null)
         {
-            isHurting = true;
+            IsHurting = true;
             StopMovement();
             animazioni.Danno();
             lastHurtAnimationTime = Time.time;
         }
 
         if(canPlayHurtFeedback)
-            characterAudio.PlayHurtSound();
+            PlayHurtSound();
 
         if(damageTakenSinceTeleport >= damageBeforeTeleport && Time.time >= nextTeleportTime)
         {
@@ -500,7 +402,7 @@ public class Wizard : Enemy
 
         yield return new WaitForSeconds(0.25f);
 
-        isHurting = false;
+        IsHurting = false;
     }
 
     private void RegenerateShield()
@@ -513,9 +415,9 @@ public class Wizard : Enemy
         if(Time.time < lastDamageTime + delay)
             return;
 
-        if(regenerateShieldOnlyWhenFar && playerTransform != null)
+        if(regenerateShieldOnlyWhenFar && PlayerTransform != null)
         {
-            float distance = Vector2.Distance(transform.position, playerTransform.position);
+            float distance = Vector2.Distance(transform.position, PlayerTransform.position);
             if(distance < shieldRegenMinPlayerDistance)
                 return;
         }
@@ -530,19 +432,19 @@ public class Wizard : Enemy
     private IEnumerator TeleportCoroutine()
     {
         // Blocca azioni e movimento, svanisce, sposta il wizard, poi forza una piccola pausa idle.
-        if(isTeleporting || isDying)
+        if(isTeleporting || IsDying)
             yield break;
 
         isTeleporting = true;
-        isAttacking = false;
-        isHurting = false;
+        IsAttacking = false;
+        IsHurting = false;
         damageTakenSinceTeleport = 0f;
         nextTeleportTime = Time.time + teleportCooldown;
 
         StopMovement();
 
-        if(spriteRenderer != null)
-            spriteRenderer.color = new Color(1f, 1f, 1f, 0.25f);
+        if(spriterenderer != null)
+            spriterenderer.color = new Color(1f, 1f, 1f, 0.25f);
 
         yield return new WaitForSeconds(0.15f);
 
@@ -554,8 +456,8 @@ public class Wizard : Enemy
 
         yield return new WaitForSeconds(0.15f);
 
-        if(spriteRenderer != null)
-            spriteRenderer.color = Color.white;
+        if(spriterenderer != null)
+            spriterenderer.color = Color.white;
 
         isTeleporting = false;
         nextActionTime = Time.time + idleDelayAfterTeleport;
@@ -600,17 +502,17 @@ public class Wizard : Enemy
             }
         }
 
-        if(playerTransform == null)
+        if(PlayerTransform == null)
             return transform.position;
 
         for(int i = 0; i < teleportSearchAttempts; i++)
         {
             Vector2 direction = Random.insideUnitCircle.normalized;
             if(direction.sqrMagnitude < 0.01f)
-                direction = (transform.position - playerTransform.position).normalized;
+                direction = (transform.position - PlayerTransform.position).normalized;
 
             float distance = Random.Range(minTeleportDistanceFromPlayer, maxTeleportDistanceFromPlayer);
-            Vector3 candidate = playerTransform.position + (Vector3)(direction * distance);
+            Vector3 candidate = PlayerTransform.position + (Vector3)(direction * distance);
 
             if(IsTeleportPositionFree(candidate) && !IsSameAsLastTeleport(candidate))
             {
@@ -621,11 +523,11 @@ public class Wizard : Enemy
             }
         }
 
-        Vector3 fallbackDirection = (transform.position - playerTransform.position).normalized;
+        Vector3 fallbackDirection = (transform.position - PlayerTransform.position).normalized;
         if(fallbackDirection.sqrMagnitude < 0.01f)
             fallbackDirection = Vector3.right;
 
-        Vector3 fallback = playerTransform.position + fallbackDirection * minTeleportDistanceFromPlayer;
+        Vector3 fallback = PlayerTransform.position + fallbackDirection * minTeleportDistanceFromPlayer;
         lastTeleportPoint = null;
         lastTeleportPosition = fallback;
         hasLastTeleportPosition = true;
@@ -644,10 +546,10 @@ public class Wizard : Enemy
     private bool IsFarEnoughFromPlayer(Vector3 position)
     {
         // Evita teleport troppo vicini al player.
-        if(playerTransform == null)
+        if(PlayerTransform == null)
             return true;
 
-        return Vector2.Distance(position, playerTransform.position) >= minTeleportDistanceFromPlayer;
+        return Vector2.Distance(position, PlayerTransform.position) >= minTeleportDistanceFromPlayer;
     }
 
     private bool IsSameAsLastTeleport(Vector3 position)
@@ -671,16 +573,16 @@ public class Wizard : Enemy
     private IEnumerator DieCoroutine()
     {
         // Morte del boss: ferma tutto, lancia animazione/audio e distrugge l'oggetto.
-        if(isDying)
+        if(IsDying)
             yield break;
 
-        isDying = true;
-        isAttacking = false;
-        isHurting = false;
+        IsDying = true;
+        IsAttacking = false;
+        IsHurting = false;
         isTeleporting = false;
 
         StopMovement();
-        characterAudio.PlayDeathSound();
+        PlayDeathSound();
 
         if(animazioni != null)
             animazioni.Morte();
@@ -689,16 +591,6 @@ public class Wizard : Enemy
 
         if(this != null)
             Destroy(gameObject);
-    }
-
-    private void StopMovement()
-    {
-        // Spegne sia la fisica 2D sia il movimento A* quando il wizard deve restare fermo.
-        if(rb != null)
-            rb.velocity = Vector2.zero;
-
-        if(aiPath != null)
-            aiPath.canMove = false;
     }
 
     private void UpdateLifeBar()
@@ -717,7 +609,7 @@ public class Wizard : Enemy
         if(shieldSlider != null)
             shieldSlider.value = shieldMassimo <= 0f ? 0f : shield / shieldMassimo;
     }
-
+/*
     private void OnDrawGizmos()
     {
         if(drawOnlyWhenSelected)
@@ -744,7 +636,7 @@ public class Wizard : Enemy
         DrawWireCircle(position, playerTooCloseDistance, teleportGizmoColor);
         DrawWireCircle(position, chaseDistance, summonGizmoColor);
 
-        Transform targetPlayer = playerTransform;
+        Transform targetPlayer = PlayerTransform;
         if(targetPlayer == null && player != null)
             targetPlayer = player.transform;
 
@@ -763,4 +655,5 @@ public class Wizard : Enemy
         Gizmos.color = color;
         Gizmos.DrawWireSphere(center, radius);
     }
+    */
 }
