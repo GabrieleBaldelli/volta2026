@@ -18,6 +18,8 @@ public class Animazioni : MonoBehaviour
 
     void Awake()
     {
+        EnsureDefaultAttackAnimation();
+
         animator = GetComponent<Animator>();
 
         if (animator == null)
@@ -25,6 +27,11 @@ public class Animazioni : MonoBehaviour
 
         if (animator == null)
             Debug.LogError("Animator mancante sul nemico o nei suoi figli", this);
+    }
+
+    private void OnValidate()
+    {
+        EnsureDefaultAttackAnimation();
     }
 
     public void Idle()
@@ -82,5 +89,16 @@ public class Animazioni : MonoBehaviour
 
         currentAnimation = animationName;
         animator.Play(animationName);
+    }
+
+    private void EnsureDefaultAttackAnimation()
+    {
+        if (!string.IsNullOrEmpty(attackAnimation1))
+            return;
+
+        if (idleAnimation == "Nemico1_Idle")
+            attackAnimation1 = "Nemico1_Attacco";
+        else if (idleAnimation == "Nemico2_Idle")
+            attackAnimation1 = "Nemico2_Attacco";
     }
 }

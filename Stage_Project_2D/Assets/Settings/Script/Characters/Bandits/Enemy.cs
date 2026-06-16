@@ -61,9 +61,6 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-        if(xp <= 0f)
-            xp = 100f;
-
         spriterenderer = GetComponent<SpriteRenderer>();
         if(spriterenderer == null)
             spriterenderer = GetComponentInChildren<SpriteRenderer>();
@@ -211,7 +208,6 @@ public class Enemy : MonoBehaviour
         if(vita <= 1)
         {
             StopRunSound();
-            GiveXPOnce();
             Destroy(gameObject);
         }
     }
