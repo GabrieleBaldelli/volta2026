@@ -18,6 +18,8 @@ public class Enemy : MonoBehaviour
     [Header("Enemy Stats")]
     public float vitaMassima = 50f;
     protected float vita;
+
+    // XP data al player quando questo nemico muore.
     public float xp = 100f;
     
     public float danno = 10f;
@@ -43,9 +45,12 @@ public class Enemy : MonoBehaviour
     protected CharacterAudioController characterAudio;
 
     [Header("Stati dell'Enemy")]
+    // Questi stati impediscono al nemico di inseguire mentre attacca, prende danno o muore.
     protected bool IsAttacking = false;
     protected bool IsHurting;
     protected bool IsDying;
+
+    // Evita di dare XP piu' volte durante la stessa morte.
     private bool hasGivenXP;
 
     public virtual bool IsAttackingSetGet
@@ -67,11 +72,13 @@ public class Enemy : MonoBehaviour
 
     protected virtual void OnEnable()
     {
+        // Quando i sistemi delle stanze riattivano il nemico, resetta AI e animazione.
         PrepareForRoomUnlock();
     }
 
     protected virtual void OnDisable()
     {
+        // Quando il nemico viene spento dalla stanza, ferma movimento e suoni.
         if(rb != null)
             rb.velocity = Vector2.zero;
 
@@ -83,6 +90,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
+        // Recupera i componenti necessari al movimento, animazione e audio.
         rb = GetComponent<Rigidbody2D>();
 
         spriterenderer = GetComponent<SpriteRenderer>();
@@ -106,12 +114,14 @@ public class Enemy : MonoBehaviour
 
         if(player != null)
         {
+            // Se il player e' gia' assegnato dall'Inspector, usa quello come target.
             p = player.transform;
             playerScript = player.GetComponent<PlayerMovement>();
             SetAIDestinationTarget();
         }
         else
         {
+            // Fallback: cerca il player nella scena se non e' stato assegnato.
             playerScript = FindObjectOfType<PlayerMovement>();
 
             if(playerScript != null)
@@ -192,6 +202,7 @@ public class Enemy : MonoBehaviour
 
         if (IsAttacking)
         {
+            // Durante l'attacco resta fermo e lascia finire la coroutine.
             StopRunSound();
             aiPath.canMove = false;
             return;
@@ -199,6 +210,7 @@ public class Enemy : MonoBehaviour
 
         if (IsHurting)
         {
+            // Mentre subisce danno non insegue il player.
             StopRunSound();
             aiPath.canMove = false;
             return;
@@ -210,6 +222,7 @@ public class Enemy : MonoBehaviour
 
         if (distance > chaseDistance)
         {
+            // Troppo lontano: non insegue e torna in idle.
             StopRunSound();
             aiPath.canMove = false;
             animazioni.Idle();
@@ -218,6 +231,7 @@ public class Enemy : MonoBehaviour
 
         if (distance <= stopDistance)
         {
+            // Abbastanza vicino: si ferma e prova ad attaccare rispettando il cooldown.
             StopRunSound();
             aiPath.canMove = false;
 
@@ -229,6 +243,7 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+        // Dentro la chaseDistance ma fuori dalla stopDistance: corre verso il player.
         animazioni.Corsa();
         PlayRunSound();
 
@@ -247,6 +262,7 @@ public class Enemy : MonoBehaviour
         if(player == null || p == null || IsDying)
             yield break;
 
+        // Blocca altri comportamenti finche' l'attacco non finisce.
         playerScript = player.GetComponent<PlayerMovement>();
 
         IsAttacking = true;
@@ -258,6 +274,7 @@ public class Enemy : MonoBehaviour
         PlayAttackSound();
         PlayAttackEffortSound();
 
+        // Aspetta il momento in cui il colpo deve effettivamente fare danno.
         yield return new WaitForSeconds(attackHitDelay);
 
         if (IsDying)
@@ -285,6 +302,7 @@ public class Enemy : MonoBehaviour
         if(Vector2.Distance(transform.position, p.position) > radius)
             return;
 
+        // Se il player sta parando, il danno normale non viene applicato.
         if(playerScript.IsShieldingSetGet)
             return;
 
@@ -323,6 +341,7 @@ public class Enemy : MonoBehaviour
         if(IsDying)
             yield break;
 
+        // Il nemico si ferma mentre prende danno, cosi' non insegue durante l'hit reaction.
         IsHurting = true;
 
         Transform lifeBarTransform = transform.Find("Canvas/Life_Bar");
@@ -343,6 +362,7 @@ public class Enemy : MonoBehaviour
 
         if(vita <= 1)
         {
+            // Morte del nemico: ferma AI, da XP una sola volta e poi distrugge l'oggetto.
             IsDying = true;
             IsAttacking = false;
             IsHurting = false;
@@ -377,6 +397,7 @@ public class Enemy : MonoBehaviour
 
     protected void TryFindPlayer()
     {
+        // Usato come recupero se il riferimento al player non e' ancora disponibile.
         playerScript = FindObjectOfType<PlayerMovement>();
         if(playerScript == null)
             return;
@@ -419,6 +440,7 @@ public class Enemy : MonoBehaviour
 
     public void PrepareForRoomLock()
     {
+        // Chiamato dai trigger delle stanze prima di disattivare il nemico.
         IsAttacking = false;
         IsHurting = false;
 
@@ -431,6 +453,7 @@ public class Enemy : MonoBehaviour
 
     public void PrepareForRoomUnlock()
     {
+        // Chiamato quando la stanza riattiva il nemico, per evitare animazioni/stati vecchi.
         IsAttacking = false;
         IsHurting = false;
 

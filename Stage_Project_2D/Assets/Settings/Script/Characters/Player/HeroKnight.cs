@@ -21,19 +21,29 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeed = 10f;
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
+
+    // XP accumulata dal player uccidendo i nemici.
     private float xp;
+
+    // Proprieta' usata dagli altri script per leggere o aggiungere XP.
+    // Quando viene assegnato un valore, passa da AddXP cosi' controlla anche il level up.
     public float AddXp
     {
         get { return xp; }
         set { AddXP(value); }
     }
 
+    // Livello attuale del player. Viene letto dal menu upgrade.
     private float livelloAttuale = 1f;
     public float livello
     {
         get { return livelloAttuale; }
     }
+
+    // Moltiplicatore della XP richiesta: livello 1 = 100 XP, poi aumenta a ogni level up.
     private float LivelloSuccessivo = 1f;
+
+    // Valori letti dal menu upgrade per mostrare "XP attuale / XP prossimo livello".
     public float XpAttuale
     {
         get { return xp; }
@@ -53,12 +63,19 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.Log("xp attuale: " + xp);
 
+        // Se l'XP supera la soglia, il player sale di livello.
+        // Il while permette di gestire anche tanta XP ricevuta tutta insieme.
         while(xp >= 100f * LivelloSuccessivo)
         {
             livelloAttuale++;
+
+            // Togli solo l'XP usata per il level up, lasciando quella in piu'.
             xp -= 100f * LivelloSuccessivo;
+
+            // Ogni nuovo livello da 2 punti spendibili nel menu upgrade.
             AddUpgradePoints(2);
 
+            // Aumenta la XP richiesta per il prossimo livello.
             LivelloSuccessivo += 0.3f;
 
             Debug.Log("livello attuale: " + livelloAttuale);
@@ -70,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
     {
         PlayerUpgradeStats upgradeStats = GetComponent<PlayerUpgradeStats>();
 
+        // Se il player ha il componente degli upgrade, aggiunge i punti da spendere.
         if(upgradeStats != null)
             upgradeStats.upgradePoints += points;
     }
@@ -645,6 +663,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if(IsDying)
         {
+            // Reset delle statistiche di progressione quando il player muore.
             xp = 0;
             livelloAttuale = 1;
             LivelloSuccessivo = 1f;
