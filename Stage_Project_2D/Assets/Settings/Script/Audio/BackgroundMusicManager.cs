@@ -53,6 +53,12 @@ public class BackgroundMusicManager : MonoBehaviour
         // Salva questo oggetto come manager principale.
         instance = this;
 
+        // DontDestroyOnLoad funziona solo su oggetti root della scena.
+        if (transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
+
         // Mantiene la musica anche quando si cambia scena.
         DontDestroyOnLoad(gameObject);
 

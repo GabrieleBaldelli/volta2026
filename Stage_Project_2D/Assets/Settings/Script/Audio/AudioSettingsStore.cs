@@ -8,7 +8,7 @@ public static class AudioSettingsStore
     public const string SFXVolumeKey = "SFXVol";
 
     private const string SettingsVersionKey = "AudioSettingsVersion";
-    private const int CurrentSettingsVersion = 4;
+    private const int CurrentSettingsVersion = 5;
     private const float DefaultVolume = 0.5f;
 
     public static void EnsureInitialized()
