@@ -44,6 +44,12 @@ public class MainMenuAudio : MonoBehaviour
         // Salva questo oggetto come istanza principale.
         instance = this;
 
+        // DontDestroyOnLoad funziona solo su oggetti root della scena.
+        if (transform.parent != null)
+        {
+            transform.SetParent(null);
+        }
+
         // Mantiene l'oggetto anche quando si cambia scena.
         DontDestroyOnLoad(gameObject);
 
