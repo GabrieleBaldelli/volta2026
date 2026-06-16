@@ -10,7 +10,8 @@ public class Enable_Collider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            colliderDaDisattivare.isTrigger = true;
+            if(colliderDaDisattivare != null)
+                colliderDaDisattivare.enabled = false;
         }
     }
 
@@ -18,7 +19,8 @@ public class Enable_Collider : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            colliderDaDisattivare.isTrigger = false;
+            if(colliderDaDisattivare != null)
+                colliderDaDisattivare.enabled = true;
         }
     }
 }

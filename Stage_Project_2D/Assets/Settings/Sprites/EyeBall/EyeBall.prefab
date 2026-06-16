@@ -593,6 +593,7 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 0}
   nextAttackTime: 0.5
+  invertFlipX: 1
 --- !u!114 &-3364697488536687573
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,11 +15,25 @@ public class Wizard : Enemy
     public int minEnemiesToSummon = 1;
     public int maxEnemiesToSummon = 2;
     public int maxSummonedEnemiesAlive = 5;
+
+    // Cooldown tra un attacco di evocazione e l'altro, 
+    // che include il tempo dell'animazione e una pausa dopo.
     public float summonCooldown = 4f;
+    // Tempo tra l'inizio dell'animazione e il momento in cui il danno viene applicato 
+    // e i nemici vengono evocati.
     public float summonDelay = 0.35f;
-    public float summonRadius = 2.5f;
-    public float summonDamageRadius = 2f;
-    public float summonPointRandomOffset = 1f;
+    
+    // Raggio attorno al wizard in cui possono comparire i nemici evocati se non ci sono summon point assegnati o sono meno del numero da evocare.
+    public float summonRadius = 2.5f; 
+
+    // Raggio in cui il player subisce danno se e' troppo vicino al wizard durante l'attacco di evocazione.
+    public float nearAttackArea = 2f; 
+    // Offset casuale aggiuntivo alla posizione di spawn dei nemici evocati 
+    // per renderli meno prevedibili, anche quando si usano summon point fissi.
+    public float summonRandomPoint = 1f;
+
+    // Se true, i nemici evocati useranno la stessa distanza di inseguimento del wizard, 
+    // altrimenti useranno quella definita nei loro prefab.
     public bool useWizardChaseDistanceForSummons = true;
     public Transform enemyAstarPathParent;
     public string enemyAstarPathObjectName = "Enemy_AstarPath";
@@ -130,7 +144,7 @@ public class Wizard : Enemy
             animazioni.Idle();
             return;
         }
-
+        
         if(distance <= stopDistance)
         {
             if(Time.time >= nextMeleeTime)
@@ -163,10 +177,15 @@ public class Wizard : Enemy
             return;
         }
 
-        if(distance > chaseDistance)
+        if(distance > chaseDistance * 1.5f)
         {
             animazioni.Idle();
+            transform.Find("Life_Canvas").gameObject.SetActive(false);
             return;
+        }
+        else
+        {
+            transform.Find("Life_Canvas").gameObject.SetActive(true);
         }
     }
 
@@ -220,7 +239,7 @@ public class Wizard : Enemy
             yield break;
         }
 
-        DamagePlayerIfNear(summonDamageRadius);
+        DamagePlayerIfNear(nearAttackArea);
         SummonEnemies();
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - summonDelay));
@@ -331,7 +350,7 @@ public class Wizard : Enemy
         {
             Transform point = summonPoints[index % summonPoints.Length];
             if(point != null)
-                return point.position + GetRandomOffset(summonPointRandomOffset);
+                return point.position + GetRandomOffset(summonRandomPoint);
         }
 
         Vector2 offset = Random.insideUnitCircle * summonRadius;
@@ -609,7 +628,7 @@ public class Wizard : Enemy
         if(shieldSlider != null)
             shieldSlider.value = shieldMassimo <= 0f ? 0f : shield / shieldMassimo;
     }
-/*
+
     private void OnDrawGizmos()
     {
         if(drawOnlyWhenSelected)
@@ -632,7 +651,7 @@ public class Wizard : Enemy
         Vector3 position = transform.position;
 
         DrawWireCircle(position, stopDistance, meleeAttackGizmoColor);
-        DrawWireCircle(position, summonDamageRadius, summonDamageGizmoColor);
+        DrawWireCircle(position, nearAttackArea, summonDamageGizmoColor);
         DrawWireCircle(position, playerTooCloseDistance, teleportGizmoColor);
         DrawWireCircle(position, chaseDistance, summonGizmoColor);
 
@@ -655,5 +674,4 @@ public class Wizard : Enemy
         Gizmos.color = color;
         Gizmos.DrawWireSphere(center, radius);
     }
-    */
 }

@@ -7917,7 +7917,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &356536790
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9474,7 +9474,7 @@ RectTransform:
   m_Father: {fileID: 290343530}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 2.5000916, y: 0}
   m_SizeDelta: {x: 5.0002, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -13155,7 +13155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0023624dc3dd2435a8aa87d17715cddb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HealthImage: {fileID: 0}
+  HealthImage: {fileID: 1993637482}
   player: {fileID: 1586416858}
   vitaMassima: 200
   xp: 100
@@ -13169,6 +13169,7 @@ MonoBehaviour:
   knockbackDuration: 0.15
   aiPath: {fileID: 0}
   nextAttackTime: 0.5
+  invertFlipX: 0
   enemyPrefabs:
   - {fileID: 8453311443834962406, guid: 33503bf574b704e38b4f3fd1441d6f33, type: 3}
   summonPoints:
@@ -13186,8 +13187,8 @@ MonoBehaviour:
   summonCooldown: 4
   summonDelay: 0.5
   summonRadius: 2.5
-  summonDamageRadius: 2
-  summonPointRandomOffset: 1
+  nearAttackArea: 2
+  summonRandomPoint: 1
   useWizardChaseDistanceForSummons: 1
   enemyAstarPathParent: {fileID: 1683034781}
   enemyAstarPathObjectName: Enemy_AstarPath
@@ -13214,13 +13215,13 @@ MonoBehaviour:
   initialIdleDelay: 1.5
   idleDelayAfterAction: 1
   idleDelayAfterTeleport: 1.2
-  hurtAnimationCooldown: 0.4
+  hurtAnimationCooldown: 1
   drawDistanceGizmos: 1
-  drawOnlyWhenSelected: 0
-  meleeAttackGizmoColor: {r: 1, g: 0.2, b: 0.2, a: 0.8}
-  summonDamageGizmoColor: {r: 1, g: 0.55, b: 0, a: 0.8}
-  teleportGizmoColor: {r: 0.35, g: 0.65, b: 1, a: 0.8}
-  summonGizmoColor: {r: 0.65, g: 0.25, b: 1, a: 0.8}
+  drawOnlyWhenSelected: 1
+  meleeAttackGizmoColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  summonDamageGizmoColor: {r: 1, g: 0.55, b: 0, a: 1}
+  teleportGizmoColor: {r: 0.35, g: 0.65, b: 1, a: 1}
+  summonGizmoColor: {r: 0.65, g: 0.25, b: 1, a: 1}
   shieldSlider: {fileID: 1698963873}
   shieldMassimo: 60
   shieldRegenDelay: 5
@@ -14904,7 +14905,7 @@ RectTransform:
   m_Father: {fileID: 355102682}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 2.5000916, y: 0}
   m_SizeDelta: {x: 5.0002, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
