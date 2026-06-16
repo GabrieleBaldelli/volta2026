@@ -8,6 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(CharacterAudioController))]
 public class Wizard : Enemy
 {
+    // Parametri dell'attacco a distanza: animazione Attack1, danno vicino e spawn dei nemici.
     [Header("Summon Attack")]
     public GameObject[] enemyPrefabs;
     public Transform[] summonPoints;
@@ -23,6 +24,7 @@ public class Wizard : Enemy
     public Transform enemyAstarPathParent;
     public string enemyAstarPathObjectName = "Enemy_AstarPath";
 
+    // Parametri della fuga: il wizard sceglie punti lontani dal player o posizioni casuali valide.
     [Header("Teleport")]
     public Transform[] teleportPoints;
     public float playerTooCloseDistance = 3f;
@@ -35,12 +37,14 @@ public class Wizard : Enemy
     public bool teleportAfterMeleeAttack = true;
     public LayerMask teleportBlockedLayers;
 
+    // Piccole pause che impediscono al wizard di concatenare azioni senza mai tornare in idle.
     [Header("Timing")]
     public float initialIdleDelay = 1.5f;
     public float idleDelayAfterAction = 1f;
     public float idleDelayAfterTeleport = 1.2f;
     public float hurtAnimationCooldown = 0.8f;
 
+    // Colori usati solo nell'Editor per leggere le distanze principali del boss.
     [Header("Distance Gizmos")]
     public bool drawDistanceGizmos = true;
     public bool drawOnlyWhenSelected = false;
@@ -49,6 +53,7 @@ public class Wizard : Enemy
     public Color teleportGizmoColor = new Color(0.35f, 0.65f, 1f, 0.8f);
     public Color summonGizmoColor = new Color(0.65f, 0.25f, 1f, 0.8f);
 
+    // Seconda barra difensiva: finche' lo shield e' sopra 0, la vita non scende.
     [Header("Wizard Shield")]
     public Slider shieldSlider;
     public float shieldMassimo = 60f;
@@ -58,6 +63,7 @@ public class Wizard : Enemy
     public bool regenerateShieldOnlyWhenFar = true;
     public float shieldRegenMinPlayerDistance = 5f;
 
+    // Cache dei componenti e riferimenti runtime. Sono separati da Enemy perche' molti campi base sono private.
     private Transform playerTransform;
     private PlayerMovement playerScript;
     private Rigidbody2D rb;
@@ -68,6 +74,7 @@ public class Wizard : Enemy
 
     private readonly List<GameObject> summonedEnemies = new List<GameObject>();
 
+    // Stato interno del boss: cooldown, vita/shield e blocchi anti-spam per coroutine e animazioni.
     private float vita;
     private float shield;
     private float lastDamageTime;
@@ -96,6 +103,7 @@ public class Wizard : Enemy
 
     protected override void Start()
     {
+        // Setup iniziale: componenti locali, player, barre UI e parent per i nemici evocati.
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         if(spriteRenderer == null)
@@ -132,6 +140,7 @@ public class Wizard : Enemy
 
     protected override void Update()
     {
+        // Ciclo decisionale del wizard: idle, melee, teleport, summon o rigenerazione shield.
         if(isDying)
             return;
 
@@ -196,6 +205,7 @@ public class Wizard : Enemy
 
     private void FindPlayer()
     {
+        // Mantiene aggiornato il riferimento al player anche se non e' stato assegnato nel prefab.
         if(player != null)
         {
             playerTransform = player.transform;
@@ -213,6 +223,7 @@ public class Wizard : Enemy
 
     private void FindBars()
     {
+        // Cerca le barre con i nomi usati nei prefab/scena, poi ripiega sui figli del wizard.
         if(lifeBar == null)
         {
             Transform lifeBarTransform = transform.Find("Canvas/Life_Bar");
@@ -239,12 +250,14 @@ public class Wizard : Enemy
 
     private void FacePlayer()
     {
+        // Orienta lo sprite verso il player senza usare la logica di movimento di Enemy.
         if(spriteRenderer != null && playerTransform != null)
             spriteRenderer.flipX = playerTransform.position.x > transform.position.x;
     }
 
     private IEnumerator SummonAttackCoroutine()
     {
+        // Attack1: resta fermo, aspetta il frame di impatto, danneggia vicino e poi evoca.
         if(isDying || playerTransform == null)
             yield break;
 
@@ -276,6 +289,7 @@ public class Wizard : Enemy
 
     private IEnumerator MeleeAttackCoroutine()
     {
+        // Attack2: colpo ravvicinato, poi opzionalmente si teletrasporta per allontanarsi.
         if(isDying || playerTransform == null)
             yield break;
 
@@ -308,6 +322,7 @@ public class Wizard : Enemy
 
     private void DamagePlayerIfNear(float radius)
     {
+        // Usato da entrambi gli attacchi: applica danno e knockback solo se il player e' nel raggio.
         if(player == null || playerTransform == null)
             return;
 
@@ -330,6 +345,7 @@ public class Wizard : Enemy
 
     private IEnumerator KnockbackPlayer(Rigidbody2D playerRb)
     {
+        // Versione locale del knockback, duplicata perche' quella di Enemy oggi e' privata.
         if(playerTransform == null)
             yield break;
 
@@ -346,6 +362,7 @@ public class Wizard : Enemy
 
     private void SummonEnemies()
     {
+        // Instanzia i prefab sotto Enemy_AstarPath e passa subito il target ai componenti AI.
         if(enemyPrefabs == null || enemyPrefabs.Length == 0)
             return;
 
@@ -385,6 +402,7 @@ public class Wizard : Enemy
 
     private Transform FindEnemyAstarPathParent()
     {
+        // Cerca una sola volta il contenitore di scena usato per organizzare i nemici evocati.
         if(enemyAstarPathParent != null)
             return enemyAstarPathParent;
 
@@ -406,6 +424,7 @@ public class Wizard : Enemy
 
     private Vector3 GetSummonPosition(int index)
     {
+        // Preferisce gli spawn point assegnati; se mancano, usa una posizione casuale attorno al wizard.
         if(summonPoints != null && summonPoints.Length > 0)
         {
             Transform point = summonPoints[index % summonPoints.Length];
@@ -422,6 +441,7 @@ public class Wizard : Enemy
 
     private void RemoveMissingSummonedEnemies()
     {
+        // Pulisce la lista quando un nemico evocato e' stato distrutto.
         for(int i = summonedEnemies.Count - 1; i >= 0; i--)
         {
             if(summonedEnemies[i] == null)
@@ -431,6 +451,7 @@ public class Wizard : Enemy
 
     public override IEnumerator HurtCoroutine(float danno)
     {
+        // Prima consuma lo shield, poi la vita. L'animazione Hit ha un cooldown anti-spam.
         if(isDying)
             yield break;
 
@@ -484,6 +505,7 @@ public class Wizard : Enemy
 
     private void RegenerateShield()
     {
+        // Lo shield torna solo dopo un periodo senza danni, e se richiesto quando il player e' lontano.
         if(shieldMassimo <= 0f || shield >= shieldMassimo)
             return;
 
@@ -507,6 +529,7 @@ public class Wizard : Enemy
 
     private IEnumerator TeleportCoroutine()
     {
+        // Blocca azioni e movimento, svanisce, sposta il wizard, poi forza una piccola pausa idle.
         if(isTeleporting || isDying)
             yield break;
 
@@ -541,6 +564,7 @@ public class Wizard : Enemy
 
     private Vector3 FindTeleportPosition()
     {
+        // Sceglie prima tra i punti configurati; se non trova candidati validi, prova intorno al player.
         if(teleportPoints != null && teleportPoints.Length > 0)
         {
             List<Vector3> candidatePositions = new List<Vector3>();
@@ -610,6 +634,7 @@ public class Wizard : Enemy
 
     private bool IsTeleportPositionFree(Vector3 position)
     {
+        // Se non sono stati impostati layer bloccanti, ogni posizione e' considerata valida.
         if(teleportBlockedLayers.value == 0)
             return true;
 
@@ -618,6 +643,7 @@ public class Wizard : Enemy
 
     private bool IsFarEnoughFromPlayer(Vector3 position)
     {
+        // Evita teleport troppo vicini al player.
         if(playerTransform == null)
             return true;
 
@@ -626,6 +652,7 @@ public class Wizard : Enemy
 
     private bool IsSameAsLastTeleport(Vector3 position)
     {
+        // Riduce il rischio di vedere il wizard comparire sempre nello stesso punto.
         if(!hasLastTeleportPosition)
             return false;
 
@@ -634,6 +661,7 @@ public class Wizard : Enemy
 
     private Vector3 GetRandomOffset(float radius)
     {
+        // Offset 2D riusato da spawn e teleport point per non essere troppo prevedibili.
         if(radius <= 0f)
             return Vector3.zero;
 
@@ -642,6 +670,7 @@ public class Wizard : Enemy
 
     private IEnumerator DieCoroutine()
     {
+        // Morte del boss: ferma tutto, lancia animazione/audio e distrugge l'oggetto.
         if(isDying)
             yield break;
 
@@ -664,6 +693,7 @@ public class Wizard : Enemy
 
     private void StopMovement()
     {
+        // Spegne sia la fisica 2D sia il movimento A* quando il wizard deve restare fermo.
         if(rb != null)
             rb.velocity = Vector2.zero;
 
@@ -673,6 +703,7 @@ public class Wizard : Enemy
 
     private void UpdateLifeBar()
     {
+        // Aggiorna sia la LifeBar custom sia l'Image legacy ereditata da Enemy, se presenti.
         if(lifeBar != null)
             lifeBar.UpdateLifeBar(vita, vitaMassima);
 
@@ -682,6 +713,7 @@ public class Wizard : Enemy
 
     private void UpdateShieldBar()
     {
+        // La slider dello shield lavora in percentuale 0-1.
         if(shieldSlider != null)
             shieldSlider.value = shieldMassimo <= 0f ? 0f : shield / shieldMassimo;
     }
@@ -701,6 +733,7 @@ public class Wizard : Enemy
 
     private void DrawDistanceGizmos()
     {
+        // Mostra solo i range principali: melee, danno summon, fuga e area di evocazione.
         if(!drawDistanceGizmos)
             return;
 
