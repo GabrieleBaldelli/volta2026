@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e675b69bfb224a09b119e958754a5c0, type: 3}
   m_Name: Faith Ring
   m_EditorClassIdentifier: 
-  itemName: Faith Ring
-  itemDescription: 'Do you believe in God...? '
+  Name: Faith Ring
+  Description: Do you believe in God...?
+  price: 0
   icon: {fileID: 0}

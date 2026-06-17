@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e675b69bfb224a09b119e958754a5c0, type: 3}
   m_Name: Nokia 3310
   m_EditorClassIdentifier: 
-  itemName: Nokia 3310
-  itemDescription: Do you need to call someone....? ( consumable )
+  Name: 
+  Description: Do you need to call SomeOne...?
+  price: 0
   icon: {fileID: 0}

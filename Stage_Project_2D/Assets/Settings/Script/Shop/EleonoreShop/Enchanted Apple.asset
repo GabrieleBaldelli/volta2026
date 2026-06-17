@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e675b69bfb224a09b119e958754a5c0, type: 3}
   m_Name: Enchanted Apple
   m_EditorClassIdentifier: 
-  itemName: Encahnted Apple
-  itemDescription: Have you ever played Minecraft...? ( consumable )
+  Name: Enchanted Apple
+  Description: Do you ever played Minecraft...?
+  price: 0
   icon: {fileID: 0}
