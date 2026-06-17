@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-public class PriceCalculator : MonoBehaviour
+public class PriceCalculator : MonoBehaviour 
 {
     [Header("Prezzi")]
     public TMP_Text priceText1;
