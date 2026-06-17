@@ -6,68 +6,99 @@ using TMPro;
 
 public class PriceCalculator : MonoBehaviour 
 {
+    [System.Serializable]
+    private class Artefact
+    {
+        public Toggle artefactToggle;
+        public TMP_Text priceText;
+    }
+
     [Header("Prezzi")]
-    public TMP_Text priceText1;
-    public TMP_Text priceText2;
     public TMP_Text totalText;
 
     [Header("Artefacts")]
-    public Toggle Artefact1;
-    public Toggle Artefact2;
+    [SerializeField] private Artefact[] artefacts;
 
-    private float price1;
-    private float price2;
     private float total = 0;
-
-    private bool CanChangePrice1 = false;
-    private bool CanChangePrice2 = false;
 
     void Start()
     {
-        Artefact1.onValueChanged.AddListener(OnToggleChanged);
-        Artefact2.onValueChanged.AddListener(OnToggleChanged);
-
-        price1 = GetPrice(priceText1.text);
-        price2 = GetPrice(priceText2.text);
+        InitializeArtefacts();
+        UpdateTotal();
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        if( Artefact1.gameObject.GetComponent<Toggle>().isOn && !CanChangePrice1)
-        {
-            total += price1;
-            CanChangePrice1 = true;
-        }    
-        else if (CanChangePrice1)
-        {
-            total -= price1;
-            CanChangePrice1 = false;
-        }
+        if(artefacts == null)
+            return;
 
-        if( Artefact2.gameObject.GetComponent<Toggle>().isOn && !CanChangePrice2) 
+        foreach(Artefact artefact in artefacts)
         {
-            total += price2;
-            CanChangePrice2 = true;
-        }    
-        else if (CanChangePrice2)
+            if(artefact == null || artefact.artefactToggle == null)
+                continue;
+
+            artefact.artefactToggle.onValueChanged.RemoveListener(OnArtefactToggleChanged);
+        }
+    }
+
+    private void InitializeArtefacts()
+    {
+        if(artefacts == null)
+            return;
+
+        foreach(Artefact artefact in artefacts)
         {
-            total -= price2;
-            CanChangePrice2 = false;
+            if(artefact == null)
+                continue;
+
+            if(artefact.artefactToggle != null)
+                artefact.artefactToggle.onValueChanged.AddListener(OnArtefactToggleChanged);
         }
     }
 
     private float GetPrice(string text)
     {
-        float.TryParse(text, 
+        if(string.IsNullOrWhiteSpace(text))
+            return 0;
+
+        text = text.Replace("coin", "").Replace("Coin", "").Trim();
+
+        if(float.TryParse(text, 
             System.Globalization.NumberStyles.Float,
             System.Globalization.CultureInfo.InvariantCulture,
-            out float value);
+            out float value))
+            return value;
+
+        float.TryParse(text, 
+            System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.CurrentCulture,
+            out value);
 
         return value;
     }
 
-    private void OnToggleChanged(bool value)
+    private void OnArtefactToggleChanged(bool value)
     {
-        totalText.text = total.ToString("0.00") + " coin";
+        UpdateTotal();
+    }
+
+    private void UpdateTotal()
+    {
+        total = 0;
+
+        if(artefacts != null)
+        {
+            foreach(Artefact artefact in artefacts)
+            {
+                if(artefact == null || artefact.artefactToggle == null || artefact.priceText == null)
+                    continue;
+
+                if(artefact.artefactToggle.isOn)
+                    total += GetPrice(artefact.priceText.text);
+            }
+        }
+
+        if(totalText != null)
+            totalText.text = total.ToString("0.00") + " coin";
     }
 }
