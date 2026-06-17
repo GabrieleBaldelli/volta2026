@@ -8,14 +8,21 @@ using Pathfinding;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Stats Player")]
-    public const float vitaMassima = 100f;
-    private float vita = vitaMassima;
+    public const float vitaMassimaIniziale = 100f;
+    public float vitaMassima = vitaMassimaIniziale;
+    private float vita = vitaMassimaIniziale;
 
     public float Vita 
     {
         get { return vita; }
         set { vita = value; }
     }
+
+    public float VitaMassima
+    {
+        get { return vitaMassima; }
+    }
+
     public float danno = 20f;
     public float speed = 5f;
     public float dashSpeed = 10f;
@@ -99,6 +106,21 @@ public class PlayerMovement : MonoBehaviour
         // Se il player ha il componente degli upgrade, aggiunge i punti da spendere.
         if(upgradeStats != null)
             upgradeStats.upgradePoints += points;
+    }
+
+    public void IncreaseMaxHealth(float amount, bool refillHealth)
+    {
+        vitaMassima += amount;
+
+        if(refillHealth)
+            vita = vitaMassima;
+        else
+            vita = Mathf.Min(vita, vitaMassima);
+
+        LifeBar lifeBar = GetComponentInChildren<LifeBar>();
+
+        if(lifeBar != null)
+            lifeBar.UpdateLifeBar(vita, vitaMassima);
     }
 
 

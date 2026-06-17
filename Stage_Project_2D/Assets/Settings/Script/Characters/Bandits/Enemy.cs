@@ -371,6 +371,7 @@ public class Enemy : MonoBehaviour
             IsHurting = false;
             GiveXPOnce();
             playerScript.CoinSetGet += coin;
+            Debug.Log(playerScript.CoinSetGet);
 
 
             if(aiPath != null)
