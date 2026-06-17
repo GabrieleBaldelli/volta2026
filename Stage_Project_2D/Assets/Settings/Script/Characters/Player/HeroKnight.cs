@@ -654,6 +654,8 @@ public class PlayerMovement : MonoBehaviour
 
         yield return new WaitForSeconds(1f);
 
+        ResetStats();
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         IsDying = false;
@@ -668,7 +670,9 @@ public class PlayerMovement : MonoBehaviour
             livelloAttuale = 1;
             LivelloSuccessivo = 1f;
             PlayerUpgradeStats upgradeStats = GetComponent<PlayerUpgradeStats>();
-            upgradeStats.upgradePoints = 0;
+
+            if(upgradeStats != null)
+                upgradeStats.ResetProgress();
 
         }
     }

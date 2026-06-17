@@ -13,6 +13,7 @@ public class ShieldBar : MonoBehaviour
 {
     public float maxShield = 5f;
     private float shield;
+    private bool hasCustomShieldValue;
 
     public float shieldSetGet
     {
@@ -22,7 +23,7 @@ public class ShieldBar : MonoBehaviour
         }
         set
         {
-            shield = value;
+            SetShield(value);
         }
     }
 
@@ -33,7 +34,12 @@ public class ShieldBar : MonoBehaviour
     public void Start()
     {
         playerScript = GetComponentInParent<PlayerMovement>();
-        shield = maxShield;
+
+        if(hasCustomShieldValue)
+            shield = Mathf.Clamp(shield, 0f, maxShield);
+        else
+            shield = maxShield;
+
         UpdateShieldVisual();
     }
 
@@ -80,6 +86,13 @@ public class ShieldBar : MonoBehaviour
             shield = Mathf.Min(shield, maxShield);
         }
 
+        UpdateShieldVisual();
+    }
+
+    public void SetShield(float value)
+    {
+        shield = Mathf.Clamp(value, 0f, maxShield);
+        hasCustomShieldValue = true;
         UpdateShieldVisual();
     }
 

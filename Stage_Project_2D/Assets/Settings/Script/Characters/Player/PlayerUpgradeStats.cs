@@ -2,6 +2,14 @@ using UnityEngine;
 
 public class PlayerUpgradeStats : MonoBehaviour
 {
+    private static bool hasSavedProgress;
+    private static int savedUpgradePoints;
+    private static int savedSwordLevel;
+    private static int savedShieldLevel;
+    private static float savedHealth = PlayerMovement.vitaMassima;
+    private static float savedCurrentShield;
+    private bool saveProgressOnDisable = true;
+
     [Header("References")]
     // Riferimento al player: serve per modificare danno e leggere livello/XP.
     public PlayerMovement player;
@@ -46,6 +54,14 @@ public class PlayerUpgradeStats : MonoBehaviour
 
         if(shieldBar == null)
             shieldBar = GetComponentInChildren<ShieldBar>();
+
+        LoadProgress();
+    }
+
+    private void OnDisable()
+    {
+        if(Application.isPlaying && saveProgressOnDisable)
+            SaveProgress();
     }
 
     public bool UpgradeSword()
@@ -58,6 +74,7 @@ public class PlayerUpgradeStats : MonoBehaviour
         upgradePoints--;
         swordLevel++;
         player.danno += swordDamageIncrease;
+        SaveProgress();
         return true;
     }
 
@@ -71,7 +88,69 @@ public class PlayerUpgradeStats : MonoBehaviour
         upgradePoints--;
         shieldLevel++;
         shieldBar.IncreaseMaxShield(shieldMaxIncrease, true);
+        SaveProgress();
         return true;
+    }
+
+    public void SaveProgress()
+    {
+        savedUpgradePoints = upgradePoints;
+        savedSwordLevel = swordLevel;
+        savedShieldLevel = shieldLevel;
+
+        if(player != null)
+            savedHealth = player.Vita;
+
+        if(shieldBar != null)
+            savedCurrentShield = shieldBar.shieldSetGet;
+
+        hasSavedProgress = true;
+    }
+
+    public void ResetProgress()
+    {
+        upgradePoints = 0;
+        swordLevel = 0;
+        shieldLevel = 0;
+
+        savedUpgradePoints = 0;
+        savedSwordLevel = 0;
+        savedShieldLevel = 0;
+        savedHealth = PlayerMovement.vitaMassima;
+        savedCurrentShield = 0f;
+        hasSavedProgress = false;
+        saveProgressOnDisable = false;
+    }
+
+    private void LoadProgress()
+    {
+        if(!Application.isPlaying || !hasSavedProgress)
+            return;
+
+        upgradePoints = savedUpgradePoints;
+        swordLevel = savedSwordLevel;
+        shieldLevel = savedShieldLevel;
+
+        if(player != null)
+        {
+            player.danno += swordLevel * swordDamageIncrease;
+            player.Vita = Mathf.Clamp(savedHealth, 0f, PlayerMovement.vitaMassima);
+            UpdatePlayerLifeBar();
+        }
+
+        if(shieldBar != null)
+        {
+            shieldBar.IncreaseMaxShield(shieldLevel * shieldMaxIncrease, true);
+            shieldBar.SetShield(savedCurrentShield);
+        }
+    }
+
+    private void UpdatePlayerLifeBar()
+    {
+        LifeBar lifeBar = GetComponentInChildren<LifeBar>();
+
+        if(lifeBar != null && player != null)
+            lifeBar.UpdateLifeBar(player.Vita, PlayerMovement.vitaMassima);
     }
 
     private bool CanUpgrade(int currentLevel, int maxLevel)
