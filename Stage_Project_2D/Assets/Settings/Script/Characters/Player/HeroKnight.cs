@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
 
     public int CoinSetGet
     {
-        get {return xp;}
+        get {return coin;}
         set { coin = value;}
     }
 
