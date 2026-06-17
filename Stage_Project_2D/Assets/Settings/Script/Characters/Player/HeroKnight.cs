@@ -22,6 +22,15 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
 
+    private int coin;
+
+    public int CoinSetGet
+    {
+        get {return xp;}
+        set { coin = value;}
+    }
+
+
     // XP accumulata dal player uccidendo i nemici.
     private float xp;
 

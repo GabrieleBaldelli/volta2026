@@ -21,6 +21,8 @@ public class Enemy : MonoBehaviour
 
     // XP data al player quando questo nemico muore.
     public float xp = 100f;
+
+    public int coin = 1;
     
     public float danno = 10f;
 
@@ -344,6 +346,7 @@ public class Enemy : MonoBehaviour
         // Il nemico si ferma mentre prende danno, cosi' non insegue durante l'hit reaction.
         IsHurting = true;
 
+        playerScript = player.GetComponent<PlayerMovement>();
         Transform lifeBarTransform = transform.Find("Canvas/Life_Bar");
         LifeBar lifebarScript = null;
 
@@ -367,6 +370,8 @@ public class Enemy : MonoBehaviour
             IsAttacking = false;
             IsHurting = false;
             GiveXPOnce();
+            playerScript.CoinSetGet += coin;
+
 
             if(aiPath != null)
                 aiPath.canMove = false;
