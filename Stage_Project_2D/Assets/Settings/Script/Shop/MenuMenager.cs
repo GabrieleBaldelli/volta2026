@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 
-public class PriceCalculator : MonoBehaviour 
+public class MenuMenager : MonoBehaviour 
 {
     [System.Serializable]
     private class Artefact

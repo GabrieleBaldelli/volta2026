@@ -15365,7 +15365,7 @@ GameObject:
   - component: {fileID: 805470624}
   - component: {fileID: 805470623}
   m_Layer: 7
-  m_Name: Artefact 3
+  m_Name: Item 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33570,7 +33570,7 @@ GameObject:
   - component: {fileID: 1659995460}
   - component: {fileID: 1659995459}
   m_Layer: 7
-  m_Name: Artefact 1
+  m_Name: Item 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39098,7 +39098,7 @@ GameObject:
   - component: {fileID: 1927335508}
   - component: {fileID: 1927335507}
   m_Layer: 7
-  m_Name: Artefact 2
+  m_Name: Item  2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

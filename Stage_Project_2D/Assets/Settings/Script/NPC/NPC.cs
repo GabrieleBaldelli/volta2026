@@ -83,8 +83,8 @@ public class NPC : MonoBehaviour, Interactable
         {
             if(Shop != null)
                 Shop.gameObject.SetActive(true);
-            else if (Shop.gameObject.activeSelf == false)
-                EndDialogue();
+
+            EndDialogue();
         }
     }
 
