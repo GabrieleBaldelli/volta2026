@@ -33,6 +33,18 @@ public class NPC : MonoBehaviour, Interactable
 
         if(isDialogueActive)
         {
+            if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKey(KeyCode.G))
+            {
+                StopDialogue(true);
+                do
+                {
+                    if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.G))
+                    {
+                        StopDialogue(false);
+                    }
+                } 
+                while (dialoguePanel.activeSelf);
+            }
             NextLine();
         }
         else
@@ -71,8 +83,8 @@ public class NPC : MonoBehaviour, Interactable
         {
             if(Shop != null)
                 Shop.gameObject.SetActive(true);
-                
-            EndDialogue();
+            else if (Shop.gameObject.activeSelf == false)
+                EndDialogue();
         }
     }
 
@@ -102,5 +114,17 @@ public class NPC : MonoBehaviour, Interactable
         isDialogueActive = false;
         dialogueText.SetText("");
         dialoguePanel.SetActive(false);
+    }
+
+    public void StopDialogue(bool stop)
+    {
+        if(stop)
+            StopAllCoroutines();
+        else
+            StartCoroutine(TypeLine());
+
+        dialoguePanel.SetActive(!stop);
+        isTyping = !stop;
+        isDialogueActive = !stop;
     }
 }
