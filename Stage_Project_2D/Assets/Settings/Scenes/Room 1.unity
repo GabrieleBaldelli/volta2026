@@ -7015,7 +7015,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &300400001
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7117,9 +7117,11 @@ MonoBehaviour:
   upgradePointsText: {fileID: 300403003}
   swordStatsText: {fileID: 300404003}
   shieldStatsText: {fileID: 300405003}
+  healthStatsText: {fileID: 0}
   characterStatsText: {fileID: 0}
   upgradeSwordButton: {fileID: 300410004}
   upgradeShieldButton: {fileID: 300420004}
+  upgradeHealthButton: {fileID: 0}
   upgradeSpeedButton: {fileID: 300430004}
 --- !u!1 &300401000
 GameObject:
@@ -11235,6 +11237,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalText: {fileID: 582758071}
+  playerCoinText: {fileID: 0}
+  buyButton: {fileID: 0}
+  player: {fileID: 0}
   artefacts: []
 --- !u!1001 &585051873
 PrefabInstance:
@@ -17201,6 +17206,9 @@ MonoBehaviour:
   shieldLevel: 0
   maxShieldLevel: 20
   shieldMaxIncrease: 0.5
+  healthLevel: 0
+  maxHealthLevel: 20
+  healthMaxIncrease: 5
 --- !u!1 &936588052
 GameObject:
   m_ObjectHideFlags: 0
@@ -20765,7 +20773,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1122732401
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34565,7 +34573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1715636709
 RectTransform:
   m_ObjectHideFlags: 0

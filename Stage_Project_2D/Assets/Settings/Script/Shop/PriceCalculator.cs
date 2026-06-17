@@ -15,19 +15,52 @@ public class PriceCalculator : MonoBehaviour
 
     [Header("Prezzi")]
     public TMP_Text totalText;
+    public TMP_Text playerCoinText;
+    public Button buyButton;
+
+    [Header("Player")]
+    [SerializeField] private PlayerMovement player;
 
     [Header("Artefacts")]
     [SerializeField] private Artefact[] artefacts;
 
     private float total = 0;
 
-    void Start()
+    private void OnEnable()
     {
-        InitializeArtefacts();
+        FindMissingReferences();
+        BuildArtefactsIfEmpty();
+        AddToggleListeners();
         UpdateTotal();
+        UpdatePlayerCoinText();
+    }
+
+    private void OnDisable()
+    {
+        RemoveToggleListeners();
     }
 
     private void OnDestroy()
+    {
+        RemoveToggleListeners();
+    }
+
+    private void AddToggleListeners()
+    {
+        if(artefacts == null)
+            return;
+
+        foreach(Artefact artefact in artefacts)
+        {
+            if(artefact == null || artefact.artefactToggle == null)
+                continue;
+
+            artefact.artefactToggle.onValueChanged.RemoveListener(OnArtefactToggleChanged);
+            artefact.artefactToggle.onValueChanged.AddListener(OnArtefactToggleChanged);
+        }
+    }
+
+    private void RemoveToggleListeners()
     {
         if(artefacts == null)
             return;
@@ -41,19 +74,123 @@ public class PriceCalculator : MonoBehaviour
         }
     }
 
-    private void InitializeArtefacts()
+    private void OnArtefactToggleChanged(bool value)
     {
-        if(artefacts == null)
+        UpdateTotal();
+    }
+
+    private void FindMissingReferences()
+    {
+        if(totalText == null)
+            totalText = GetComponent<TMP_Text>();
+
+        if(playerCoinText == null)
+        {
+            foreach(TMP_Text text in FindObjectsOfType<TMP_Text>())
+            {
+                if(text.transform.parent != null && text.transform.parent.name == "Player Coin" && text.gameObject.name == "Ammount")
+                {
+                    playerCoinText = text;
+                    break;
+                }
+            }
+        }
+
+        if(buyButton == null)
+        {
+            foreach(Button button in FindObjectsOfType<Button>())
+            {
+                if(button.gameObject.name == "BuyButton")
+                {
+                    buyButton = button;
+                    break;
+                }
+            }
+        }
+
+        PlayerMovement[] players = FindObjectsOfType<PlayerMovement>();
+        foreach(PlayerMovement foundPlayer in players)
+        {
+            if(player == null || foundPlayer.CoinSetGet > player.CoinSetGet)
+                player = foundPlayer;
+        }
+    }
+
+    private void BuildArtefactsIfEmpty()
+    {
+        if(HasValidArtefacts())
             return;
+
+        Toggle[] toggles = FindObjectsOfType<Toggle>();
+        TMP_Text[] texts = FindObjectsOfType<TMP_Text>();
+        List<Artefact> foundArtefacts = new List<Artefact>();
+
+        foreach(Toggle toggle in toggles)
+        {
+            int index = GetLastNumber(toggle.gameObject.name);
+
+            if(index < 0)
+                continue;
+
+            TMP_Text priceText = FindPriceText(texts, index);
+
+            if(priceText == null)
+                continue;
+
+            foundArtefacts.Add(new Artefact
+            {
+                artefactToggle = toggle,
+                priceText = priceText
+            });
+        }
+
+        artefacts = foundArtefacts.ToArray();
+    }
+
+    private bool HasValidArtefacts()
+    {
+        if(artefacts == null || artefacts.Length == 0)
+            return false;
 
         foreach(Artefact artefact in artefacts)
         {
-            if(artefact == null)
+            if(artefact == null || artefact.artefactToggle == null || artefact.priceText == null)
+                return false;
+        }
+
+        return true;
+    }
+
+    private TMP_Text FindPriceText(TMP_Text[] texts, int index)
+    {
+        foreach(TMP_Text text in texts)
+        {
+            if(!text.gameObject.name.Contains("Price"))
                 continue;
 
-            if(artefact.artefactToggle != null)
-                artefact.artefactToggle.onValueChanged.AddListener(OnArtefactToggleChanged);
+            if(GetLastNumber(text.gameObject.name) == index)
+                return text;
         }
+
+        return null;
+    }
+
+    private int GetLastNumber(string text)
+    {
+        int number = -1;
+        int multiplier = 1;
+
+        for(int i = text.Length - 1; i >= 0; i--)
+        {
+            if(!char.IsDigit(text[i]))
+                break;
+
+            number = number < 0 ? 0 : number;
+            number += (text[i] - '0') * multiplier;
+            multiplier *= 10;
+        }
+
+        return number;
     }
 
     private float GetPrice(string text)
@@ -77,9 +214,16 @@ public class PriceCalculator : MonoBehaviour
         return value;
     }
 
-    private void OnArtefactToggleChanged(bool value)
+    private void UpdatePlayerCoinText()
     {
-        UpdateTotal();
+        if(player != null && playerCoinText != null)
+            playerCoinText.text = player.CoinSetGet.ToString() + " coin";
+    }
+
+    private void UpdateBuyButton()
+    {
+        if(buyButton != null)
+            buyButton.interactable = player != null && total > 0 && player.CoinSetGet >= total;
     }
 
     private void UpdateTotal()
@@ -100,5 +244,8 @@ public class PriceCalculator : MonoBehaviour
 
         if(totalText != null)
             totalText.text = total.ToString("0.00") + " coin";
+
+        UpdatePlayerCoinText();
+        UpdateBuyButton();
     }
 }
