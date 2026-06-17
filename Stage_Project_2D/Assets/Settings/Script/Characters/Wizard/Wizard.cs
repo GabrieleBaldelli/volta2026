@@ -120,6 +120,18 @@ public class Wizard : Enemy
 
     protected override void Update()
     {
+        float distance = Vector2.Distance(transform.position, PlayerTransform.position);
+
+        if(distance > chaseDistance * 1.5f)
+        {
+            PlayIdleAnimation();
+            transform.Find("Life_Canvas").gameObject.SetActive(false);
+            return;
+        }
+        else
+        {
+            transform.Find("Life_Canvas").gameObject.SetActive(true);
+        }
         // Ciclo decisionale del wizard: idle, melee, teleport, summon o rigenerazione shield.
         if(IsDying)
             return;
@@ -136,7 +148,6 @@ public class Wizard : Enemy
         if(IsAttacking || IsHurting || isTeleporting)
             return;
 
-        float distance = Vector2.Distance(transform.position, PlayerTransform.position);
 
         // Il wizard guarda sempre il player, ma attacca o si muove solo se e' abbastanza vicino e se i cooldown lo permettono.
         FacePlayer();
@@ -185,16 +196,7 @@ public class Wizard : Enemy
             return;
         }
 
-        if(distance > chaseDistance * 1.5f)
-        {
-            PlayIdleAnimation();
-            transform.Find("Life_Canvas").gameObject.SetActive(false);
-            return;
-        }
-        else
-        {
-            transform.Find("Life_Canvas").gameObject.SetActive(true);
-        }
+        
     }
 
     private void FindBars()
