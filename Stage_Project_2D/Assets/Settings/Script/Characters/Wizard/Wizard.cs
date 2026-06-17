@@ -90,6 +90,7 @@ public class Wizard : Enemy
     private float nextSummonTime;
     private float nextMeleeTime;
     private float nextActionTime;
+    private float forceIdleUntilTime;
     private float lastHurtAnimationTime = -999f;
 
     private bool isTeleporting;
@@ -102,6 +103,7 @@ public class Wizard : Enemy
     protected override void Start()
     {
         // Setup iniziale: Enemy prepara componenti/player/vita; il wizard aggiunge barre, summon e shield.
+        xp = 500f;
         base.Start();
         FindBars();
         FindEnemyAstarPathParent();
@@ -139,18 +141,24 @@ public class Wizard : Enemy
         // Il wizard guarda sempre il player, ma attacca o si muove solo se e' abbastanza vicino e se i cooldown lo permettono.
         FacePlayer();
 
+        if(Time.time < forceIdleUntilTime)
+        {
+            PlayIdleAnimation();
+            return;
+        }
+
         if(Time.time < nextActionTime)
         {
-            animazioni.Idle();
+            PlayIdleAnimation();
             return;
         }
         
-        if(distance <= stopDistance)
+        if(distance <= nearAttackArea)
         {
             if(Time.time >= nextMeleeTime)
                 StartCoroutine(MeleeAttackCoroutine());
             else
-                animazioni.Idle();
+                PlayIdleAnimation();
 
             return;
         }
@@ -164,10 +172,12 @@ public class Wizard : Enemy
         if(distance <= chaseDistance)
         {
             if(Time.time >= nextSummonTime)
-                StartCoroutine(SummonAttackCoroutine());
-            else
-                animazioni.Idle();
+            {
+                SummonEnemies();
+                nextSummonTime = Time.time + summonCooldown;
+            }
 
+            PlayIdleAnimation();
             return;
         }
 
@@ -179,7 +189,7 @@ public class Wizard : Enemy
 
         if(distance > chaseDistance * 1.5f)
         {
-            animazioni.Idle();
+            PlayIdleAnimation();
             transform.Find("Life_Canvas").gameObject.SetActive(false);
             return;
         }
@@ -216,6 +226,23 @@ public class Wizard : Enemy
         }
     }
 
+    private void PlayIdleAnimation()
+    {
+        if(animazioni == null)
+            return;
+
+        animazioni.Idle();
+    }
+
+    private void ForceIdleAnimation()
+    {
+        if(animazioni == null)
+            return;
+
+        animazioni.ResetCurrentAnimation();
+        animazioni.Idle();
+    }
+
     private IEnumerator SummonAttackCoroutine()
     {
         // Attack1: resta fermo, aspetta il frame di impatto, danneggia vicino e poi evoca.
@@ -250,7 +277,7 @@ public class Wizard : Enemy
 
     private IEnumerator MeleeAttackCoroutine()
     {
-        // Attack2: colpo ravvicinato, poi opzionalmente si teletrasporta per allontanarsi.
+        // Attack2: colpo ravvicinato quando il player entra nella nearAttackArea.
         if(IsDying || PlayerTransform == null)
             yield break;
 
@@ -266,7 +293,7 @@ public class Wizard : Enemy
         yield return new WaitForSeconds(attackHitDelay);
 
         if(!IsDying)
-            DamagePlayerIfNear(stopDistance + 0.4f);
+            DamagePlayerIfNear(nearAttackArea);
 
         yield return new WaitForSeconds(Mathf.Max(0f, attackDuration - attackHitDelay));
 
@@ -274,6 +301,7 @@ public class Wizard : Enemy
 
         if(teleportAfterMeleeAttack && !IsDying)
         {
+            ForceIdleAnimation();
             StartCoroutine(TeleportCoroutine());
             yield break;
         }
@@ -480,7 +508,9 @@ public class Wizard : Enemy
 
         isTeleporting = false;
         nextActionTime = Time.time + idleDelayAfterTeleport;
-        animazioni.Idle();
+        forceIdleUntilTime = nextActionTime;
+
+        ForceIdleAnimation();
     }
 
     private Vector3 FindTeleportPosition()
@@ -600,6 +630,7 @@ public class Wizard : Enemy
         IsHurting = false;
         isTeleporting = false;
 
+        GiveXPOnce();
         StopMovement();
         PlayDeathSound();
 

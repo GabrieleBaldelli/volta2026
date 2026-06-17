@@ -106,6 +106,14 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(!Application.isPlaying)
             return;
 
+        if(Time.timeScale == 0f)
+        {
+            if(isOpen)
+                SetMenuOpen(false);
+
+            return;
+        }
+
         bool shouldBeOpen = Input.GetKey(menuKey);
 
         if(shouldBeOpen != isOpen)

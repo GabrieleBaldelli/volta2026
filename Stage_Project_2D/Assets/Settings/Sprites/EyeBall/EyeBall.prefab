@@ -585,7 +585,7 @@ MonoBehaviour:
   xp: 0
   danno: 10
   stopDistance: 2
-  chaseDistance: 5
+  chaseDistance: 8
   attackCooldown: 1
   attackDuration: 1
   attackHitDelay: 0.25
@@ -638,7 +638,7 @@ MonoBehaviour:
   radius: 0.5
   height: 2
   canMove: 1
-  maxSpeed: 4
+  maxSpeed: 6
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2
