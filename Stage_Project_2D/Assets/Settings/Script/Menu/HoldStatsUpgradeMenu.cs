@@ -17,16 +17,18 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
     public Text upgradePointsText;
     public Text swordStatsText;
     public Text shieldStatsText;
+    public Text healthStatsText;
     public Text characterStatsText;
 
     [Header("Buttons")]
     public Button upgradeSwordButton;
     public Button upgradeShieldButton;
+    public Button upgradeHealthButton;
     public Button upgradeSpeedButton;
 
     private bool isOpen;
     private static HoldStatsUpgradeMenu instance;
-    private static readonly Vector2 PanelSize = new Vector2(360f, 300f);
+    private static readonly Vector2 PanelSize = new Vector2(360f, 370f);
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void InitializeOnFirstScene()
@@ -145,6 +147,15 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         }
     }
 
+    public void UpgradeHealth()
+    {
+        if(playerStats != null)
+        {
+            playerStats.UpgradeHealth();
+            Refresh();
+        }
+    }
+
     public void UpgradeSpeed()
     {
         HideSpeedUpgradeButton();
@@ -193,6 +204,14 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
                 "Resistenza: " + playerStats.ShieldMax;
         }
 
+        if(healthStatsText != null)
+        {
+            healthStatsText.text =
+                "Vita\n" +
+                "Livello: " + playerStats.healthLevel + "/" + playerStats.maxHealthLevel + "\n" +
+                "PV: " + Mathf.CeilToInt(playerStats.HealthCurrent);
+        }
+
         if(characterStatsText != null)
         {
             characterStatsText.text =
@@ -202,6 +221,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         SetButtonInteractable(upgradeSwordButton, playerStats.upgradePoints > 0 && playerStats.swordLevel < playerStats.maxSwordLevel);
         SetButtonInteractable(upgradeShieldButton, playerStats.upgradePoints > 0 && playerStats.shieldLevel < playerStats.maxShieldLevel);
+        SetButtonInteractable(upgradeHealthButton, playerStats.upgradePoints > 0 && playerStats.healthLevel < playerStats.maxHealthLevel);
         HideSpeedUpgradeButton();
     }
 
@@ -259,8 +279,13 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         upgradeShieldButton = CreateButton("UpgradeShieldButton", menuPanel.transform, defaultFont, "Scudo +", new Vector2(-18f, -144f));
         upgradeShieldButton.onClick.AddListener(UpgradeShield);
 
+        healthStatsText = CreateText("HealthStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
+        SetRect(healthStatsText.rectTransform, new Vector2(18f, -204f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
+        upgradeHealthButton = CreateButton("UpgradeHealthButton", menuPanel.transform, defaultFont, "Vita +", new Vector2(-18f, -214f));
+        upgradeHealthButton.onClick.AddListener(UpgradeHealth);
+
         characterStatsText = CreateText("CharacterStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
-        SetRect(characterStatsText.rectTransform, new Vector2(18f, -204f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
+        SetRect(characterStatsText.rectTransform, new Vector2(18f, -274f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
         Text hintText = CreateText("Hint", menuPanel.transform, defaultFont, "Tieni premuto G", 13, TextAnchor.MiddleCenter);
         hintText.color = new Color(0.8f, 0.84f, 0.9f, 1f);

@@ -6,7 +6,9 @@ public class PlayerUpgradeStats : MonoBehaviour
     private static int savedUpgradePoints;
     private static int savedSwordLevel;
     private static int savedShieldLevel;
-    private static float savedHealth = PlayerMovement.vitaMassima;
+    private static int savedHealthLevel;
+    private static float savedHealth = PlayerMovement.vitaMassimaIniziale;
+    private static float savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
     private static float savedCurrentShield;
     private bool saveProgressOnDisable = true;
 
@@ -38,10 +40,20 @@ public class PlayerUpgradeStats : MonoBehaviour
     // Quanto scudo massimo viene aggiunto a ogni upgrade.
     public float shieldMaxIncrease = 0.5f;
 
+    [Header("Health")]
+    // Livello e limite massimo del potenziamento della vita.
+    public int healthLevel = 0;
+    public int maxHealthLevel = 20;
+
+    // Quanta vita massima viene aggiunta a ogni upgrade.
+    public float healthMaxIncrease = 5f;
+
     // Valori letti dal menu upgrade per mostrare statistiche aggiornate.
     public float SwordDamage => player != null ? player.danno : 0f;
     public float MoveSpeed => player != null ? player.speed : 0f;
     public float ShieldMax => shieldBar != null ? shieldBar.maxShield : 0f;
+    public float HealthCurrent => player != null ? player.Vita : 0f;
+    public float HealthMax => player != null ? player.VitaMassima : 0f;
     public int PlayerLevel => player != null ? Mathf.FloorToInt(player.livello) : 0;
     public int CurrentXP => player != null ? Mathf.FloorToInt(player.XpAttuale) : 0;
     public int NextLevelXP => player != null ? Mathf.CeilToInt(player.XpProssimoLivello) : 0;
@@ -92,14 +104,32 @@ public class PlayerUpgradeStats : MonoBehaviour
         return true;
     }
 
+    public bool UpgradeHealth()
+    {
+        // Non potenzia se mancano punti, se la vita e' al massimo o se manca il player.
+        if(!CanUpgrade(healthLevel, maxHealthLevel) || player == null)
+            return false;
+
+        // Consuma un punto, aumenta il livello e aumenta la vita massima.
+        upgradePoints--;
+        healthLevel++;
+        player.IncreaseMaxHealth(healthMaxIncrease, true);
+        SaveProgress();
+        return true;
+    }
+
     public void SaveProgress()
     {
         savedUpgradePoints = upgradePoints;
         savedSwordLevel = swordLevel;
         savedShieldLevel = shieldLevel;
+        savedHealthLevel = healthLevel;
 
         if(player != null)
+        {
             savedHealth = player.Vita;
+            savedMaxHealth = player.VitaMassima;
+        }
 
         if(shieldBar != null)
             savedCurrentShield = shieldBar.shieldSetGet;
@@ -112,11 +142,14 @@ public class PlayerUpgradeStats : MonoBehaviour
         upgradePoints = 0;
         swordLevel = 0;
         shieldLevel = 0;
+        healthLevel = 0;
 
         savedUpgradePoints = 0;
         savedSwordLevel = 0;
         savedShieldLevel = 0;
-        savedHealth = PlayerMovement.vitaMassima;
+        savedHealthLevel = 0;
+        savedHealth = PlayerMovement.vitaMassimaIniziale;
+        savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
         savedCurrentShield = 0f;
         hasSavedProgress = false;
         saveProgressOnDisable = false;
@@ -130,11 +163,13 @@ public class PlayerUpgradeStats : MonoBehaviour
         upgradePoints = savedUpgradePoints;
         swordLevel = savedSwordLevel;
         shieldLevel = savedShieldLevel;
+        healthLevel = savedHealthLevel;
 
         if(player != null)
         {
             player.danno += swordLevel * swordDamageIncrease;
-            player.Vita = Mathf.Clamp(savedHealth, 0f, PlayerMovement.vitaMassima);
+            player.vitaMassima = savedMaxHealth;
+            player.Vita = Mathf.Clamp(savedHealth, 0f, player.VitaMassima);
             UpdatePlayerLifeBar();
         }
 
@@ -150,7 +185,7 @@ public class PlayerUpgradeStats : MonoBehaviour
         LifeBar lifeBar = GetComponentInChildren<LifeBar>();
 
         if(lifeBar != null && player != null)
-            lifeBar.UpdateLifeBar(player.Vita, PlayerMovement.vitaMassima);
+            lifeBar.UpdateLifeBar(player.Vita, player.VitaMassima);
     }
 
     private bool CanUpgrade(int currentLevel, int maxLevel)

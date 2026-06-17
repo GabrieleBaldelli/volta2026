@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
@@ -19,41 +17,29 @@ public class PriceCalculator : MonoBehaviour
     private float price2;
     private float total = 0;
 
-    private bool CanChangePrice1 = false;
-    private bool CanChangePrice2 = false;
-
-    void Start()
+    private void Start()
     {
-        Artefact1.onValueChanged.AddListener(OnToggleChanged);
-        Artefact2.onValueChanged.AddListener(OnToggleChanged);
+        AssignMissingToggles();
 
-        price1 = GetPrice(priceText1.text);
-        price2 = GetPrice(priceText2.text);
+        if(Artefact1 != null)
+            Artefact1.onValueChanged.AddListener(OnToggleChanged);
+
+        if(Artefact2 != null)
+            Artefact2.onValueChanged.AddListener(OnToggleChanged);
+
+        price1 = priceText1 != null ? GetPrice(priceText1.text) : 0f;
+        price2 = priceText2 != null ? GetPrice(priceText2.text) : 0f;
+
+        UpdateTotal();
     }
 
-    void Update()
+    private void OnDestroy()
     {
-        if( Artefact1.gameObject.GetComponent<Toggle>().isOn && !CanChangePrice1)
-        {
-            total += price1;
-            CanChangePrice1 = true;
-        }    
-        else if (CanChangePrice1)
-        {
-            total -= price1;
-            CanChangePrice1 = false;
-        }
+        if(Artefact1 != null)
+            Artefact1.onValueChanged.RemoveListener(OnToggleChanged);
 
-        if( Artefact2.gameObject.GetComponent<Toggle>().isOn && !CanChangePrice2) 
-        {
-            total += price2;
-            CanChangePrice2 = true;
-        }    
-        else if (CanChangePrice2)
-        {
-            total -= price2;
-            CanChangePrice2 = false;
-        }
+        if(Artefact2 != null)
+            Artefact2.onValueChanged.RemoveListener(OnToggleChanged);
     }
 
     private float GetPrice(string text)
@@ -68,6 +54,39 @@ public class PriceCalculator : MonoBehaviour
 
     private void OnToggleChanged(bool value)
     {
-        totalText.text = total.ToString("0.00") + " coin";
+        UpdateTotal();
+    }
+
+    private void UpdateTotal()
+    {
+        total = 0f;
+
+        if(Artefact1 != null && Artefact1.isOn)
+            total += price1;
+
+        if(Artefact2 != null && Artefact2.isOn)
+            total += price2;
+
+        if(totalText != null)
+            totalText.text = total.ToString("0.00") + " coin";
+    }
+
+    private void AssignMissingToggles()
+    {
+        if(Artefact1 != null && Artefact2 != null)
+            return;
+
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
+
+        if(parentCanvas == null)
+            return;
+
+        Toggle[] toggles = parentCanvas.GetComponentsInChildren<Toggle>(true);
+
+        if(Artefact1 == null && toggles.Length > 0)
+            Artefact1 = toggles[0];
+
+        if(Artefact2 == null && toggles.Length > 1)
+            Artefact2 = toggles[1];
     }
 }
