@@ -15004,6 +15004,12 @@ PrefabInstance:
       insertIndex: 2
       addedObject: {fileID: 933564150}
     - targetCorrespondingSourceObject: {fileID: 6323719953710832613, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 933564160}
+    - targetCorrespondingSourceObject: {fileID: 6323719953710832613, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+      insertIndex: 4
+      addedObject: {fileID: 933564159}
+    - targetCorrespondingSourceObject: {fileID: 6323719953710832613, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 933564151}
     - targetCorrespondingSourceObject: {fileID: 6323719953710832613, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
@@ -18943,6 +18949,48 @@ MonoBehaviour:
   healthLevel: 0
   maxHealthLevel: 20
   healthMaxIncrease: 5
+--- !u!114 &933564158 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9043920546160527475, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
+  m_PrefabInstance: {fileID: 707727399}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933564138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f5034bc83802944c9bca57c55e08978, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &933564159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933564138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8aa43997842543cabcbcc6c442717b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxEquippedSpells: 2
+  ownedSpells:
+  - {fileID: 11400000, guid: 8facc599db64946d18230e8bd9edd928, type: 2}
+  equippedSpells:
+  - {fileID: 11400000, guid: 8facc599db64946d18230e8bd9edd928, type: 2}
+--- !u!114 &933564160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933564138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61749e010d8ee45df8f0222a5ee0ea4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 933564158}
+  inventory: {fileID: 933564159}
 --- !u!1 &936588052
 GameObject:
   m_ObjectHideFlags: 0

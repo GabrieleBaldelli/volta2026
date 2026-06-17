@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7810ae31122f247bead6da3842e8c58a, type: 3}
   m_Name: Heal Attaccking
   m_EditorClassIdentifier: 
-  spellName: 
+  spellName: Blood Charm
   description: cura quando attacca
   price: 1
   icon: {fileID: 21300000, guid: a30e9a59a4ffb884489afda27a4945c3, type: 3}

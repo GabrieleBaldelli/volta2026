@@ -31,6 +31,7 @@ public class MenuMenager : MonoBehaviour
         FindMissingReferences();
         BuildArtefactsIfEmpty();
         AddToggleListeners();
+        AddBuyButtonListener();
         UpdateTotal();
         UpdatePlayerCoinText();
     }
@@ -38,11 +39,19 @@ public class MenuMenager : MonoBehaviour
     private void OnDisable()
     {
         RemoveToggleListeners();
+        RemoveBuyButtonListener();
     }
 
     private void OnDestroy()
     {
         RemoveToggleListeners();
+        RemoveBuyButtonListener();
+    }
+
+    private void Update()
+    {
+        UpdatePlayerCoinText();
+        UpdateBuyButton();
     }
 
     private void AddToggleListeners()
@@ -77,6 +86,21 @@ public class MenuMenager : MonoBehaviour
     private void OnArtefactToggleChanged(bool value)
     {
         UpdateTotal();
+    }
+
+    private void AddBuyButtonListener()
+    {
+        if(buyButton == null)
+            return;
+
+        buyButton.onClick.RemoveListener(BuySelectedArtefacts);
+        buyButton.onClick.AddListener(BuySelectedArtefacts);
+    }
+
+    private void RemoveBuyButtonListener()
+    {
+        if(buyButton != null)
+            buyButton.onClick.RemoveListener(BuySelectedArtefacts);
     }
 
     private void FindMissingReferences()
@@ -224,6 +248,17 @@ public class MenuMenager : MonoBehaviour
     {
         if(buyButton != null)
             buyButton.interactable = player != null && total > 0 && player.CoinSetGet >= total;
+    }
+
+    public void BuySelectedArtefacts()
+    {
+        UpdateTotal();
+
+        if(player == null || total <= 0 || player.CoinSetGet < total)
+            return;
+
+        player.CoinSetGet -= Mathf.RoundToInt(total);
+        UpdateTotal();
     }
 
     private void UpdateTotal()
