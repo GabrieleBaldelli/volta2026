@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class PlayerUpgradeStats : MonoBehaviour
 {
+    // Queste variabili statiche restano in memoria anche quando Unity cambia scena.
+    // Per questo le usiamo per portare gli upgrade dalla Room 1 alla Room 2.
+    // Non sono un salvataggio su file: se chiudi il gioco, questi valori si perdono.
     private static bool hasSavedProgress;
     private static int savedUpgradePoints;
     private static int savedSwordLevel;
@@ -10,6 +13,8 @@ public class PlayerUpgradeStats : MonoBehaviour
     private static float savedHealth = PlayerMovement.vitaMassimaIniziale;
     private static float savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
     private static float savedCurrentShield;
+
+    // Serve per evitare che OnDisable risalvi i dati subito dopo un reset per morte.
     private bool saveProgressOnDisable = true;
 
     [Header("References")]
@@ -67,11 +72,13 @@ public class PlayerUpgradeStats : MonoBehaviour
         if(shieldBar == null)
             shieldBar = GetComponentInChildren<ShieldBar>();
 
+        // Appena nasce il player in una nuova scena, ricarica gli upgrade salvati.
         LoadProgress();
     }
 
     private void OnDisable()
     {
+        // Quando il player viene disattivato durante un cambio scena, salva i progressi attuali.
         if(Application.isPlaying && saveProgressOnDisable)
             SaveProgress();
     }
@@ -120,30 +127,36 @@ public class PlayerUpgradeStats : MonoBehaviour
 
     public void SaveProgress()
     {
+        // Salva i livelli degli upgrade e i punti ancora non spesi.
         savedUpgradePoints = upgradePoints;
         savedSwordLevel = swordLevel;
         savedShieldLevel = shieldLevel;
         savedHealthLevel = healthLevel;
 
+        // Salva anche vita attuale e vita massima, cosi' il player mantiene i PV tra le room.
         if(player != null)
         {
             savedHealth = player.Vita;
             savedMaxHealth = player.VitaMassima;
         }
 
+        // Salva lo scudo attuale, non solo il suo livello massimo.
         if(shieldBar != null)
             savedCurrentShield = shieldBar.shieldSetGet;
 
+        // Da questo momento LoadProgress sa che esistono dati da ricaricare.
         hasSavedProgress = true;
     }
 
     public void ResetProgress()
     {
+        // Rimette a zero i valori dell'oggetto attuale.
         upgradePoints = 0;
         swordLevel = 0;
         shieldLevel = 0;
         healthLevel = 0;
 
+        // Cancella anche i valori statici usati per passare da una scena all'altra.
         savedUpgradePoints = 0;
         savedSwordLevel = 0;
         savedShieldLevel = 0;
@@ -152,14 +165,18 @@ public class PlayerUpgradeStats : MonoBehaviour
         savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
         savedCurrentShield = 0f;
         hasSavedProgress = false;
+
+        // Dopo un reset non vogliamo che OnDisable salvi di nuovo i vecchi valori.
         saveProgressOnDisable = false;
     }
 
     private void LoadProgress()
     {
+        // In editor o se non e' mai stato salvato nulla, non c'e' niente da ricaricare.
         if(!Application.isPlaying || !hasSavedProgress)
             return;
 
+        // Ripristina punti e livelli degli upgrade.
         upgradePoints = savedUpgradePoints;
         swordLevel = savedSwordLevel;
         shieldLevel = savedShieldLevel;
@@ -167,14 +184,18 @@ public class PlayerUpgradeStats : MonoBehaviour
 
         if(player != null)
         {
+            // Riapplica gli upgrade al nuovo player creato nella scena corrente.
             player.danno += swordLevel * swordDamageIncrease;
             player.vitaMassima = savedMaxHealth;
+
+            // Clamp evita che la vita caricata superi la nuova vita massima.
             player.Vita = Mathf.Clamp(savedHealth, 0f, player.VitaMassima);
             UpdatePlayerLifeBar();
         }
 
         if(shieldBar != null)
         {
+            // Riapplica prima lo scudo massimo, poi rimette lo scudo attuale salvato.
             shieldBar.IncreaseMaxShield(shieldLevel * shieldMaxIncrease, true);
             shieldBar.SetShield(savedCurrentShield);
         }

@@ -7,51 +7,69 @@ using UnityEngine.UI;
 public class HoldStatsUpgradeMenu : MonoBehaviour
 {
     [Header("Input")]
+    // Tasto da tenere premuto per aprire il menu upgrade durante il gioco.
     public KeyCode menuKey = KeyCode.G;
 
     [Header("References")]
+    // Pannello che contiene tutta la UI visibile del menu.
     public GameObject menuPanel;
+
+    // Script del player che contiene punti upgrade, livelli e statistiche.
     public PlayerUpgradeStats playerStats;
 
     [Header("Texts")]
+    // Testo in alto: mostra livello, punti disponibili e XP.
     public Text upgradePointsText;
+
+    // Testi delle singole statistiche mostrate nel menu.
     public Text swordStatsText;
     public Text shieldStatsText;
     public Text healthStatsText;
     public Text characterStatsText;
 
     [Header("Buttons")]
+    // Bottoni collegati agli upgrade. Ogni bottone chiama una funzione pubblica qui sotto.
     public Button upgradeSwordButton;
     public Button upgradeShieldButton;
     public Button upgradeHealthButton;
     public Button upgradeSpeedButton;
 
     private bool isOpen;
+
+    // Tiene traccia del menu gia' presente, cosi' non ne vengono creati due nella stessa scena.
     private static HoldStatsUpgradeMenu instance;
+
+    // Dimensione usata quando il menu viene creato automaticamente da codice.
     private static readonly Vector2 PanelSize = new Vector2(360f, 370f);
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void InitializeOnFirstScene()
     {
+        // Ogni volta che cambia scena controlla se esiste un menu upgrade.
         SceneManager.sceneLoaded += OnSceneLoaded;
         EnsureMenuExists();
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // Questo viene chiamato automaticamente dopo ogni cambio scena.
+        // Serve per far funzionare il menu sia in Room 1 sia in Room 2.
         EnsureMenuExists();
     }
 
     private static void EnsureMenuExists()
     {
+        // Se il menu e' gia' stato trovato o creato, non fa nulla.
         if(instance != null)
             return;
 
+        // Prima cerca un HoldStatsUpgradeMenu gia' inserito nella scena dall'Inspector.
         instance = FindObjectOfType<HoldStatsUpgradeMenu>();
 
         if(instance != null)
             return;
 
+        // Se la scena non ha il Canvas del menu, prova a crearlo usando il player trovato.
         PlayerMovement player = FindObjectOfType<PlayerMovement>();
 
         if(player == null)
@@ -61,6 +79,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         instance = menuObject.AddComponent<HoldStatsUpgradeMenu>();
         instance.playerStats = player.GetComponent<PlayerUpgradeStats>();
 
+        // Se al player manca PlayerUpgradeStats, lo aggiunge per evitare errori.
         if(instance.playerStats == null)
             instance.playerStats = player.gameObject.AddComponent<PlayerUpgradeStats>();
 
@@ -72,6 +91,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(instance == null)
             instance = this;
 
+        // Se il riferimento non e' stato collegato nella scena, cerca il player automaticamente.
         if(playerStats == null)
         {
             PlayerMovement player = FindObjectOfType<PlayerMovement>();
@@ -88,6 +108,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(menuPanel == null)
             CreateRuntimeUI();
 
+        // Il bottone velocita' non e' usato, quindi viene nascosto anche se esiste nel Canvas.
         HideSpeedUpgradeButton();
         AssignFallbackFonts();
 
@@ -99,6 +120,8 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void OnValidate()
     {
+        // OnValidate gira nell'Editor quando cambi valori nell'Inspector.
+        // Aiuta a tenere nascosto il bottone velocita' anche senza avviare il gioco.
         HideSpeedUpgradeButton();
         AssignFallbackFonts();
     }
@@ -108,6 +131,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(!Application.isPlaying)
             return;
 
+        // Se il gioco e' in pausa, chiude il menu upgrade e impedisce di aprirlo.
         if(Time.timeScale == 0f)
         {
             if(isOpen)
@@ -116,6 +140,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
             return;
         }
 
+        // Il menu resta aperto solo mentre tieni premuto il tasto scelto.
         bool shouldBeOpen = Input.GetKey(menuKey);
 
         if(shouldBeOpen != isOpen)
@@ -125,12 +150,15 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         if(isOpen)
         {
+            // Aggiorna i valori mentre il menu e' visibile, cosi' XP e punti restano corretti.
             Refresh();
         }
     }
 
     public void UpgradeSword()
     {
+        // Chiamata dal bottone della spada.
+        // Dopo l'upgrade aggiorna subito i testi del menu.
         if(playerStats != null)
         {
             playerStats.UpgradeSword();
@@ -140,6 +168,8 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeShield()
     {
+        // Chiamata dal bottone dello scudo.
+        // Se l'upgrade riesce, PlayerUpgradeStats aumenta lo scudo massimo.
         if(playerStats != null)
         {
             playerStats.UpgradeShield();
@@ -149,6 +179,8 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeHealth()
     {
+        // Chiamata dal bottone della vita.
+        // L'aumento vero della vita viene gestito dentro PlayerUpgradeStats.
         if(playerStats != null)
         {
             playerStats.UpgradeHealth();
@@ -158,6 +190,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeSpeed()
     {
+        // La velocita' non viene piu' usata come upgrade, quindi il bottone viene solo nascosto.
         HideSpeedUpgradeButton();
     }
 
@@ -165,6 +198,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
     {
         isOpen = open;
 
+        // Attiva o disattiva tutto il pannello visibile.
         if(menuPanel != null)
         {
             menuPanel.SetActive(open);
@@ -172,6 +206,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         if(open)
         {
+            // Quando si apre, aggiorna subito testi e bottoni.
             Refresh();
         }
     }
@@ -181,6 +216,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         if(playerStats == null)
             return;
 
+        // Testo in alto: livello, punti upgrade disponibili e progressione XP.
         if(upgradePointsText != null)
         {
             upgradePointsText.text =
@@ -188,6 +224,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
                 "XP: " + playerStats.CurrentXP + "/" + playerStats.NextLevelXP;
         }
 
+        // Statistiche della spada: livello upgrade e danno attuale.
         if(swordStatsText != null)
         {
             swordStatsText.text =
@@ -196,6 +233,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
                 "Danno: " + playerStats.SwordDamage;
         }
 
+        // Statistiche dello scudo: livello upgrade e scudo massimo.
         if(shieldStatsText != null)
         {
             shieldStatsText.text =
@@ -204,6 +242,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
                 "Resistenza: " + playerStats.ShieldMax;
         }
 
+        // Statistiche della vita: livello upgrade e vita attuale.
         if(healthStatsText != null)
         {
             healthStatsText.text =
@@ -214,11 +253,13 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
         if(characterStatsText != null)
         {
+            // Al momento resta qui solo come testo extra, nel caso serva mostrare altre statistiche.
             characterStatsText.text =
                 "Personaggio\n" +
                 "Velocita': " + playerStats.MoveSpeed;
         }
 
+        // Un bottone e' cliccabile solo se hai punti e quell'upgrade non e' al massimo.
         SetButtonInteractable(upgradeSwordButton, playerStats.upgradePoints > 0 && playerStats.swordLevel < playerStats.maxSwordLevel);
         SetButtonInteractable(upgradeShieldButton, playerStats.upgradePoints > 0 && playerStats.shieldLevel < playerStats.maxShieldLevel);
         SetButtonInteractable(upgradeHealthButton, playerStats.upgradePoints > 0 && playerStats.healthLevel < playerStats.maxHealthLevel);
@@ -227,6 +268,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void SetButtonInteractable(Button button, bool interactable)
     {
+        // Evita errori se in una scena un bottone non e' stato assegnato.
         if(button != null)
         {
             button.interactable = interactable;
@@ -235,22 +277,27 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void CreateRuntimeUI()
     {
+        // Crea una versione semplice del menu se nella scena non e' stato messo a mano il Canvas.
         Font defaultFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         GameObject canvasObject = new GameObject("StatsUpgradeCanvas");
         canvasObject.transform.SetParent(transform);
 
+        // Canvas in ScreenSpaceOverlay: viene disegnato sopra la scena, senza bisogno di camera.
         Canvas canvas = canvasObject.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.sortingOrder = 20;
 
+        // CanvasScaler: mantiene dimensioni simili anche con risoluzioni diverse.
         CanvasScaler scaler = canvasObject.AddComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(800f, 600f);
 
+        // GraphicRaycaster permette ai bottoni UI di ricevere click.
         canvasObject.AddComponent<GraphicRaycaster>();
         EnsureEventSystemExists();
 
+        // Pannello principale, agganciato al lato destro dello schermo.
         menuPanel = CreateUIObject("StatsUpgradePanel", canvasObject.transform);
         RectTransform panelRect = menuPanel.GetComponent<RectTransform>();
         panelRect.anchorMin = new Vector2(1f, 0.5f);
@@ -262,31 +309,38 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         Image panelImage = menuPanel.AddComponent<Image>();
         panelImage.color = new Color(0.08f, 0.09f, 0.11f, 0.92f);
 
+        // Titolo del pannello.
         Text titleText = CreateText("Title", menuPanel.transform, defaultFont, "Statistiche", 22, TextAnchor.MiddleLeft);
         SetRect(titleText.rectTransform, new Vector2(18f, -20f), new Vector2(324f, 30f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
+        // Riga superiore con livello, punti e XP.
         upgradePointsText = CreateText("UpgradePoints", menuPanel.transform, defaultFont, "", 16, TextAnchor.MiddleRight);
         upgradePointsText.fontSize = 14;
         SetRect(upgradePointsText.rectTransform, new Vector2(18f, -26f), new Vector2(324f, 44f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
+        // Sezione spada: testo a sinistra e bottone a destra.
         swordStatsText = CreateText("SwordStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(swordStatsText.rectTransform, new Vector2(18f, -64f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
         upgradeSwordButton = CreateButton("UpgradeSwordButton", menuPanel.transform, defaultFont, "Spada +", new Vector2(-18f, -74f));
         upgradeSwordButton.onClick.AddListener(UpgradeSword);
 
+        // Sezione scudo.
         shieldStatsText = CreateText("ShieldStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(shieldStatsText.rectTransform, new Vector2(18f, -134f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
         upgradeShieldButton = CreateButton("UpgradeShieldButton", menuPanel.transform, defaultFont, "Scudo +", new Vector2(-18f, -144f));
         upgradeShieldButton.onClick.AddListener(UpgradeShield);
 
+        // Sezione vita.
         healthStatsText = CreateText("HealthStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(healthStatsText.rectTransform, new Vector2(18f, -204f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
         upgradeHealthButton = CreateButton("UpgradeHealthButton", menuPanel.transform, defaultFont, "Vita +", new Vector2(-18f, -214f));
         upgradeHealthButton.onClick.AddListener(UpgradeHealth);
 
+        // Spazio lasciato per eventuali statistiche future del personaggio.
         characterStatsText = CreateText("CharacterStats", menuPanel.transform, defaultFont, "", 15, TextAnchor.UpperLeft);
         SetRect(characterStatsText.rectTransform, new Vector2(18f, -274f), new Vector2(210f, 58f), new Vector2(0f, 1f), new Vector2(0f, 1f));
 
+        // Piccolo suggerimento in basso.
         Text hintText = CreateText("Hint", menuPanel.transform, defaultFont, "Tieni premuto G", 13, TextAnchor.MiddleCenter);
         hintText.color = new Color(0.8f, 0.84f, 0.9f, 1f);
         SetRect(hintText.rectTransform, new Vector2(0f, 18f), new Vector2(324f, 24f), new Vector2(0.5f, 0f), new Vector2(0.5f, 0f));
@@ -294,6 +348,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private GameObject CreateUIObject(string objectName, Transform parent)
     {
+        // Crea un GameObject UI base e lo mette nel layer UI.
         GameObject uiObject = new GameObject(objectName);
         uiObject.layer = 5;
         uiObject.transform.SetParent(parent, false);
@@ -303,6 +358,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private Text CreateText(string objectName, Transform parent, Font font, string text, int fontSize, TextAnchor alignment)
     {
+        // Helper per creare testi UI senza ripetere sempre le stesse impostazioni.
         GameObject textObject = CreateUIObject(objectName, parent);
         Text textComponent = textObject.AddComponent<Text>();
         textComponent.font = font;
@@ -317,6 +373,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private Button CreateButton(string objectName, Transform parent, Font font, string label, Vector2 anchoredPosition)
     {
+        // Helper per creare un bottone con immagine, componente Button e testo figlio.
         GameObject buttonObject = CreateUIObject(objectName, parent);
         RectTransform buttonRect = buttonObject.GetComponent<RectTransform>();
         SetRect(buttonRect, anchoredPosition, new Vector2(104f, 34f), new Vector2(1f, 1f), new Vector2(1f, 1f));
@@ -335,6 +392,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void SetRect(RectTransform rectTransform, Vector2 anchoredPosition, Vector2 sizeDelta, Vector2 anchorMin, Vector2 anchorMax)
     {
+        // Centralizza le impostazioni del RectTransform usate dagli elementi creati da codice.
         rectTransform.anchorMin = anchorMin;
         rectTransform.anchorMax = anchorMax;
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
@@ -344,12 +402,15 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void HideSpeedUpgradeButton()
     {
+        // Il bottone velocita' puo' essere ancora presente in vecchie scene,
+        // quindi lo nascondiamo da codice senza doverlo cancellare a mano ovunque.
         if(upgradeSpeedButton != null)
             upgradeSpeedButton.gameObject.SetActive(false);
     }
 
     private void EnsureEventSystemExists()
     {
+        // I bottoni UI funzionano solo se nella scena esiste un EventSystem.
         if(EventSystem.current != null)
             return;
 
@@ -360,6 +421,8 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void AssignFallbackFonts()
     {
+        // In alcune versioni di Unity i Text copiati possono perdere il font.
+        // Questo evita testi invisibili assegnando un font di fallback.
         Font fallbackFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         Text[] texts = GetComponentsInChildren<Text>(true);
 
