@@ -17,7 +17,7 @@ MonoBehaviour:
   dialogueLines:
   - Ei come va?
   - Sei un viandante di passaggio?
-  autoProgressLines: 01
+  autoProgressLines: 0101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}

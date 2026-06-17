@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Heal Attaccking
   m_EditorClassIdentifier: 
   spellName: 
-  description: 
-  price: 0
-  icon: {fileID: 0}
+  description: cura quando attacca
+  price: 1
+  icon: {fileID: 21300000, guid: a30e9a59a4ffb884489afda27a4945c3, type: 3}
   effectType: 0
-  value: 0
+  value: 10
