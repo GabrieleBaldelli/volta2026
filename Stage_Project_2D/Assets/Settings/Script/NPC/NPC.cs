@@ -11,6 +11,7 @@ public class NPC : MonoBehaviour, Interactable
     public GameObject dialoguePanel;
     public TMP_Text dialogueText, nameText;
     public Image portraitImage;
+    public Canvas Shop;
 
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
@@ -68,6 +69,9 @@ public class NPC : MonoBehaviour, Interactable
         }
         else
         {
+            if(Shop != null)
+                Shop.gameObject.SetActive(true);
+                
             EndDialogue();
         }
     }

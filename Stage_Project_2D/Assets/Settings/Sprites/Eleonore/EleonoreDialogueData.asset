@@ -17,7 +17,7 @@ MonoBehaviour:
   dialogueLines:
   - Chi va la?!
   - Stai lontano forestiero!
-  autoProgressLines: 01
+  autoProgressLines: 0101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}
