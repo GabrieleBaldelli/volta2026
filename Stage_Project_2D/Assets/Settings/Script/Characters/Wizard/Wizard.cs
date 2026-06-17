@@ -172,12 +172,10 @@ public class Wizard : Enemy
         if(distance <= chaseDistance)
         {
             if(Time.time >= nextSummonTime)
-            {
-                SummonEnemies();
-                nextSummonTime = Time.time + summonCooldown;
-            }
+                StartCoroutine(SummonAttackCoroutine());
+            else
+                PlayIdleAnimation();
 
-            PlayIdleAnimation();
             return;
         }
 
