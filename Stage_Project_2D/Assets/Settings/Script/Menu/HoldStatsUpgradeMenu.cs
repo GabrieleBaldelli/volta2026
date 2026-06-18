@@ -35,6 +35,9 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
     public Button upgradeSpeedButton;
 
     private bool isOpen;
+    private int lastSwordUpgradeFrame = -1;
+    private int lastShieldUpgradeFrame = -1;
+    private int lastHealthUpgradeFrame = -1;
 
     // Tiene traccia del menu gia' presente, cosi' non ne vengono creati due nella stessa scena.
     private static HoldStatsUpgradeMenu instance;
@@ -64,7 +67,7 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
             return;
 
         // Prima cerca un HoldStatsUpgradeMenu gia' inserito nella scena dall'Inspector.
-        instance = FindObjectOfType<HoldStatsUpgradeMenu>();
+        instance = FindBestSceneMenu();
 
         if(instance != null)
             return;
@@ -86,27 +89,39 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         instance.CreateRuntimeUI();
     }
 
-    private void Start()
+    private static HoldStatsUpgradeMenu FindBestSceneMenu()
     {
-        if(instance == null)
-            instance = this;
+        HoldStatsUpgradeMenu[] menus = FindObjectsOfType<HoldStatsUpgradeMenu>();
+        HoldStatsUpgradeMenu bestMenu = null;
+        int bestScore = -1;
 
-        // Se il riferimento non e' stato collegato nella scena, cerca il player automaticamente.
-        if(playerStats == null)
+        foreach(HoldStatsUpgradeMenu menu in menus)
         {
-            PlayerMovement player = FindObjectOfType<PlayerMovement>();
+            int score = menu.GetConfigurationScore();
 
-            if(player != null)
+            if(score > bestScore)
             {
-                playerStats = player.GetComponent<PlayerUpgradeStats>();
-
-                if(playerStats == null)
-                    playerStats = player.gameObject.AddComponent<PlayerUpgradeStats>();
+                bestMenu = menu;
+                bestScore = score;
             }
         }
 
+        return bestMenu;
+    }
+
+    private void Start()
+    {
+        if(!RegisterAsActiveMenu())
+            return;
+
+        AutoWireSceneReferences();
+        EnsurePlayerStatsReference();
+
         if(menuPanel == null)
             CreateRuntimeUI();
+
+        AutoWireSceneReferences();
+        ConnectButtonCallbacks();
 
         // Il bottone velocita' non e' usato, quindi viene nascosto anche se esiste nel Canvas.
         HideSpeedUpgradeButton();
@@ -116,6 +131,12 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
             return;
 
         SetMenuOpen(false);
+    }
+
+    private void OnDestroy()
+    {
+        if(instance == this)
+            instance = null;
     }
 
     private void OnValidate()
@@ -157,6 +178,11 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeSword()
     {
+        if(lastSwordUpgradeFrame == Time.frameCount)
+            return;
+
+        lastSwordUpgradeFrame = Time.frameCount;
+
         // Chiamata dal bottone della spada.
         // Dopo l'upgrade aggiorna subito i testi del menu.
         if(playerStats != null)
@@ -168,6 +194,11 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeShield()
     {
+        if(lastShieldUpgradeFrame == Time.frameCount)
+            return;
+
+        lastShieldUpgradeFrame = Time.frameCount;
+
         // Chiamata dal bottone dello scudo.
         // Se l'upgrade riesce, PlayerUpgradeStats aumenta lo scudo massimo.
         if(playerStats != null)
@@ -179,6 +210,11 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     public void UpgradeHealth()
     {
+        if(lastHealthUpgradeFrame == Time.frameCount)
+            return;
+
+        lastHealthUpgradeFrame = Time.frameCount;
+
         // Chiamata dal bottone della vita.
         // L'aumento vero della vita viene gestito dentro PlayerUpgradeStats.
         if(playerStats != null)
@@ -213,6 +249,12 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
 
     private void Refresh()
     {
+        AutoWireSceneReferences();
+        ConnectButtonCallbacks();
+
+        if(playerStats == null)
+            EnsurePlayerStatsReference();
+
         if(playerStats == null)
             return;
 
@@ -264,6 +306,194 @@ public class HoldStatsUpgradeMenu : MonoBehaviour
         SetButtonInteractable(upgradeShieldButton, playerStats.upgradePoints > 0 && playerStats.shieldLevel < playerStats.maxShieldLevel);
         SetButtonInteractable(upgradeHealthButton, playerStats.upgradePoints > 0 && playerStats.healthLevel < playerStats.maxHealthLevel);
         HideSpeedUpgradeButton();
+    }
+
+    private bool RegisterAsActiveMenu()
+    {
+        if(instance == null)
+        {
+            instance = this;
+            return true;
+        }
+
+        if(instance == this)
+            return true;
+
+        if(GetConfigurationScore() > instance.GetConfigurationScore())
+        {
+            instance.SetMenuOpen(false);
+            instance.enabled = false;
+            instance = this;
+            return true;
+        }
+
+        SetMenuOpen(false);
+        enabled = false;
+        return false;
+    }
+
+    private int GetConfigurationScore()
+    {
+        int score = 0;
+
+        if(menuPanel != null || HasNamedChild("StatsUpgradePanel"))
+            score += 3;
+
+        if(playerStats != null)
+            score += 2;
+
+        if(upgradePointsText != null || HasNamedChildComponent<Text>("UpgradePoints"))
+            score++;
+
+        if(swordStatsText != null || HasNamedChildComponent<Text>("SwordStats"))
+            score++;
+
+        if(shieldStatsText != null || HasNamedChildComponent<Text>("ShieldStats"))
+            score++;
+
+        if(healthStatsText != null || HasNamedChildComponent<Text>("HealthStats"))
+            score++;
+
+        if(characterStatsText != null || HasNamedChildComponent<Text>("CharacterStats"))
+            score++;
+
+        if(upgradeSwordButton != null || HasNamedChildComponent<Button>("UpgradeSwordButton"))
+            score++;
+
+        if(upgradeShieldButton != null || HasNamedChildComponent<Button>("UpgradeShieldButton"))
+            score++;
+
+        if(upgradeHealthButton != null || HasNamedChildComponent<Button>("UpgradeHealthButton"))
+            score++;
+
+        return score;
+    }
+
+    private void AutoWireSceneReferences()
+    {
+        if(menuPanel == null)
+            menuPanel = FindChildGameObject("StatsUpgradePanel");
+
+        if(upgradePointsText == null)
+            upgradePointsText = FindChildComponent<Text>("UpgradePoints");
+
+        if(swordStatsText == null)
+            swordStatsText = FindChildComponent<Text>("SwordStats");
+
+        if(shieldStatsText == null)
+            shieldStatsText = FindChildComponent<Text>("ShieldStats");
+
+        if(healthStatsText == null)
+            healthStatsText = FindChildComponent<Text>("HealthStats");
+
+        if(characterStatsText == null)
+            characterStatsText = FindChildComponent<Text>("CharacterStats");
+
+        if(upgradeSwordButton == null)
+            upgradeSwordButton = FindChildComponent<Button>("UpgradeSwordButton");
+
+        if(upgradeShieldButton == null)
+            upgradeShieldButton = FindChildComponent<Button>("UpgradeShieldButton");
+
+        if(upgradeHealthButton == null)
+            upgradeHealthButton = FindChildComponent<Button>("UpgradeHealthButton");
+
+        if(upgradeSpeedButton == null)
+            upgradeSpeedButton = FindChildComponent<Button>("UpgradeSpeedButton");
+    }
+
+    private void EnsurePlayerStatsReference()
+    {
+        // Se il riferimento non e' stato collegato nella scena, cerca il player automaticamente.
+        if(playerStats != null)
+            return;
+
+        PlayerMovement player = FindObjectOfType<PlayerMovement>();
+
+        if(player == null)
+            return;
+
+        playerStats = player.GetComponent<PlayerUpgradeStats>();
+
+        if(playerStats == null)
+            playerStats = player.gameObject.AddComponent<PlayerUpgradeStats>();
+    }
+
+    private void ConnectButtonCallbacks()
+    {
+        ConnectButton(upgradeSwordButton, UpgradeSword);
+        ConnectButton(upgradeShieldButton, UpgradeShield);
+        ConnectButton(upgradeHealthButton, UpgradeHealth);
+        ConnectButton(upgradeSpeedButton, UpgradeSpeed);
+    }
+
+    private void ConnectButton(Button button, UnityEngine.Events.UnityAction action)
+    {
+        if(button == null)
+            return;
+
+        // Se il bottone e' gia' collegato dall'Inspector, non aggiungere un secondo listener.
+        // Altrimenti un solo click spenderebbe piu' punti upgrade.
+        if(HasPersistentCallback(button, action.Method.Name))
+            return;
+
+        button.onClick.RemoveListener(action);
+        button.onClick.AddListener(action);
+    }
+
+    private bool HasPersistentCallback(Button button, string methodName)
+    {
+        int persistentEventCount = button.onClick.GetPersistentEventCount();
+
+        for(int i = 0; i < persistentEventCount; i++)
+        {
+            if(button.onClick.GetPersistentTarget(i) != null &&
+                button.onClick.GetPersistentMethodName(i) == methodName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private bool HasNamedChild(string objectName)
+    {
+        return FindChildGameObject(objectName) != null;
+    }
+
+    private bool HasNamedChildComponent<T>(string objectName) where T : Component
+    {
+        return FindChildComponent<T>(objectName) != null;
+    }
+
+    private GameObject FindChildGameObject(string objectName)
+    {
+        if(gameObject.name == objectName)
+            return gameObject;
+
+        Transform[] children = GetComponentsInChildren<Transform>(true);
+
+        foreach(Transform child in children)
+        {
+            if(child.name == objectName)
+                return child.gameObject;
+        }
+
+        return null;
+    }
+
+    private T FindChildComponent<T>(string objectName) where T : Component
+    {
+        T[] components = GetComponentsInChildren<T>(true);
+
+        foreach(T component in components)
+        {
+            if(component.name == objectName)
+                return component;
+        }
+
+        return null;
     }
 
     private void SetButtonInteractable(Button button, bool interactable)

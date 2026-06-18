@@ -70,6 +70,18 @@ public class PlayerMovement : MonoBehaviour
         get { return 100f * LivelloSuccessivo; }
     }
 
+    public float MoltiplicatoreLivelloSuccessivo
+    {
+        get { return LivelloSuccessivo; }
+    }
+
+    public void RestoreProgression(float savedXp, float savedLevel, float savedNextLevelMultiplier)
+    {
+        xp = Mathf.Max(0f, savedXp);
+        livelloAttuale = Mathf.Max(1f, savedLevel);
+        LivelloSuccessivo = Mathf.Max(1f, savedNextLevelMultiplier);
+    }
+
     public void AddXP(float xpToAdd)
     {
         if(xpToAdd <= 0f)
