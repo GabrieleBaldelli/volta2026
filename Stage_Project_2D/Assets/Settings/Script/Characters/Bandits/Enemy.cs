@@ -451,7 +451,7 @@ public class Enemy : MonoBehaviour
             aiPath.canMove = false;
     }
 
-    public void PrepareForRoomLock()
+    public virtual void PrepareForRoomLock()
     {
         // Chiamato dai trigger delle stanze prima di disattivare il nemico.
         IsAttacking = false;
@@ -464,7 +464,7 @@ public class Enemy : MonoBehaviour
             animazioni.ResetCurrentAnimation();
     }
 
-    public void PrepareForRoomUnlock()
+    public virtual void PrepareForRoomUnlock()
     {
         // Chiamato quando la stanza riattiva il nemico, per evitare animazioni/stati vecchi.
         IsAttacking = false;

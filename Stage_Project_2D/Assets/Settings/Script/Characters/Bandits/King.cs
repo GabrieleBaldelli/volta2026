@@ -19,8 +19,14 @@ public class King : Enemy
     public float rageAttackHitDelayMultiplier = 0.65f;
     public Color rageColor = new Color(1f, 0.65f, 0.65f, 1f);
 
+    [Header("Room UI")]
+    public GameObject[] roomCanvases;
+    public bool activateWhenPlayerIsNear = true;
+
     private float rageAmount;
     private bool isRageMode;
+    private bool rageCanCharge;
+    private bool isRoomUnlocked;
     private float baseDamage;
     private float baseAttackCooldown;
     private float baseAttackDuration;
@@ -28,9 +34,16 @@ public class King : Enemy
     private Color baseColor = Color.white;
     private bool hasStoredBaseStats;
 
+    protected override void OnEnable()
+    {
+        // Il King viene attivato davvero solo dal trigger della stanza.
+    }
+
     protected override void Start()
     {
         base.Start();
+
+        CacheRoomCanvases();
 
         baseDamage = danno;
         baseAttackCooldown = attackCooldown;
@@ -50,6 +63,7 @@ public class King : Enemy
 
         SetRageAmount(0f);
         SetRageMode(false);
+        SetRoomCanvasesActive(isRoomUnlocked);
 
         if(animazioni != null)
         {
@@ -66,7 +80,26 @@ public class King : Enemy
 
     protected override void Update()
     {
-        UpdateRageMode();
+        if(!isRoomUnlocked)
+        {
+            TryActivateFromPlayerDistance();
+
+            if(!isRoomUnlocked)
+            {
+                StopRunSound();
+
+                if(aiPath != null)
+                    aiPath.canMove = false;
+
+                if(animazioni != null)
+                    animazioni.Idle();
+
+                return;
+            }
+        }
+
+        if(rageCanCharge)
+            UpdateRageMode();
 
         if(IsDying)
             return;
@@ -128,10 +161,60 @@ public class King : Enemy
 
     protected override void OnDisable()
     {
+        rageCanCharge = false;
+        isRoomUnlocked = false;
+        SetRageAmount(0f);
+
         if(hasStoredBaseStats)
             SetRageMode(false);
 
+        SetRoomCanvasesActive(false);
+
         base.OnDisable();
+    }
+
+    public override void PrepareForRoomLock()
+    {
+        rageCanCharge = false;
+        isRoomUnlocked = false;
+        SetRageAmount(0f);
+
+        if(hasStoredBaseStats)
+            SetRageMode(false);
+
+        SetRoomCanvasesActive(false);
+        base.PrepareForRoomLock();
+    }
+
+    public override void PrepareForRoomUnlock()
+    {
+        base.PrepareForRoomUnlock();
+
+        ActivateKingRoom();
+    }
+
+    private void TryActivateFromPlayerDistance()
+    {
+        if(!activateWhenPlayerIsNear)
+            return;
+
+        if(p == null)
+            TryFindPlayer();
+
+        if(p == null)
+            return;
+
+        if(Vector2.Distance(transform.position, p.position) <= chaseDistance)
+            ActivateKingRoom();
+    }
+
+    private void ActivateKingRoom()
+    {
+        isRoomUnlocked = true;
+        rageCanCharge = true;
+        SetRageAmount(0f);
+        SetRageMode(false);
+        SetRoomCanvasesActive(true);
     }
 
     private void UpdateRageMode()
@@ -176,6 +259,30 @@ public class King : Enemy
 
         if(spriterenderer != null)
             spriterenderer.color = active ? rageColor : baseColor;
+    }
+
+    private void CacheRoomCanvases()
+    {
+        if(roomCanvases != null && roomCanvases.Length > 0)
+            return;
+
+        Transform canvasTransform = transform.Find("Canvas");
+        if(canvasTransform != null)
+            roomCanvases = new GameObject[] { canvasTransform.gameObject };
+    }
+
+    private void SetRoomCanvasesActive(bool active)
+    {
+        CacheRoomCanvases();
+
+        if(roomCanvases == null)
+            return;
+
+        foreach(GameObject canvasObject in roomCanvases)
+        {
+            if(canvasObject != null)
+                canvasObject.SetActive(active);
+        }
     }
 
     private IEnumerator KingAttackCoroutine()

@@ -14873,10 +14873,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthImage: {fileID: 1488964697}
   player: {fileID: 1586416858}
-  vitaMassima: 750
+  vitaMassima: 700
   xp: 100
   coin: 2000
-  danno: 20
+  danno: 17
   stopDistance: 1.4
   chaseDistance: 7
   attackCooldown: 1.5
@@ -14895,6 +14895,9 @@ MonoBehaviour:
   rageAttackDurationMultiplier: 0.65
   rageAttackHitDelayMultiplier: 0.65
   rageColor: {r: 1, g: 0.65, b: 0.65, a: 1}
+  roomCanvases:
+  - {fileID: 224400193}
+  activateWhenPlayerIsNear: 1
 --- !u!82 &227485368
 AudioSource:
   m_ObjectHideFlags: 0
