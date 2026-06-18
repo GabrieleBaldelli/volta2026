@@ -500,6 +500,11 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Knockback(enemyRb, enemyScript.aiPath, enemyCollider.transform));
             StartCoroutine(enemyScript.HurtCoroutine(danno));
 
+            PassiveSpellManager passiveSpellManager = GetComponent<PassiveSpellManager>();
+
+            if(passiveSpellManager != null)
+                passiveSpellManager.NotifyAttackHit();
+
             Debug.Log("Nemico Colpito");
         }
     }

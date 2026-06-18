@@ -16,3 +16,6 @@ MonoBehaviour:
   Description: You can't read...!?
   price: 1
   icon: {fileID: 21300000, guid: 7b3876a2b72c44540a4bbd5aaba9e506, type: 3}
+  effectType: 1
+  value: 30
+  duration: 0

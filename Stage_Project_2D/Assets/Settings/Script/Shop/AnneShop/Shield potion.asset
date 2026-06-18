@@ -16,3 +16,6 @@ MonoBehaviour:
   Description: Do you believe in God...?
   price: 2
   icon: {fileID: 21300000, guid: 2d7d9ae02b7159843ac7d5ead0f8b89a, type: 3}
+  effectType: 2
+  value: 5
+  duration: 0

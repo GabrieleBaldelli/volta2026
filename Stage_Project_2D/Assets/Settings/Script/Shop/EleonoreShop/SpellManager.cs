@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PassiveSpellInventory))]
@@ -6,9 +7,7 @@ public class PassiveSpellManager : MonoBehaviour
     [SerializeField] private PlayerMovement player;
     [SerializeField] private PassiveSpellInventory inventory;
 
-    private float appliedMaxHealthBonus;
-    private float appliedSpeedBonus;
-    private float appliedDamageBonus;
+    private readonly List<SpellData> appliedSpells = new List<SpellData>();
 
     private void Awake()
     {
@@ -35,7 +34,13 @@ public class PassiveSpellManager : MonoBehaviour
             return false;
 
         player.CoinSetGet -= spell.price;
-        return inventory.AddSpell(spell);
+
+        bool added = inventory.AddSpell(spell);
+
+        if(added)
+            RefreshInventoryMenu();
+
+        return added;
     }
 
     public bool EquipSpell(SpellData spell)
@@ -62,10 +67,8 @@ public class PassiveSpellManager : MonoBehaviour
             return;
 
         foreach(SpellData spell in inventory.EquippedSpells)
-        {
-            if(spell != null && spell.effectType == PassiveSpellEffectType.HealOnAttack)
-                HealPlayer(spell.value);
-        }
+            if(spell != null)
+                spell.OnAttackHit(player);
     }
 
     public void NotifyEnemyKilled()
@@ -74,10 +77,8 @@ public class PassiveSpellManager : MonoBehaviour
             return;
 
         foreach(SpellData spell in inventory.EquippedSpells)
-        {
-            if(spell != null && spell.effectType == PassiveSpellEffectType.HealOnKill)
-                HealPlayer(spell.value);
-        }
+            if(spell != null)
+                spell.OnEnemyKilled(player);
     }
 
     public int GetCoinRewardWithPassives(int baseReward)
@@ -88,10 +89,8 @@ public class PassiveSpellManager : MonoBehaviour
         int reward = baseReward;
 
         foreach(SpellData spell in inventory.EquippedSpells)
-        {
-            if(spell != null && spell.effectType == PassiveSpellEffectType.ExtraCoinOnKill)
-                reward += Mathf.RoundToInt(spell.value);
-        }
+            if(spell != null)
+                reward += spell.GetCoinRewardBonus();
 
         return Mathf.Max(0, reward);
     }
@@ -108,23 +107,9 @@ public class PassiveSpellManager : MonoBehaviour
             if(spell == null)
                 continue;
 
-            switch(spell.effectType)
-            {
-                case PassiveSpellEffectType.MaxHealthBonus:
-                    appliedMaxHealthBonus += spell.value;
-                    break;
-                case PassiveSpellEffectType.SpeedBonus:
-                    appliedSpeedBonus += spell.value;
-                    break;
-                case PassiveSpellEffectType.DamageBonus:
-                    appliedDamageBonus += spell.value;
-                    break;
-            }
+            spell.ApplyEquipped(player);
+            appliedSpells.Add(spell);
         }
-
-        player.vitaMassima += appliedMaxHealthBonus;
-        player.speed += appliedSpeedBonus;
-        player.danno += appliedDamageBonus;
     }
 
     private void RemoveEquippedBonuses()
@@ -132,24 +117,11 @@ public class PassiveSpellManager : MonoBehaviour
         if(player == null)
             return;
 
-        player.vitaMassima -= appliedMaxHealthBonus;
-        player.speed -= appliedSpeedBonus;
-        player.danno -= appliedDamageBonus;
+        foreach(SpellData spell in appliedSpells)
+            if(spell != null)
+                spell.RemoveEquipped(player);
 
-        appliedMaxHealthBonus = 0;
-        appliedSpeedBonus = 0;
-        appliedDamageBonus = 0;
-
-        if(player.Vita > player.VitaMassima)
-            player.Vita = player.VitaMassima;
-    }
-
-    private void HealPlayer(float amount)
-    {
-        if(amount <= 0)
-            return;
-
-        player.Vita = Mathf.Min(player.Vita + amount, player.VitaMassima);
+        appliedSpells.Clear();
     }
 
     private void FindMissingReferences()
@@ -159,5 +131,16 @@ public class PassiveSpellManager : MonoBehaviour
 
         if(inventory == null)
             inventory = GetComponent<PassiveSpellInventory>();
+    }
+
+    private void RefreshInventoryMenu()
+    {
+        InventoryMenager inventoryMenager = InventoryMenager.Instance;
+
+        if(inventoryMenager == null)
+            inventoryMenager = FindObjectOfType<InventoryMenager>();
+
+        if(inventoryMenager != null)
+            inventoryMenager.RefreshSpells();
     }
 }

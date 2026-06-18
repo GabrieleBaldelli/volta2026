@@ -370,7 +370,14 @@ public class Enemy : MonoBehaviour
             IsAttacking = false;
             IsHurting = false;
             GiveXPOnce();
-            playerScript.CoinSetGet += coin;
+            PassiveSpellManager passiveSpellManager = playerScript.GetComponent<PassiveSpellManager>();
+            int coinReward = passiveSpellManager != null ? passiveSpellManager.GetCoinRewardWithPassives(coin) : coin;
+
+            playerScript.CoinSetGet += coinReward;
+
+            if(passiveSpellManager != null)
+                passiveSpellManager.NotifyEnemyKilled();
+
             Debug.Log(playerScript.CoinSetGet);
 
 

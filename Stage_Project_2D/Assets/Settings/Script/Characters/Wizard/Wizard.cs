@@ -631,6 +631,11 @@ public class Wizard : Enemy
         isTeleporting = false;
 
         GiveXPOnce();
+        PassiveSpellManager passiveSpellManager = playerScript != null ? playerScript.GetComponent<PassiveSpellManager>() : null;
+
+        if(passiveSpellManager != null)
+            passiveSpellManager.NotifyEnemyKilled();
+
         StopMovement();
         PlayDeathSound();
 

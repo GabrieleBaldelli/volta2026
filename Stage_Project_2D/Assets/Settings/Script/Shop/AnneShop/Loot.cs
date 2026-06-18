@@ -50,6 +50,14 @@ public class Loot : MonoBehaviour
             iconImage.sprite = item.icon;
     }
 
+    public bool Consume(PlayerMovement player, MonoBehaviour coroutineRunner)
+    {
+        if(item == null)
+            return false;
+
+        return item.Consume(player, coroutineRunner);
+    }
+
     private void FindShopReferences()
     {
         if(shop == null)
