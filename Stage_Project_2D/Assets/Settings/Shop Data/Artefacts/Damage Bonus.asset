@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7810ae31122f247bead6da3842e8c58a, type: 3}
   m_Name: Damage Bonus
   m_EditorClassIdentifier: 
-  spellName: MuscleRade
-  description: Ooh, someone here is too WEAK! ahaha.
+  spellName: MuscleRade Staff
+  description: 'Ooh, someone here is too weak ! '
   price: 1
   icon: {fileID: 21300000, guid: 21ed692efe3d95a40bcb58ec97b4d87a, type: 3}
   effectType: 4
-  value: 5
+  value: 1.5

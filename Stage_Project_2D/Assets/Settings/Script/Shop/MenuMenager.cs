@@ -297,7 +297,7 @@ public class MenuMenager : MonoBehaviour
             nameText.SetText(spell.spellName);
 
         if(descriptionText != null)
-            descriptionText.SetText(spell.description);
+            descriptionText.SetText(GetShopDescription(spell.description, spell.GetValueMeaning(player)));
 
         if(priceText != null)
             priceText.SetText(spell.price.ToString());
@@ -320,7 +320,7 @@ public class MenuMenager : MonoBehaviour
             nameText.SetText(item.Name);
 
         if(descriptionText != null)
-            descriptionText.SetText(item.Description);
+            descriptionText.SetText(GetShopDescription(item.Description, item.GetValueMeaning(player)));
 
         if(priceText != null)
             priceText.SetText(item.price.ToString());
@@ -340,6 +340,17 @@ public class MenuMenager : MonoBehaviour
 
         if(!canBuyMore)
             artefact.artefactToggle.isOn = false;
+    }
+
+    private string GetShopDescription(string description, string valueMeaning)
+    {
+        if(string.IsNullOrWhiteSpace(valueMeaning))
+            return description;
+
+        if(string.IsNullOrWhiteSpace(description))
+            return valueMeaning;
+
+        return description + "\n" + valueMeaning;
     }
 
     private TMP_Text FindPriceText(TMP_Text[] texts, int index)

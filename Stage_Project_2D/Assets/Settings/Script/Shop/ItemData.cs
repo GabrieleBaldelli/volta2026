@@ -23,6 +23,7 @@ public class ItemData : ScriptableObject
     public int price;
     public Sprite icon;
     public ItemEffectType effectType;
+    [Tooltip("Heal: percentuale della vita massima curata. RestoreShield/AddCoins/MaxHealthBoost: valore sommato. SpeedBoost/DamageBoost: valore sommato temporaneamente per duration secondi.")]
     public float value;
     public float duration;
 
@@ -34,7 +35,7 @@ public class ItemData : ScriptableObject
         switch(effectType)
         {
             case ItemEffectType.Heal:
-                player.Vita = Mathf.Min(player.Vita + value, player.VitaMassima);
+                player.Vita = Mathf.Min(player.Vita + GetHealingAmount(player), player.VitaMassima);
                 UpdateLifeBar(player);
                 return true;
             case ItemEffectType.RestoreShield:
@@ -95,5 +96,47 @@ public class ItemData : ScriptableObject
 
         if(lifeBar != null)
             lifeBar.UpdateLifeBar(player.Vita, player.VitaMassima);
+    }
+
+    public string GetValueMeaning(PlayerMovement player = null)
+    {
+        switch(effectType)
+        {
+            case ItemEffectType.Heal:
+                return GetHealingMeaning(player);
+            case ItemEffectType.RestoreShield:
+                return "Value si somma allo scudo attuale: +" + FormatValue(value) + " shield.";
+            case ItemEffectType.SpeedBoost:
+                return "Value si somma temporaneamente alla velocita': +" + FormatValue(value) + " speed per " + FormatValue(duration) + "s.";
+            case ItemEffectType.DamageBoost:
+                return "Value si somma temporaneamente al danno: +" + FormatValue(value) + " danno per " + FormatValue(duration) + "s.";
+            case ItemEffectType.MaxHealthBoost:
+                return "Value si somma alla vita massima: +" + FormatValue(value) + " PV.";
+            case ItemEffectType.AddCoins:
+                return "Value si somma alle monete: +" + Mathf.RoundToInt(value) + " coin.";
+            default:
+                return string.Empty;
+        }
+    }
+
+    private float GetHealingAmount(PlayerMovement player)
+    {
+        if(player == null)
+            return 0f;
+
+        return player.VitaMassima * (value / 100f);
+    }
+
+    private string GetHealingMeaning(PlayerMovement player)
+    {
+        if(player == null)
+            return "Value cura una percentuale della vita massima: " + FormatValue(value) + "%.";
+
+        return "Value cura il " + FormatValue(value) + "% della vita massima (" + FormatValue(player.VitaMassima) + "): +" + FormatValue(GetHealingAmount(player)) + " PV.";
+    }
+
+    private string FormatValue(float number)
+    {
+        return number.ToString("0.##");
     }
 }
