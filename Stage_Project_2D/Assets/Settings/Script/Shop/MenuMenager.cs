@@ -13,6 +13,9 @@ public class MenuMenager : MonoBehaviour
         public TMP_Text priceText;
     }
 
+    [Header("Shop")]
+    [SerializeField] private Canvas shop;
+
     [Header("Prezzi")]
     public TMP_Text totalText;
     public TMP_Text playerCoinText;
@@ -121,16 +124,7 @@ public class MenuMenager : MonoBehaviour
         }
 
         if(buyButton == null)
-        {
-            foreach(Button button in FindObjectsOfType<Button>())
-            {
-                if(button.gameObject.name == "BuyButton")
-                {
-                    buyButton = button;
-                    break;
-                }
-            }
-        }
+            buyButton = FindButtonByName(GetButtons(), "BuyButton");
 
         PlayerMovement[] players = FindObjectsOfType<PlayerMovement>();
         foreach(PlayerMovement foundPlayer in players)
@@ -145,8 +139,8 @@ public class MenuMenager : MonoBehaviour
         if(HasValidArtefacts())
             return;
 
-        Toggle[] toggles = FindObjectsOfType<Toggle>();
-        TMP_Text[] texts = FindObjectsOfType<TMP_Text>();
+        Toggle[] toggles = GetToggles();
+        TMP_Text[] texts = GetTexts();
         List<Artefact> foundArtefacts = new List<Artefact>();
 
         foreach(Toggle toggle in toggles)
@@ -167,6 +161,13 @@ public class MenuMenager : MonoBehaviour
                 priceText = priceText
             });
         }
+
+        foundArtefacts.Sort((first, second) =>
+        {
+            int firstIndex = first != null && first.artefactToggle != null ? GetLastNumber(first.artefactToggle.gameObject.name) : -1;
+            int secondIndex = second != null && second.artefactToggle != null ? GetLastNumber(second.artefactToggle.gameObject.name) : -1;
+            return firstIndex.CompareTo(secondIndex);
+        });
 
         artefacts = foundArtefacts.ToArray();
     }
@@ -189,7 +190,7 @@ public class MenuMenager : MonoBehaviour
     {
         foreach(TMP_Text text in texts)
         {
-            if(!text.gameObject.name.Contains("Price"))
+            if(!IsPriceTextName(text.gameObject.name))
                 continue;
 
             if(GetLastNumber(text.gameObject.name) == index)
@@ -197,6 +198,50 @@ public class MenuMenager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private Toggle[] GetToggles()
+    {
+        if(shop != null)
+            return shop.GetComponentsInChildren<Toggle>(true);
+
+        return FindObjectsOfType<Toggle>();
+    }
+
+    private TMP_Text[] GetTexts()
+    {
+        if(shop != null)
+            return shop.GetComponentsInChildren<TMP_Text>(true);
+
+        return FindObjectsOfType<TMP_Text>();
+    }
+
+    private Button[] GetButtons()
+    {
+        if(shop != null)
+            return shop.GetComponentsInChildren<Button>(true);
+
+        return FindObjectsOfType<Button>();
+    }
+
+    private Button FindButtonByName(Button[] buttons, string buttonName)
+    {
+        foreach(Button button in buttons)
+        {
+            if(button.gameObject.name == buttonName)
+                return button;
+        }
+
+        return null;
+    }
+
+    private bool IsPriceTextName(string objectName)
+    {
+        string lowerName = objectName.ToLower();
+        return lowerName.Contains("price")
+            || lowerName.Contains("prezzo")
+            || lowerName.Contains("cost")
+            || lowerName.Contains("costo");
     }
 
     private int GetLastNumber(string text)
