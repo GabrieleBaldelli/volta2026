@@ -11,8 +11,30 @@ public class MenuMenager : MonoBehaviour
     {
         public Toggle artefactToggle;
         public TMP_Text priceText;
-        public Loot loot;
+        public ItemData item;
         public SpellData spell;
+        [Min(0)] public int quantity;
+        private int boughtQuantity;
+
+        public int BoughtQuantity
+        {
+            get { return boughtQuantity; }
+        }
+
+        public bool HasQuantityLimit
+        {
+            get { return quantity > 0; }
+        }
+
+        public bool IsSoldOut
+        {
+            get { return HasQuantityLimit && boughtQuantity >= quantity; }
+        }
+
+        public void RegisterPurchase()
+        {
+            boughtQuantity++;
+        }
     }
 
     [Header("Shop")]
@@ -30,12 +52,19 @@ public class MenuMenager : MonoBehaviour
     [SerializeField] private Artefact[] artefacts;
 
     private float total = 0;
+    private bool isConfiguredManager = true;
 
     private void OnEnable()
     {
+        isConfiguredManager = HasSerializedSetup();
+
+        if(!isConfiguredManager)
+            return;
+
         FindMissingReferences();
         BuildArtefactsIfEmpty();
         RefreshArtefactBindings();
+        ApplyArtefactDataToRows();
         AddToggleListeners();
         AddBuyButtonListener();
         UpdateTotal();
@@ -44,6 +73,9 @@ public class MenuMenager : MonoBehaviour
 
     private void OnDisable()
     {
+        if(!isConfiguredManager)
+            return;
+
         RemoveToggleListeners();
         RemoveBuyButtonListener();
     }
@@ -56,8 +88,20 @@ public class MenuMenager : MonoBehaviour
 
     private void Update()
     {
+        if(!isConfiguredManager)
+            return;
+
         UpdatePlayerCoinText();
         UpdateBuyButton();
+        ApplyArtefactDataToRows();
+    }
+
+    private bool HasSerializedSetup()
+    {
+        return shop != null
+            || buyButton != null
+            || player != null
+            || (artefacts != null && artefacts.Length > 0);
     }
 
     private void AddToggleListeners()
@@ -161,9 +205,7 @@ public class MenuMenager : MonoBehaviour
             foundArtefacts.Add(new Artefact
             {
                 artefactToggle = toggle,
-                priceText = priceText,
-                loot = FindLoot(toggle, index, priceText),
-                spell = FindSpellData(toggle, index, priceText)
+                priceText = priceText
             });
         }
 
@@ -187,7 +229,7 @@ public class MenuMenager : MonoBehaviour
             if(artefact == null || artefact.artefactToggle == null || artefact.priceText == null)
                 return false;
 
-            if(artefact.loot == null && artefact.spell == null)
+            if(artefact.item == null && artefact.spell == null)
                 return false;
         }
 
@@ -204,10 +246,100 @@ public class MenuMenager : MonoBehaviour
             if(artefact == null || artefact.artefactToggle == null || artefact.priceText == null)
                 continue;
 
-            int index = GetLastNumber(artefact.artefactToggle.gameObject.name);
-            artefact.loot = FindLoot(artefact.artefactToggle, index, artefact.priceText);
-            artefact.spell = FindSpellData(artefact.artefactToggle, index, artefact.priceText);
+            if(artefact.spell != null)
+            {
+                artefact.item = null;
+                continue;
+            }
         }
+    }
+
+    private void ApplyArtefactDataToRows()
+    {
+        if(artefacts == null)
+            return;
+
+        foreach(Artefact artefact in artefacts)
+        {
+            if(artefact == null || artefact.artefactToggle == null)
+                continue;
+
+            Transform rowRoot = FindIndexedParent(artefact.artefactToggle.transform);
+
+            if(rowRoot == null)
+                continue;
+
+            if(artefact.spell != null)
+            {
+                ApplySpellDataToRow(rowRoot, artefact.spell);
+                UpdateArtefactAvailability(artefact);
+                continue;
+            }
+
+            if(artefact.item != null)
+                ApplyItemDataToRow(rowRoot, artefact.item);
+
+            UpdateArtefactAvailability(artefact);
+        }
+    }
+
+    private void ApplySpellDataToRow(Transform rowRoot, SpellData spell)
+    {
+        TMP_Text[] texts = rowRoot.GetComponentsInChildren<TMP_Text>(true);
+        Image[] images = rowRoot.GetComponentsInChildren<Image>(true);
+
+        TMP_Text nameText = FindText(texts, "name item", "name", "nome");
+        TMP_Text descriptionText = FindText(texts, "description", "descrizione", "desc");
+        TMP_Text priceText = FindText(texts, "price", "prezzo", "cost", "costo");
+        Image iconImage = FindImage(images, "portrait", "icon", "icona", "sprite", "image", "immagine");
+
+        if(nameText != null)
+            nameText.SetText(spell.spellName);
+
+        if(descriptionText != null)
+            descriptionText.SetText(spell.description);
+
+        if(priceText != null)
+            priceText.SetText(spell.price.ToString());
+
+        if(iconImage != null)
+            iconImage.sprite = spell.icon;
+    }
+
+    private void ApplyItemDataToRow(Transform rowRoot, ItemData item)
+    {
+        TMP_Text[] texts = rowRoot.GetComponentsInChildren<TMP_Text>(true);
+        Image[] images = rowRoot.GetComponentsInChildren<Image>(true);
+
+        TMP_Text nameText = FindText(texts, "name item", "name", "nome");
+        TMP_Text descriptionText = FindText(texts, "description", "descrizione", "desc");
+        TMP_Text priceText = FindText(texts, "price", "prezzo", "cost", "costo");
+        Image iconImage = FindImage(images, "portrait", "icon", "icona", "sprite", "image", "immagine");
+
+        if(nameText != null)
+            nameText.SetText(item.Name);
+
+        if(descriptionText != null)
+            descriptionText.SetText(item.Description);
+
+        if(priceText != null)
+            priceText.SetText(item.price.ToString());
+
+        if(iconImage != null)
+            iconImage.sprite = item.icon;
+    }
+
+    private void UpdateArtefactAvailability(Artefact artefact)
+    {
+        if(artefact == null || artefact.artefactToggle == null)
+            return;
+
+        bool hasData = artefact.item != null || artefact.spell != null;
+        bool canBuyMore = hasData && !artefact.IsSoldOut;
+        artefact.artefactToggle.interactable = canBuyMore;
+
+        if(!canBuyMore)
+            artefact.artefactToggle.isOn = false;
     }
 
     private TMP_Text FindPriceText(TMP_Text[] texts, int index)
@@ -268,164 +400,36 @@ public class MenuMenager : MonoBehaviour
             || lowerName.Contains("costo");
     }
 
-    private Loot FindLoot(Toggle toggle, int index, TMP_Text priceText)
+    private TMP_Text FindText(TMP_Text[] texts, params string[] keywords)
     {
-        Loot loot = FindComponentInParents<Loot>(toggle.transform);
-
-        if(loot != null && loot.item != null)
-            return loot;
-
-        loot = FindLootByRowData(toggle, priceText);
-
-        if(loot != null)
-            return loot;
-
-        foreach(Loot foundLoot in GetShopComponents<Loot>())
-        {
-            if(foundLoot != null && foundLoot.item != null && IsShopElementIndex(foundLoot.transform, foundLoot.quantity, index))
-                return foundLoot;
-        }
-
-        return null;
-    }
-
-    private Loot FindLootByRowData(Toggle toggle, TMP_Text priceText)
-    {
-        float rowPrice = GetPrice(priceText != null ? priceText.text : string.Empty);
-        string rowText = GetCombinedRowText(toggle != null ? toggle.transform : null);
-
-        foreach(Loot foundLoot in GetShopComponents<Loot>())
-        {
-            if(foundLoot == null || foundLoot.item == null)
-                continue;
-
-            bool priceMatches = rowPrice > 0 && Mathf.Approximately(foundLoot.item.price, rowPrice);
-            bool nameMatches = !string.IsNullOrWhiteSpace(rowText)
-                && !string.IsNullOrWhiteSpace(foundLoot.item.Name)
-                && rowText.Contains(foundLoot.item.Name.ToLower());
-
-            if(priceMatches || nameMatches)
-                return foundLoot;
-        }
-
-        return null;
-    }
-
-    private SpellData FindSpellData(Toggle toggle, int index, TMP_Text priceText)
-    {
-        SpellPrefab spellPrefab = FindComponentInParents<SpellPrefab>(toggle.transform);
-
-        if(spellPrefab != null && spellPrefab.spell != null)
-            return spellPrefab.spell;
-
-        SpellData spell = FindSpellByRowData(toggle, priceText);
-
-        if(spell != null)
-            return spell;
-
-        foreach(SpellPrefab foundSpellPrefab in GetShopComponents<SpellPrefab>())
-        {
-            if(foundSpellPrefab != null && foundSpellPrefab.spell != null && IsShopElementIndex(foundSpellPrefab.transform, foundSpellPrefab.quantity, index))
-                return foundSpellPrefab.spell;
-        }
-
-        return null;
-    }
-
-    private SpellData FindSpellByRowData(Toggle toggle, TMP_Text priceText)
-    {
-        float rowPrice = GetPrice(priceText != null ? priceText.text : string.Empty);
-        string rowText = GetCombinedRowText(toggle != null ? toggle.transform : null);
-
-        foreach(SpellPrefab foundSpellPrefab in GetShopComponents<SpellPrefab>())
-        {
-            if(foundSpellPrefab == null || foundSpellPrefab.spell == null)
-                continue;
-
-            bool priceMatches = rowPrice > 0 && Mathf.Approximately(foundSpellPrefab.spell.price, rowPrice);
-            bool nameMatches = !string.IsNullOrWhiteSpace(rowText)
-                && !string.IsNullOrWhiteSpace(foundSpellPrefab.spell.spellName)
-                && rowText.Contains(foundSpellPrefab.spell.spellName.ToLower());
-
-            if(priceMatches || nameMatches)
-                return foundSpellPrefab.spell;
-        }
-
-        return null;
-    }
-
-    private T FindComponentInParents<T>(Transform startTransform) where T : Component
-    {
-        Transform current = startTransform;
-
-        while(current != null)
-        {
-            T component = current.GetComponent<T>();
-
-            if(component != null)
-                return component;
-
-            if(shop != null && current == shop.transform)
-                break;
-
-            current = current.parent;
-        }
-
-        return null;
-    }
-
-    private T[] GetShopComponents<T>() where T : Component
-    {
-        if(shop != null)
-            return shop.GetComponentsInChildren<T>(true);
-
-        return FindObjectsOfType<T>();
-    }
-
-    private bool IsShopElementIndex(Transform element, int quantity, int index)
-    {
-        if(quantity > 0 && quantity == index)
-            return true;
-
-        Transform current = element;
-
-        while(current != null)
-        {
-            if(GetLastNumber(current.gameObject.name) == index)
-                return true;
-
-            if(shop != null && current == shop.transform)
-                break;
-
-            current = current.parent;
-        }
-
-        return false;
-    }
-
-    private string GetCombinedRowText(Transform startTransform)
-    {
-        Transform rowRoot = FindIndexedParent(startTransform);
-
-        if(rowRoot == null)
-            rowRoot = startTransform;
-
-        if(rowRoot == null)
-            return string.Empty;
-
-        TMP_Text[] texts = rowRoot.GetComponentsInChildren<TMP_Text>(true);
-        System.Text.StringBuilder builder = new System.Text.StringBuilder();
-
         foreach(TMP_Text text in texts)
         {
-            if(text == null || string.IsNullOrWhiteSpace(text.text))
-                continue;
+            string objectName = text.gameObject.name.ToLower();
 
-            builder.Append(text.text.ToLower());
-            builder.Append(' ');
+            foreach(string keyword in keywords)
+            {
+                if(objectName.Contains(keyword))
+                    return text;
+            }
         }
 
-        return builder.ToString();
+        return null;
+    }
+
+    private Image FindImage(Image[] images, params string[] keywords)
+    {
+        foreach(Image image in images)
+        {
+            string objectName = image.gameObject.name.ToLower();
+
+            foreach(string keyword in keywords)
+            {
+                if(objectName.Contains(keyword))
+                    return image;
+            }
+        }
+
+        return null;
     }
 
     private Transform FindIndexedParent(Transform startTransform)
@@ -434,7 +438,7 @@ public class MenuMenager : MonoBehaviour
 
         while(current != null)
         {
-            if(GetLastNumber(current.gameObject.name) >= 0)
+            if(IsShopRowName(current.gameObject.name))
                 return current;
 
             if(shop != null && current == shop.transform)
@@ -444,6 +448,17 @@ public class MenuMenager : MonoBehaviour
         }
 
         return null;
+    }
+
+    private bool IsShopRowName(string objectName)
+    {
+        if(GetLastNumber(objectName) < 0)
+            return false;
+
+        string lowerName = objectName.ToLower();
+        return lowerName.StartsWith("artefact")
+            || lowerName.StartsWith("item")
+            || lowerName.StartsWith("spell");
     }
 
     private InventoryMenager FindInventoryMenager()
@@ -501,8 +516,13 @@ public class MenuMenager : MonoBehaviour
 
     private void UpdateBuyButton()
     {
-        if(buyButton != null)
-            buyButton.interactable = player != null && total > 0 && player.CoinSetGet >= total;
+        if(buyButton == null)
+            return;
+
+        buyButton.interactable = player != null
+            && total > 0
+            && player.CoinSetGet >= total
+            && CanRegisterSelectedArtefacts(GetSelectedArtefacts(), FindInventoryMenager());
     }
 
     public void BuySelectedArtefacts()
@@ -557,16 +577,19 @@ public class MenuMenager : MonoBehaviour
 
         foreach(Artefact artefact in selectedArtefacts)
         {
-            bool needsInventory = artefact.loot != null || artefact.spell != null;
+            if(artefact.IsSoldOut)
+                return false;
+
+            bool needsInventory = artefact.item != null || artefact.spell != null;
 
             if(needsInventory && inventory == null)
                 return false;
 
-            if(artefact.loot != null)
+            if(artefact.item != null)
             {
                 pendingItems++;
 
-                if(!inventory.CanAddItem(artefact.loot, pendingItems))
+                if(!inventory.CanAddItem(artefact.item, pendingItems))
                     return false;
             }
 
@@ -584,12 +607,19 @@ public class MenuMenager : MonoBehaviour
 
         foreach(Artefact artefact in selectedArtefacts)
         {
-            if(artefact.loot != null)
-                inventory.AddItem(artefact.loot);
+            bool registered = false;
+
+            if(artefact.item != null)
+                registered = inventory.AddItem(artefact.item);
 
             if(artefact.spell != null)
-                inventory.AddSpell(artefact.spell);
+                registered = inventory.AddSpell(artefact.spell);
+
+            if(registered)
+                artefact.RegisterPurchase();
         }
+
+        ApplyArtefactDataToRows();
     }
 
     private void UpdateTotal()
@@ -603,7 +633,7 @@ public class MenuMenager : MonoBehaviour
                 if(artefact == null || artefact.artefactToggle == null || artefact.priceText == null)
                     continue;
 
-                if(artefact.artefactToggle.isOn)
+                if(artefact.artefactToggle.isOn && !artefact.IsSoldOut)
                     total += GetPrice(artefact.priceText.text);
             }
         }

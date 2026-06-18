@@ -21,7 +21,7 @@ public class InventoryMenager : MonoBehaviour
     [Header("Items")]
     [SerializeField] private int maxItems = 10;
 
-    private readonly List<Loot> items = new List<Loot>();
+    private readonly List<ItemData> items = new List<ItemData>();
     private readonly List<SpellData> ownedSpellsWithoutInventory = new List<SpellData>();
     private readonly List<Button> spellSelectionButtons = new List<Button>();
 
@@ -74,20 +74,20 @@ public class InventoryMenager : MonoBehaviour
         UpdatePlayerCoinText();
     }
 
-    public bool CanAddItem(Loot loot, int amount = 1)
+    public bool CanAddItem(ItemData item, int amount = 1)
     {
-        if(loot == null || loot.item == null || amount <= 0)
+        if(item == null || amount <= 0)
             return false;
 
         return items.Count + amount <= maxItems && items.Count + amount <= itemButtons.Length;
     }
 
-    public bool AddItem(Loot loot)
+    public bool AddItem(ItemData item)
     {
-        if(!CanAddItem(loot))
+        if(!CanAddItem(item))
             return false;
 
-        items.Add(loot);
+        items.Add(item);
         selectedItemIndex = -1;
         RefreshItems();
         return true;
@@ -446,10 +446,9 @@ public class InventoryMenager : MonoBehaviour
     {
         for(int i = 0; i < itemButtons.Length; i++)
         {
-            Loot loot = i < items.Count ? items[i] : null;
-            ItemData item = loot != null ? loot.item : null;
+            ItemData item = i < items.Count ? items[i] : null;
             SetButtonContent(itemButtons[i], item != null ? item.icon : null, item != null ? item.Name : "");
-            itemButtons[i].interactable = loot != null && item != null;
+            itemButtons[i].interactable = item != null;
             SetButtonSelected(itemButtons[i], i == selectedItemIndex);
         }
 

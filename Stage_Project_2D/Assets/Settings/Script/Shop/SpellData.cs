@@ -10,7 +10,7 @@ public enum PassiveSpellEffectType
     ExtraCoinOnKill
 }
 
-[CreateAssetMenu(fileName = "SpellData", menuName = "Eleonore Shop/Passive Spell")]
+[CreateAssetMenu(fileName = "SpellData", menuName = "Spell")]
 public class SpellData : ScriptableObject
 {
     public string spellName;
