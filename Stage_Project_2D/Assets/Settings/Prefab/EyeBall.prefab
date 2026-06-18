@@ -583,9 +583,10 @@ MonoBehaviour:
   player: {fileID: 0}
   vitaMassima: 50
   xp: 0
+  coin: 0
   danno: 10
   stopDistance: 2
-  chaseDistance: 8
+  chaseDistance: 10
   attackCooldown: 1
   attackDuration: 1
   attackHitDelay: 0.25
