@@ -59,8 +59,8 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Livello attuale del player. Viene letto dal menu upgrade.
-    private float livelloAttuale = 1f;
-    public float livello
+    private int livelloAttuale = 1;
+    public int livello
     {
         get { return livelloAttuale; }
     }

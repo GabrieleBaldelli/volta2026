@@ -626,50 +626,38 @@ public class Wizard : Enemy
         return (Vector3)(Random.insideUnitCircle * radius);
     }
 
-    private IEnumerator DieCoroutine()
+   private IEnumerator DieCoroutine()
     {
         if(IsDying)
             yield break;
 
         IsDying = true;
 
-            Debug.Log("INIZIO DIECOROUTINE");
-
-            vita = 0f;
-            UpdateLifeBar();
-
         IsAttacking = false;
         IsHurting = false;
         isTeleporting = false;
 
-        GiveXPOnce();
-
-        PassiveSpellManager passiveSpellManager =
-            playerScript != null ? playerScript.GetComponent<PassiveSpellManager>() : null;
-
-        if(playerScript != null)
-        {
-            int coinReward = passiveSpellManager != null
-                ? passiveSpellManager.GetCoinRewardWithPassives(coin)
-                : coin;
-
-            playerScript.CoinSetGet += coinReward;
-            CoinHud.ShowCoinReward(coinReward, transform.position);
-        }
-
-        if(passiveSpellManager != null)
-            passiveSpellManager.NotifyEnemyKilled();
-
         StopMovement();
-        PlayDeathSound();
 
+        // Nasconde le barre
+        Transform lifeCanvas = transform.Find("Life_Canvas");
+        if(lifeCanvas != null)
+            lifeCanvas.gameObject.SetActive(false);
+
+        Transform canvas = transform.Find("Canvas");
+        if(canvas != null)
+            canvas.gameObject.SetActive(false);
+
+        // Avvia animazione morte
         if(animazioni != null)
             animazioni.Morte();
 
-        // Attende che l'animazione di morte finisca
-        yield return new WaitForSeconds(0.8f);
+        PlayDeathSound();
 
-        // Distrugge tutti gli occhi evocati
+        // Aspetta che l'animazione finisca
+        yield return new WaitForSeconds(1.5f);
+
+        // Distrugge gli occhi evocati
         foreach(GameObject enemy in summonedEnemies)
         {
             if(enemy != null)
@@ -678,26 +666,25 @@ public class Wizard : Enemy
 
         summonedEnemies.Clear();
 
-        // Disattiva il movimento del pathfinding
+        // Disattiva il pathfinding
         if(aiPath != null)
             aiPath.enabled = false;
 
-        AIDestinationSetter destinationSetter =
-            GetComponent<AIDestinationSetter>();
+        AIDestinationSetter destinationSetter = GetComponent<AIDestinationSetter>();
 
         if(destinationSetter != null)
             destinationSetter.enabled = false;
 
-        // Attiva il componente NPC
+        // Attiva NPC
         NPC npc = GetComponent<NPC>();
 
         if(npc != null)
             npc.enabled = true;
 
-        // Disattiva il boss
-        this.enabled = false;
+        // Disattiva Wizard
+        enabled = false;
     }
-    private void UpdateLifeBar()
+        private void UpdateLifeBar()
     {
         // Aggiorna sia la LifeBar custom sia l'Image legacy ereditata da Enemy, se presenti.
         if(lifeBar != null)
