@@ -15,9 +15,9 @@ MonoBehaviour:
   npcName: Riven
   npcPortrait: {fileID: 21300000, guid: c55d38eacf59947af8fb8641049e1f6d, type: 3}
   dialogueLines:
-  - Salve Impavido Cavaliere!
-  - Qual buon vento ti porta nella mia dimora?
-  autoProgressLines: 01
+  - Grazie per avermi salvato da quei banditi!
+  - Da quando il Mago ha preso il controllo del Re, sono tutti impazziti!
+  autoProgressLines: 0101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}

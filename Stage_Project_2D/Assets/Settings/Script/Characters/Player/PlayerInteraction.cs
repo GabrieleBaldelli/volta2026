@@ -32,15 +32,29 @@ public class PlayerInteraction : MonoBehaviour
         {
             // Prendo la posizione dell' GameObject di activeInteractable
             MonoBehaviour mb = activeInteractable as MonoBehaviour;
+            if(mb == null)
+            {
+                activeInteractable = null;
+                return;
+            }
+
             GameObject activeInteractableObject = mb.gameObject;
             Transform interactableTransform = activeInteractableObject.transform;
             float distance = Vector2.Distance(interactableTransform.position, transform.position);
+            NPC activeNpc = activeInteractableObject.GetComponent<NPC>();
 
             if(!activeInteractable.CanInteract() && distance <= interactionRadius)
+            {
+                if(activeNpc != null)
+                    return;
+
+                activeInteractable = null;
                 return;
+            }
 
             activeInteractable = null;
-            activeInteractableObject.GetComponent<NPC>().EndDialogue();
+            if(activeNpc != null)
+                activeNpc.EndDialogue();
 
             Debug.Log("Interazione interrotta perché troppo lontano");
         }
@@ -70,7 +84,10 @@ public class PlayerInteraction : MonoBehaviour
 
                 // Se l'interazione finisce subito, libera activeInteractable.
                 // Utile per oggetti semplici tipo leve, porte o casse.
-                if(activeInteractable.CanInteract())
+                MonoBehaviour activeBehaviour = activeInteractable as MonoBehaviour;
+                NPC activeNpc = activeBehaviour != null ? activeBehaviour.GetComponent<NPC>() : null;
+
+                if(activeNpc == null || activeInteractable.CanInteract())
                     activeInteractable = null;
             }
         }

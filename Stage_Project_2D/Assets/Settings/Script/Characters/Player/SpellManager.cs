@@ -27,6 +27,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public bool BuySpell(SpellData spell)
     {
+        FindMissingReferences();
+
         if(spell == null || player == null || inventory == null)
             return false;
 
@@ -45,6 +47,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public bool EquipSpell(SpellData spell)
     {
+        FindMissingReferences();
+
         if(inventory == null || !inventory.EquipSpell(spell))
             return false;
 
@@ -54,6 +58,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public bool UnequipSpell(SpellData spell)
     {
+        FindMissingReferences();
+
         if(inventory == null || !inventory.UnequipSpell(spell))
             return false;
 
@@ -63,6 +69,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public void NotifyAttackHit()
     {
+        FindMissingReferences();
+
         if(player == null || inventory == null)
             return;
 
@@ -73,6 +81,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public void NotifyEnemyKilled()
     {
+        FindMissingReferences();
+
         if(player == null || inventory == null)
             return;
 
@@ -83,6 +93,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public int GetCoinRewardWithPassives(int baseReward)
     {
+        FindMissingReferences();
+
         if(inventory == null)
             return baseReward;
 
@@ -97,6 +109,8 @@ public class PassiveSpellManager : MonoBehaviour
 
     public void RefreshEquippedBonuses()
     {
+        FindMissingReferences();
+
         if(player == null || inventory == null)
             return;
 

@@ -193,10 +193,24 @@ public class InventoryMenager : MonoBehaviour
             player = FindObjectOfType<PlayerMovement>();
 
         if(spellManager == null)
-            spellManager = FindObjectOfType<PassiveSpellManager>();
+        {
+            if(player != null)
+                spellManager = player.GetComponent<PassiveSpellManager>();
+
+            if(spellManager == null)
+                spellManager = FindObjectOfType<PassiveSpellManager>();
+        }
 
         if(spellInventory == null)
-            spellInventory = FindObjectOfType<PassiveSpellInventory>();
+        {
+            if(player != null)
+                spellInventory = player.GetComponent<PassiveSpellInventory>();
+
+            if(spellInventory == null)
+                spellInventory = FindObjectOfType<PassiveSpellInventory>();
+        }
+
+        EnsurePlayerPassiveSpellComponents();
 
         Transform root = inventoryCanvas != null ? inventoryCanvas.transform : transform;
         Transform itemsPanel = FindChildByName(root, "Items Panel");
@@ -247,6 +261,24 @@ public class InventoryMenager : MonoBehaviour
             consumeButton.onClick.RemoveAllListeners();
             consumeButton.onClick.AddListener(ConsumeSelectedItem);
         }
+    }
+
+    private void EnsurePlayerPassiveSpellComponents()
+    {
+        if(player == null)
+            return;
+
+        if(spellInventory == null)
+            spellInventory = player.GetComponent<PassiveSpellInventory>();
+
+        if(spellInventory == null)
+            spellInventory = player.gameObject.AddComponent<PassiveSpellInventory>();
+
+        if(spellManager == null)
+            spellManager = player.GetComponent<PassiveSpellManager>();
+
+        if(spellManager == null)
+            spellManager = player.gameObject.AddComponent<PassiveSpellManager>();
     }
 
     private void SelectItem(int index)

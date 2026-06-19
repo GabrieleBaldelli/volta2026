@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -13,8 +14,21 @@ public class NPC : MonoBehaviour, Interactable
     public Image portraitImage;
     public Canvas Shop;
 
+    [Header("Unread Dialogue Indicator")]
+    [SerializeField] private GameObject unreadDialogueIndicator;
+    [SerializeField] private bool autoCreateUnreadDialogueIndicator = true;
+    [SerializeField] private Vector3 unreadIndicatorOffset = new Vector3(0f, 1.35f, 0f);
+    [SerializeField] private Color unreadIndicatorColor = new Color(1f, 0.85f, 0.15f, 1f);
+    [SerializeField] private float unreadIndicatorFontSize = 5f;
+    [SerializeField] private string dialogueId;
+    [SerializeField] private bool hideIndicatorDuringDialogue = true;
+
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
+
+    public event Action<NPC> DialogueCompleted;
+
+    private static readonly HashSet<string> readDialogueIds = new HashSet<string>();
 
     private static readonly string[] rivenDialogueAfterKingDeath =
     {
@@ -26,6 +40,17 @@ public class NPC : MonoBehaviour, Interactable
     public bool CanInteract()
     {
         return enabled && !isDialogueActive;
+    }
+
+    private void OnEnable()
+    {
+        EnsureUnreadDialogueIndicator();
+        RefreshUnreadDialogueIndicator();
+    }
+
+    private void Update()
+    {
+        RefreshUnreadDialogueIndicator();
     }
 
     [Header("Player Interaction")]
@@ -68,6 +93,7 @@ public class NPC : MonoBehaviour, Interactable
         portraitImage.sprite = dialogueData.npcPortrait;
 
         dialoguePanel.SetActive(true);
+        RefreshUnreadDialogueIndicator();
 
         StartCoroutine(TypeLine());
     }
@@ -90,7 +116,7 @@ public class NPC : MonoBehaviour, Interactable
             if(Shop != null)
                 Shop.gameObject.SetActive(true);
 
-            EndDialogue();
+            EndDialogue(true);
         }
     }
 
@@ -117,10 +143,22 @@ public class NPC : MonoBehaviour, Interactable
 
     public void EndDialogue()
     {
+        EndDialogue(false);
+    }
+
+    private void EndDialogue(bool completedDialogue)
+    {
         StopAllCoroutines();
         isDialogueActive = false;
         dialogueText.SetText("");
         dialoguePanel.SetActive(false);
+
+        if(completedDialogue)
+        {
+            DialogueCompleted?.Invoke(this);
+            MarkCurrentDialogueAsRead();
+            RefreshUnreadDialogueIndicator();
+        }
     }
 
     public void StopDialogue(bool stop)
@@ -137,9 +175,79 @@ public class NPC : MonoBehaviour, Interactable
 
     private string[] GetDialogueLines()
     {
-        if(dialogueData != null && dialogueData.npcName == "Riven" && King.HasBeenDefeated)
+        if(IsRivenPostKingDialogue())
             return rivenDialogueAfterKingDeath;
 
         return dialogueData.dialogueLines;
+    }
+
+    public bool IsRivenPostKingDialogue()
+    {
+        return dialogueData != null && dialogueData.npcName == "Riven" && King.HasBeenDefeated;
+    }
+
+    private void MarkCurrentDialogueAsRead()
+    {
+        string key = GetCurrentDialogueId();
+
+        if(!string.IsNullOrWhiteSpace(key))
+            readDialogueIds.Add(key);
+    }
+
+    private void RefreshUnreadDialogueIndicator()
+    {
+        EnsureUnreadDialogueIndicator();
+
+        if(unreadDialogueIndicator == null)
+            return;
+
+        bool shouldShow = enabled && dialogueData != null && !IsCurrentDialogueRead();
+
+        if(hideIndicatorDuringDialogue && isDialogueActive)
+            shouldShow = false;
+
+        unreadDialogueIndicator.SetActive(shouldShow);
+    }
+
+    private void EnsureUnreadDialogueIndicator()
+    {
+        if(unreadDialogueIndicator != null || !autoCreateUnreadDialogueIndicator)
+            return;
+
+        GameObject indicator = new GameObject("Unread Dialogue Indicator");
+        indicator.transform.SetParent(transform);
+        indicator.transform.localPosition = unreadIndicatorOffset;
+        indicator.transform.localRotation = Quaternion.identity;
+        indicator.transform.localScale = Vector3.one;
+
+        TextMeshPro indicatorText = indicator.AddComponent<TextMeshPro>();
+        indicatorText.text = "!";
+        indicatorText.alignment = TextAlignmentOptions.Center;
+        indicatorText.fontSize = unreadIndicatorFontSize;
+        indicatorText.color = unreadIndicatorColor;
+        indicatorText.fontStyle = FontStyles.Bold;
+        indicatorText.enableWordWrapping = false;
+        indicatorText.sortingOrder = 100;
+
+        unreadDialogueIndicator = indicator;
+    }
+
+    private bool IsCurrentDialogueRead()
+    {
+        string key = GetCurrentDialogueId();
+        return string.IsNullOrWhiteSpace(key) || readDialogueIds.Contains(key);
+    }
+
+    private string GetCurrentDialogueId()
+    {
+        if(dialogueData == null)
+            return string.Empty;
+
+        string baseId = !string.IsNullOrWhiteSpace(dialogueId) ? dialogueId : dialogueData.name;
+
+        if(IsRivenPostKingDialogue())
+            return baseId + ":after-king";
+
+        return baseId;
     }
 }
