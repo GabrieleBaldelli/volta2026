@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellName: MuscleRade Staff
   description: 'Ooh, someone here is too weak ! '
-  price: 1
+  price: 700
   icon: {fileID: 21300000, guid: 21ed692efe3d95a40bcb58ec97b4d87a, type: 3}
   effectType: 4
   value: 1.5

@@ -74,9 +74,26 @@ public class PlayerMovement : MonoBehaviour
         get { return xp; }
     }
 
-    public float XpProssimoLivello
+    private readonly int[] xpTable =
     {
-        get { return 100f * LivelloSuccessivo; }
+        0,      // livello 1
+        50,     // livello 2
+        120,    // livello 3
+        220,    // livello 4
+        350,    // livello 5
+        520,    // livello 6
+        740,    // livello 7
+        1020,   // livello 8
+        1370,   // livello 9
+        1800    // livello 10
+    };
+
+    public int XpProssimoLivello
+    {
+        get
+        {
+            return xpTable[livelloAttuale];
+        }
     }
 
     public float MoltiplicatoreLivelloSuccessivo

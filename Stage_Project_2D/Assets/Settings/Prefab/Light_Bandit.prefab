@@ -213,8 +213,8 @@ MonoBehaviour:
   HealthImage: {fileID: 2086133643084991260}
   player: {fileID: 0}
   vitaMassima: 50
-  xp: 100
-  coin: 10
+  xp: 5
+  coin: 8
   danno: 5
   stopDistance: 1.5
   chaseDistance: 7

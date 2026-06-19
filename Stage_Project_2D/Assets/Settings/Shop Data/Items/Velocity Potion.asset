@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Velocity Potion
   Description: Do you need to call SomeOne...?
-  price: 3
+  price: 30
   icon: {fileID: 21300000, guid: 805736230f06ac449a72b0ecb951e522, type: 3}
   effectType: 3
   value: 2

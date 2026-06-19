@@ -15,7 +15,7 @@ MonoBehaviour:
   spellName: Bloody Mary Staff
   description: Se sei un cavaliere affamato di sangue questo arteffatto fa al caso
     tuo.
-  price: 1
+  price: 500
   icon: {fileID: 21300000, guid: a30e9a59a4ffb884489afda27a4945c3, type: 3}
   effectType: 1
   value: 10
