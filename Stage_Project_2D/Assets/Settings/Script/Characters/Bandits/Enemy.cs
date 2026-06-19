@@ -369,6 +369,7 @@ public class Enemy : MonoBehaviour
             IsDying = true;
             IsAttacking = false;
             IsHurting = false;
+            OnDeathRewardGranted();
             GiveXPOnce();
             PassiveSpellManager passiveSpellManager = playerScript.GetComponent<PassiveSpellManager>();
             int coinReward = passiveSpellManager != null ? passiveSpellManager.GetCoinRewardWithPassives(coin) : coin;
@@ -406,6 +407,10 @@ public class Enemy : MonoBehaviour
         IsHurting = false;
 
         Debug.Log("viene colpito");
+    }
+
+    protected virtual void OnDeathRewardGranted()
+    {
     }
 
     protected void TryFindPlayer()

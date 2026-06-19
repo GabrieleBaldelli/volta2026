@@ -16,6 +16,12 @@ public class NPC : MonoBehaviour, Interactable
     private int dialogueIndex;
     private bool isTyping, isDialogueActive;
 
+    private static readonly string[] rivenDialogueAfterKingDeath =
+    {
+        "Hai sconfitto il King. Non male, cavaliere.",
+        "Come ricompensa ti do una chiave che ho trovato nel bagno del castello."
+    };
+
     //Puoi interagirci solo se non è già attivo un dialogo con questo NPC
     public bool CanInteract()
     {
@@ -71,10 +77,10 @@ public class NPC : MonoBehaviour, Interactable
         if(isTyping)
         {
             StopAllCoroutines();
-            dialogueText.SetText(dialogueData.dialogueLines[dialogueIndex]);
+            dialogueText.SetText(GetDialogueLines()[dialogueIndex]);
             isTyping = false;
         }
-        else if( ++dialogueIndex < dialogueData.dialogueLines.Length)
+        else if( ++dialogueIndex < GetDialogueLines().Length)
         {
             //If another line, type next line
             StartCoroutine(TypeLine());
@@ -92,8 +98,9 @@ public class NPC : MonoBehaviour, Interactable
     {
         isTyping = true;
         dialogueText.SetText("");
+        string[] dialogueLines = GetDialogueLines();
 
-        foreach (char letter in dialogueData.dialogueLines[dialogueIndex])
+        foreach (char letter in dialogueLines[dialogueIndex])
         {
             dialogueText.text += letter;
             yield return new WaitForSecondsRealtime(dialogueData.typingSpeed);
@@ -126,5 +133,13 @@ public class NPC : MonoBehaviour, Interactable
         dialoguePanel.SetActive(!stop);
         isTyping = !stop;
         isDialogueActive = !stop;
+    }
+
+    private string[] GetDialogueLines()
+    {
+        if(dialogueData != null && dialogueData.npcName == "Riven" && King.HasBeenDefeated)
+            return rivenDialogueAfterKingDeath;
+
+        return dialogueData.dialogueLines;
     }
 }
