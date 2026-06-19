@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7810ae31122f247bead6da3842e8c58a, type: 3}
   m_Name: Heal On Kill
   m_EditorClassIdentifier: 
-  spellName: Bloody Mary
+  spellName: Bloody Mary Staff
   description: Se sei un cavaliere affamato di sangue questo arteffatto fa al caso
     tuo.
   price: 1

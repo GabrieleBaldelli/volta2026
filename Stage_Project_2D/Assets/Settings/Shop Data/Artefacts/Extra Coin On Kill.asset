@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7810ae31122f247bead6da3842e8c58a, type: 3}
   m_Name: Extra Coin On Kill
   m_EditorClassIdentifier: 
-  spellName: Coins Rain
+  spellName: Coins Rain Staff
   description: Sei a corto di monete ?
   price: 1
   icon: {fileID: 21300000, guid: 1877011fdc8954440a807dd46b4eaab4, type: 3}

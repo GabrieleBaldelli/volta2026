@@ -53,6 +53,10 @@ public class MenuMenager : MonoBehaviour
 
     private float total = 0;
     private bool isConfiguredManager = true;
+    private GameObject tooltipObject;
+    private RectTransform tooltipRect;
+    private TMP_Text tooltipTitleText;
+    private TMP_Text tooltipBodyText;
 
     private void OnEnable()
     {
@@ -272,12 +276,16 @@ public class MenuMenager : MonoBehaviour
             if(artefact.spell != null)
             {
                 ApplySpellDataToRow(rowRoot, artefact.spell);
+                ConfigureTooltip(rowRoot, artefact.spell.spellName, GetSpellTooltipText(artefact.spell));
                 UpdateArtefactAvailability(artefact);
                 continue;
             }
 
             if(artefact.item != null)
+            {
                 ApplyItemDataToRow(rowRoot, artefact.item);
+                ConfigureTooltip(rowRoot, artefact.item.Name, GetItemTooltipText(artefact.item));
+            }
 
             UpdateArtefactAvailability(artefact);
         }
@@ -297,7 +305,7 @@ public class MenuMenager : MonoBehaviour
             nameText.SetText(spell.spellName);
 
         if(descriptionText != null)
-            descriptionText.SetText(GetShopDescription(spell.description, spell.GetValueMeaning(player)));
+            descriptionText.SetText(spell.description);
 
         if(priceText != null)
             priceText.SetText(spell.price.ToString());
@@ -320,7 +328,7 @@ public class MenuMenager : MonoBehaviour
             nameText.SetText(item.Name);
 
         if(descriptionText != null)
-            descriptionText.SetText(GetShopDescription(item.Description, item.GetValueMeaning(player)));
+            descriptionText.SetText(item.Description);
 
         if(priceText != null)
             priceText.SetText(item.price.ToString());
@@ -342,15 +350,183 @@ public class MenuMenager : MonoBehaviour
             artefact.artefactToggle.isOn = false;
     }
 
-    private string GetShopDescription(string description, string valueMeaning)
+    private void ConfigureTooltip(Transform rowRoot, string title, string body)
     {
-        if(string.IsNullOrWhiteSpace(valueMeaning))
-            return description;
+        if(rowRoot == null)
+            return;
 
-        if(string.IsNullOrWhiteSpace(description))
-            return valueMeaning;
+        ShopTooltipTarget tooltipTarget = rowRoot.GetComponent<ShopTooltipTarget>();
 
-        return description + "\n" + valueMeaning;
+        if(tooltipTarget == null)
+            tooltipTarget = rowRoot.gameObject.AddComponent<ShopTooltipTarget>();
+
+        tooltipTarget.Configure(this, title, body);
+    }
+
+    public void ShowArtefactTooltip(string title, string body, Vector2 screenPosition)
+    {
+        if(string.IsNullOrWhiteSpace(body))
+            return;
+
+        EnsureTooltip();
+
+        if(tooltipObject == null)
+            return;
+
+        tooltipTitleText.SetText(title);
+        tooltipBodyText.SetText(body);
+        tooltipObject.SetActive(true);
+        MoveArtefactTooltip(screenPosition);
+    }
+
+    public void MoveArtefactTooltip(Vector2 screenPosition)
+    {
+        if(tooltipRect == null || shop == null)
+            return;
+
+        RectTransform canvasRect = shop.transform as RectTransform;
+
+        if(canvasRect == null)
+            return;
+
+        Camera camera = shop.renderMode == RenderMode.ScreenSpaceOverlay ? null : shop.worldCamera;
+
+        if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screenPosition, camera, out Vector2 localPoint))
+            return;
+
+        Vector2 offset = new Vector2(18f, -18f);
+        Vector2 tooltipSize = tooltipRect.sizeDelta;
+        Rect canvasBounds = canvasRect.rect;
+        Vector2 anchoredPosition = localPoint + offset;
+
+        anchoredPosition.x = Mathf.Clamp(anchoredPosition.x, canvasBounds.xMin + 8f, canvasBounds.xMax - tooltipSize.x - 8f);
+        anchoredPosition.y = Mathf.Clamp(anchoredPosition.y, canvasBounds.yMin + tooltipSize.y + 8f, canvasBounds.yMax - 8f);
+
+        tooltipRect.anchoredPosition = anchoredPosition;
+    }
+
+    public void HideArtefactTooltip()
+    {
+        if(tooltipObject != null)
+            tooltipObject.SetActive(false);
+    }
+
+    private void EnsureTooltip()
+    {
+        if(tooltipObject != null)
+            return;
+
+        Transform parent = shop != null ? shop.transform : transform;
+        tooltipObject = new GameObject("Artefact Tooltip", typeof(RectTransform), typeof(CanvasGroup), typeof(Image));
+        tooltipObject.transform.SetParent(parent, false);
+
+        tooltipRect = tooltipObject.GetComponent<RectTransform>();
+        tooltipRect.anchorMin = new Vector2(0.5f, 0.5f);
+        tooltipRect.anchorMax = new Vector2(0.5f, 0.5f);
+        tooltipRect.pivot = new Vector2(0f, 1f);
+        tooltipRect.sizeDelta = new Vector2(310f, 118f);
+
+        Image background = tooltipObject.GetComponent<Image>();
+        background.color = new Color(0.04f, 0.035f, 0.03f, 0.96f);
+
+        CanvasGroup canvasGroup = tooltipObject.GetComponent<CanvasGroup>();
+        canvasGroup.blocksRaycasts = false;
+
+        tooltipTitleText = CreateTooltipText("Title", tooltipObject.transform, new Vector2(14f, -38f), new Vector2(-14f, -10f), 18f, FontStyles.Bold);
+        tooltipBodyText = CreateTooltipText("Body", tooltipObject.transform, new Vector2(14f, 10f), new Vector2(-14f, -42f), 14f, FontStyles.Normal);
+        tooltipObject.SetActive(false);
+    }
+
+    private TMP_Text CreateTooltipText(string objectName, Transform parent, Vector2 offsetMin, Vector2 offsetMax, float fontSize, FontStyles fontStyle)
+    {
+        GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(TextMeshProUGUI));
+        textObject.transform.SetParent(parent, false);
+
+        RectTransform rectTransform = textObject.GetComponent<RectTransform>();
+        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.anchorMax = Vector2.one;
+        rectTransform.offsetMin = offsetMin;
+        rectTransform.offsetMax = offsetMax;
+
+        TextMeshProUGUI text = textObject.GetComponent<TextMeshProUGUI>();
+        text.fontSize = fontSize;
+        text.fontStyle = fontStyle;
+        text.color = Color.white;
+        text.alignment = TextAlignmentOptions.TopLeft;
+        text.enableWordWrapping = true;
+
+        return text;
+    }
+
+    private string GetSpellTooltipText(SpellData spell)
+    {
+        if(spell == null)
+            return string.Empty;
+
+        switch(spell.effectType)
+        {
+            case PassiveSpellEffectType.HealOnAttack:
+                return GetHealTooltip("Ogni colpo andato a segno ruba un sorso di vita.", spell.value);
+            case PassiveSpellEffectType.HealOnKill:
+                return GetHealTooltip("Quando un nemico cade, il sangue torna a scorrere dalla tua parte.", spell.value);
+            case PassiveSpellEffectType.MaxHealthBonus:
+                return "Incide una runa di resistenza sul cuore: +" + FormatValue(spell.value) + " PV massimi.";
+            case PassiveSpellEffectType.SpeedBonus:
+                return "Alleggerisce armatura e passi: +" + FormatValue(spell.value) + " velocita'.";
+            case PassiveSpellEffectType.DamageBonus:
+                return GetDamageTooltip(spell.value);
+            case PassiveSpellEffectType.ExtraCoinOnKill:
+                return "Ogni nemico sconfitto lascia cadere " + Mathf.RoundToInt(spell.value) + " coin extra.";
+            default:
+                return string.Empty;
+        }
+    }
+
+    private string GetItemTooltipText(ItemData item)
+    {
+        if(item == null)
+            return string.Empty;
+
+        switch(item.effectType)
+        {
+            case ItemEffectType.Heal:
+                return GetHealTooltip("Bevila al momento giusto: richiude le ferite prima che diventino destino.", item.value);
+            case ItemEffectType.RestoreShield:
+                return "Rinforza lo scudo con una carica limpida: +" + FormatValue(item.value) + " scudo.";
+            case ItemEffectType.SpeedBoost:
+                return "Per " + FormatValue(item.duration) + " secondi ti muovi come una lama nel vento: +" + FormatValue(item.value) + " velocita'.";
+            case ItemEffectType.DamageBoost:
+                return "Per " + FormatValue(item.duration) + " secondi ogni fendente pesa di piu': +" + FormatValue(item.value) + " danni.";
+            case ItemEffectType.MaxHealthBoost:
+                return "Tempra il corpo in modo permanente: +" + FormatValue(item.value) + " PV massimi.";
+            case ItemEffectType.AddCoins:
+                return "Una piccola fortuna pronta in tasca: +" + Mathf.RoundToInt(item.value) + " coin.";
+            default:
+                return string.Empty;
+        }
+    }
+
+    private string GetHealTooltip(string intro, float percent)
+    {
+        if(player == null)
+            return intro + " Cura il " + FormatValue(percent) + "% della vita massima.";
+
+        float healAmount = player.VitaMassima * (percent / 100f);
+        return intro + " Cura il " + FormatValue(percent) + "% della vita massima: circa +" + FormatValue(healAmount) + " PV.";
+    }
+
+    private string GetDamageTooltip(float multiplier)
+    {
+        if(player == null)
+            return "La staffa carica i colpi: danni x" + FormatValue(multiplier) + ".";
+
+        float finalDamage = player.danno * multiplier;
+        return "La staffa carica i colpi: " + FormatValue(player.danno) + " danni diventano " + FormatValue(finalDamage) + ".";
+    }
+
+    private string FormatValue(float number)
+    {
+        return number.ToString("0.##");
     }
 
     private TMP_Text FindPriceText(TMP_Text[] texts, int index)
@@ -650,7 +826,7 @@ public class MenuMenager : MonoBehaviour
         }
 
         if(totalText != null)
-            totalText.text = total.ToString("0.00") + " coin";
+            totalText.text = Mathf.RoundToInt(total).ToString() + " coin";
 
         UpdatePlayerCoinText();
         UpdateBuyButton();
