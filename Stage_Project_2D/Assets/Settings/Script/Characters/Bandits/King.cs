@@ -9,6 +9,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Seeker))]
 public class King : Enemy
 {
+    public static bool HasBeenDefeated { get; private set; }
+
     [Header("Rage Mode")]
     public Slider rageSlider;
     public float rageChargeDuration = 8f;
@@ -379,6 +381,7 @@ public class King : Enemy
             yield break;
 
         hasConvertedToNpc = true;
+        HasBeenDefeated = true;
         IsDying = true;
         IsAttacking = false;
         IsHurting = false;
