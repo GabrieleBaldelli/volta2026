@@ -705,6 +705,7 @@ public class InventoryMenager : MonoBehaviour
         if(selectedSpellSlot >= 0 && !IsSpellSlotUnlocked(selectedSpellSlot))
             selectedSpellSlot = -1;
 
+        LoadSavedInventory();
         RefreshSpellSlots();
     }
 

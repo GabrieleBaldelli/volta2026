@@ -18,6 +18,7 @@ public class PlayerUpgradeStats : MonoBehaviour
     private static float savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
     private static float savedCurrentShield;
     private static float savedMaxShield = 5f;
+    private static int savedCoins;
 
     // Serve per evitare che OnDisable risalvi i dati subito dopo un reset per morte.
     private bool saveProgressOnDisable = true;
@@ -147,6 +148,7 @@ public class PlayerUpgradeStats : MonoBehaviour
             savedXP = player.XpAttuale;
             savedPlayerLevel = player.livello;
             savedNextLevelMultiplier = player.MoltiplicatoreLivelloSuccessivo;
+            savedCoins = player.CoinSetGet;
         }
 
         // Salva lo scudo attuale, non solo il suo livello massimo.
@@ -181,6 +183,7 @@ public class PlayerUpgradeStats : MonoBehaviour
         savedMaxHealth = PlayerMovement.vitaMassimaIniziale;
         savedCurrentShield = 0f;
         savedMaxShield = 5f;
+        savedCoins = 0;
         hasSavedProgress = false;
 
         // Dopo un reset non vogliamo che OnDisable salvi di nuovo i vecchi valori.
@@ -203,6 +206,7 @@ public class PlayerUpgradeStats : MonoBehaviour
         {
             // Ripristina anche livello e XP, cosi' il menu in Room 2 mostra la progressione di Room 1.
             player.RestoreProgression(savedXP, savedPlayerLevel, savedNextLevelMultiplier);
+            player.CoinSetGet = savedCoins;
 
             // Ripristina i valori reali salvati, senza sommare di nuovo i bonus.
             player.danno = savedSwordDamage;
