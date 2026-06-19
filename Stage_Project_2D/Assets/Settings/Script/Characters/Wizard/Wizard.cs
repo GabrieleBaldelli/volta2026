@@ -102,7 +102,11 @@ public class Wizard : Enemy
 
     protected override void Start()
     {
-        // Setup iniziale: Enemy prepara componenti/player/vita; il wizard aggiunge barre, summon e shield.
+        NPC npc = GetComponent<NPC>();
+
+        if(npc != null)
+            npc.enabled = false;
+
         xp = 500f;
         base.Start();
         FindBars();
@@ -421,8 +425,11 @@ public class Wizard : Enemy
             UpdateLifeBar();
         }
 
-        if(vita <= 1f)
+       if(vita <= 0f)
         {
+            vita = 0f;
+            UpdateLifeBar();
+
             StartCoroutine(DieCoroutine());
             yield break;
         }
@@ -621,21 +628,31 @@ public class Wizard : Enemy
 
     private IEnumerator DieCoroutine()
     {
-        // Morte del boss: ferma tutto, lancia animazione/audio e distrugge l'oggetto.
         if(IsDying)
             yield break;
 
         IsDying = true;
+
+            Debug.Log("INIZIO DIECOROUTINE");
+
+            vita = 0f;
+            UpdateLifeBar();
+
         IsAttacking = false;
         IsHurting = false;
         isTeleporting = false;
 
         GiveXPOnce();
-        PassiveSpellManager passiveSpellManager = playerScript != null ? playerScript.GetComponent<PassiveSpellManager>() : null;
+
+        PassiveSpellManager passiveSpellManager =
+            playerScript != null ? playerScript.GetComponent<PassiveSpellManager>() : null;
 
         if(playerScript != null)
         {
-            int coinReward = passiveSpellManager != null ? passiveSpellManager.GetCoinRewardWithPassives(coin) : coin;
+            int coinReward = passiveSpellManager != null
+                ? passiveSpellManager.GetCoinRewardWithPassives(coin)
+                : coin;
+
             playerScript.CoinSetGet += coinReward;
             CoinHud.ShowCoinReward(coinReward, transform.position);
         }
@@ -649,12 +666,37 @@ public class Wizard : Enemy
         if(animazioni != null)
             animazioni.Morte();
 
+        // Attende che l'animazione di morte finisca
         yield return new WaitForSeconds(0.8f);
 
-        if(this != null)
-            Destroy(gameObject);
-    }
+        // Distrugge tutti gli occhi evocati
+        foreach(GameObject enemy in summonedEnemies)
+        {
+            if(enemy != null)
+                Destroy(enemy);
+        }
 
+        summonedEnemies.Clear();
+
+        // Disattiva il movimento del pathfinding
+        if(aiPath != null)
+            aiPath.enabled = false;
+
+        AIDestinationSetter destinationSetter =
+            GetComponent<AIDestinationSetter>();
+
+        if(destinationSetter != null)
+            destinationSetter.enabled = false;
+
+        // Attiva il componente NPC
+        NPC npc = GetComponent<NPC>();
+
+        if(npc != null)
+            npc.enabled = true;
+
+        // Disattiva il boss
+        this.enabled = false;
+    }
     private void UpdateLifeBar()
     {
         // Aggiorna sia la LifeBar custom sia l'Image legacy ereditata da Enemy, se presenti.
