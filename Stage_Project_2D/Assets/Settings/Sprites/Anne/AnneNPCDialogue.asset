@@ -18,7 +18,7 @@ MonoBehaviour:
   - "Come fai ad essere cos\xEC forte!"
   - Ma tranquillo che non sarai mai al nostro livello.
   - E per dimostrartelo sconfiggeremo il King prima di te.
-  autoProgressLines: 0101
+  autoProgressLines: 010101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
   voiceSound: {fileID: 0}

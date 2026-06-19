@@ -402,6 +402,7 @@ public class King : Enemy
             PassiveSpellManager passiveSpellManager = playerScript.GetComponent<PassiveSpellManager>();
             int coinReward = passiveSpellManager != null ? passiveSpellManager.GetCoinRewardWithPassives(coin) : coin;
             playerScript.CoinSetGet += coinReward;
+            CoinHud.ShowCoinReward(coinReward, transform.position);
 
             if(passiveSpellManager != null)
                 passiveSpellManager.NotifyEnemyKilled();

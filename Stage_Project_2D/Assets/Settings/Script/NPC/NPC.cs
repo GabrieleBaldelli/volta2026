@@ -1,4 +1,5 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,6 +7,8 @@ using UnityEngine.UI;
 
 public class NPC : MonoBehaviour, Interactable
 {
+    private static readonly HashSet<string> talkedNpcNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
     [Header("Dialogue")]
     public NPCDialogue dialogueData;
     public GameObject dialoguePanel;
@@ -26,6 +29,17 @@ public class NPC : MonoBehaviour, Interactable
     public bool CanInteract()
     {
         return enabled && !isDialogueActive;
+    }
+
+    public static bool HasTalkedTo(string npcName)
+    {
+        return !string.IsNullOrWhiteSpace(npcName) && talkedNpcNames.Contains(npcName.Trim());
+    }
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetTalkedNpcNames()
+    {
+        talkedNpcNames.Clear();
     }
 
     [Header("Player Interaction")]
@@ -66,6 +80,7 @@ public class NPC : MonoBehaviour, Interactable
 
         nameText.SetText(dialogueData.npcName);
         portraitImage.sprite = dialogueData.npcPortrait;
+        MarkAsTalked();
 
         dialoguePanel.SetActive(true);
 
@@ -141,5 +156,13 @@ public class NPC : MonoBehaviour, Interactable
             return rivenDialogueAfterKingDeath;
 
         return dialogueData.dialogueLines;
+    }
+
+    private void MarkAsTalked()
+    {
+        if(dialogueData == null || string.IsNullOrWhiteSpace(dialogueData.npcName))
+            return;
+
+        talkedNpcNames.Add(dialogueData.npcName.Trim());
     }
 }
