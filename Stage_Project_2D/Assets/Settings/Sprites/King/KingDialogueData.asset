@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9180cc1661b6406ba216c72d5f9bbf3, type: 3}
+  m_Name: KingDialogueData
+  m_EditorClassIdentifier: 
+  npcName: King
+  npcPortrait: {fileID: 0}
+  dialogueLines:
+  - Grazie  per averli liberato dal controllo di quel Mago!
+  - Adesso lui si trova nella stanza situata qua sopra.
+  - "Ma ho perso la chiave e non riesco pi\xF9 a trovarla."
+  autoProgressLines: 010101
+  autoProgressDelay: 1.5
+  typingSpeed: 0.05
+  voiceSound: {fileID: 0}
+  voicePitch: 1

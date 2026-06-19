@@ -67,6 +67,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public bool IsDyingSetGet
+    {
+        get { return IsDying; }
+    }
+
+    public virtual bool ShouldRoomLockerControl
+    {
+        get { return true; }
+    }
+
     protected Transform PlayerTransform
     {
         get { return p; }
