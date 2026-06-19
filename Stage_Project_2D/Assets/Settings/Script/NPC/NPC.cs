@@ -14,6 +14,8 @@ public class NPC : MonoBehaviour, Interactable
     public Image portraitImage;
     public Canvas Shop;
 
+    private bool talked = false;
+
     [Header("Unread Dialogue Indicator")]
     [SerializeField] private GameObject unreadDialogueIndicator;
     [SerializeField] private bool autoCreateUnreadDialogueIndicator = true;
@@ -29,6 +31,8 @@ public class NPC : MonoBehaviour, Interactable
     public event Action<NPC> DialogueCompleted;
 
     private static readonly HashSet<string> readDialogueIds = new HashSet<string>();
+
+    private static readonly HashSet<string> talkedNPCs = new HashSet<string>();
 
     private static readonly string[] rivenDialogueAfterKingDeath =
     {
@@ -144,6 +148,7 @@ public class NPC : MonoBehaviour, Interactable
     public void EndDialogue()
     {
         EndDialogue(false);
+        talked = true;
     }
 
     private void EndDialogue(bool completedDialogue)
@@ -153,12 +158,16 @@ public class NPC : MonoBehaviour, Interactable
         dialogueText.SetText("");
         dialoguePanel.SetActive(false);
 
-        if(completedDialogue)
-        {
-            DialogueCompleted?.Invoke(this);
-            MarkCurrentDialogueAsRead();
-            RefreshUnreadDialogueIndicator();
-        }
+       if(completedDialogue)
+    {
+        DialogueCompleted?.Invoke(this);
+
+        if(dialogueData != null)
+            talkedNPCs.Add(dialogueData.npcName);
+
+        MarkCurrentDialogueAsRead();
+        RefreshUnreadDialogueIndicator();
+    }
     }
 
     public void StopDialogue(bool stop)
@@ -250,4 +259,11 @@ public class NPC : MonoBehaviour, Interactable
 
         return baseId;
     }
+
+    public static bool HasTalkedTo(string npcName)
+    {
+        return talkedNPCs.Contains(npcName);
+    }
+
+    
 }
