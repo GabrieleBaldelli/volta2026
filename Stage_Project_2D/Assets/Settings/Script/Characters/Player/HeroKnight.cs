@@ -29,6 +29,15 @@ public class PlayerMovement : MonoBehaviour
     public float dashDuration = 0.15f;
     public float comboResetTime = 0.8f;
 
+    [Header("Dash Effects")]
+    [SerializeField] private Animator slideDustAnimator;
+    [SerializeField] private string slideDustStateName = "SlideDust";
+    [SerializeField] private float slideDustLeftDashExtraRightOffset = 0.15f;
+    private SpriteRenderer slideDustRenderer;
+    private Vector3 slideDustStartLocalPosition;
+    private Vector3 slideDustStartLocalScale;
+    private bool hasSlideDustStartLocalPosition;
+
     private int coin;
 
     public int CoinSetGet
@@ -190,6 +199,19 @@ public class PlayerMovement : MonoBehaviour
     private float movementX;
     private float movementY;
 
+    private void Awake()
+    {
+        if(slideDustAnimator == null)
+            slideDustAnimator = FindSlideDustAnimator();
+
+        PrepareSlideDust();
+    }
+
+    private void OnEnable()
+    {
+        HideSlideDust();
+    }
+
     void Start()
     {
         //Prende automaticamente i componenti del gameobject
@@ -209,6 +231,11 @@ public class PlayerMovement : MonoBehaviour
 
         if(spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if(slideDustAnimator == null)
+            slideDustAnimator = FindSlideDustAnimator();
+
+        PrepareSlideDust();
 
         if(rb == null)
             Debug.LogError("Rigidbody2D mancante sul Player", this);
@@ -592,6 +619,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //Cambio animazione
             anim.Play("Player_Dash");
+            PlaySlideDust();
         }
 
         //Aspetto che l'animazione finisca
@@ -602,7 +630,79 @@ public class PlayerMovement : MonoBehaviour
 
         //Fine dash
         IsDashing = false;
+        HideSlideDust();
     } 
+
+    private void PrepareSlideDust()
+    {
+        if(slideDustAnimator == null)
+            return;
+
+        slideDustRenderer = slideDustAnimator.GetComponent<SpriteRenderer>();
+
+        if(slideDustRenderer == null)
+            slideDustRenderer = slideDustAnimator.GetComponentInChildren<SpriteRenderer>(true);
+
+        if(!hasSlideDustStartLocalPosition)
+        {
+            slideDustStartLocalPosition = slideDustAnimator.transform.localPosition;
+            slideDustStartLocalScale = slideDustAnimator.transform.localScale;
+            hasSlideDustStartLocalPosition = true;
+        }
+
+        HideSlideDust();
+    }
+
+    private void PlaySlideDust()
+    {
+        if(SceneManager.GetActiveScene().name != "Room 1" || slideDustAnimator == null)
+            return;
+
+        bool dashLeft = dashDirection.x < -0.01f || (Mathf.Approximately(dashDirection.x, 0f) && spriteRenderer != null && spriteRenderer.flipX);
+
+        if(hasSlideDustStartLocalPosition)
+        {
+            Vector3 localPosition = slideDustStartLocalPosition;
+            localPosition.x = dashLeft
+                ? -slideDustStartLocalPosition.x + slideDustLeftDashExtraRightOffset
+                : slideDustStartLocalPosition.x - slideDustLeftDashExtraRightOffset;
+            slideDustAnimator.transform.localPosition = localPosition;
+        }
+
+        if(slideDustRenderer != null)
+        {
+            slideDustRenderer.flipX = false;
+            slideDustRenderer.flipY = false;
+        }
+
+        Vector3 localScale = slideDustStartLocalScale;
+        localScale.x = -Mathf.Abs(slideDustStartLocalScale.x);
+        localScale.y = Mathf.Abs(slideDustStartLocalScale.y) * (dashLeft ? -1f : 1f);
+        slideDustAnimator.transform.localScale = localScale;
+
+        slideDustAnimator.gameObject.SetActive(true);
+        slideDustAnimator.enabled = true;
+        slideDustAnimator.Play(slideDustStateName, 0, 0f);
+    }
+
+    private void HideSlideDust()
+    {
+        if(slideDustAnimator != null)
+            slideDustAnimator.gameObject.SetActive(false);
+    }
+
+    private Animator FindSlideDustAnimator()
+    {
+        Animator[] childAnimators = GetComponentsInChildren<Animator>(true);
+
+        foreach(Animator childAnimator in childAnimators)
+        {
+            if(childAnimator != null && childAnimator.gameObject.name == "SlideDust")
+                return childAnimator;
+        }
+
+        return null;
+    }
 
     private IEnumerator ShieldCoroutine()
     {
