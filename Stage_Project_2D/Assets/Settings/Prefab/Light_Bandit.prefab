@@ -216,7 +216,7 @@ MonoBehaviour:
   xp: 100
   coin: 10
   danno: 5
-  stopDistance: 1.4
+  stopDistance: 1.5
   chaseDistance: 7
   attackCooldown: 1.5
   attackDuration: 0.6
