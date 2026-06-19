@@ -17,6 +17,9 @@ public class Lock_Enemy : MonoBehaviour
                     continue;
 
                 Enemy enemyScript = enemy.GetComponent<Enemy>();
+                if(enemyScript != null && !enemyScript.ShouldRoomLockerControl)
+                    continue;
+
                 if(enemyScript != null)
                     enemyScript.PrepareForRoomLock();
 

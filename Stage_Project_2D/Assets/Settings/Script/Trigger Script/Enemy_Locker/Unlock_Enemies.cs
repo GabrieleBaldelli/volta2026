@@ -14,10 +14,13 @@ public class Unlock_Enemy : MonoBehaviour
             {
                 if(enemy == null)
                     continue;
+
+                Enemy enemyScript = enemy.GetComponent<Enemy>();
+                if(enemyScript != null && !enemyScript.ShouldRoomLockerControl)
+                    continue;
                 
                 enemy.SetActive(true);
 
-                Enemy enemyScript = enemy.GetComponent<Enemy>();
                 if(enemyScript != null)
                     enemyScript.PrepareForRoomUnlock();
             }

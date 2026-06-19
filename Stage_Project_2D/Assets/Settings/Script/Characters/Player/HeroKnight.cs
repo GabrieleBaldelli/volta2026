@@ -541,6 +541,7 @@ public class PlayerMovement : MonoBehaviour
         if(enemyRb == null || e == null)
             yield break;
 
+        Enemy enemyScript = e.GetComponent<Enemy>();
         Vector2 knockbackDirection = (e.position - transform.position).normalized;
 
         if (enemyPath != null)
@@ -557,6 +558,9 @@ public class PlayerMovement : MonoBehaviour
             yield break;
 
         enemyRb.velocity = Vector2.zero;
+
+        if(enemyScript != null && (!enemyScript.enabled || enemyScript.IsDyingSetGet))
+            yield break;
 
         if (enemyPath != null)
         {

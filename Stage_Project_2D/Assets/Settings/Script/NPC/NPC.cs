@@ -25,7 +25,7 @@ public class NPC : MonoBehaviour, Interactable
     //Puoi interagirci solo se non è già attivo un dialogo con questo NPC
     public bool CanInteract()
     {
-        return !isDialogueActive;
+        return enabled && !isDialogueActive;
     }
 
     [Header("Player Interaction")]
