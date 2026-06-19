@@ -15936,9 +15936,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthImage: {fileID: 1488964697}
   player: {fileID: 1586416858}
-  vitaMassima: 50
-  xp: 100
-  coin: 2000
+  vitaMassima: 700
+  xp: 500
+  coin: 150
   danno: 17
   stopDistance: 2
   chaseDistance: 7
@@ -27847,7 +27847,7 @@ Transform:
   m_GameObject: {fileID: 542244226}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.289763, y: 60.77466, z: -12.629301}
+  m_LocalPosition: {x: 2.289763, y: -4.40534, z: -12.629301}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -31206,7 +31206,7 @@ Transform:
   m_GameObject: {fileID: 729149687}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.289763, y: 60.77466, z: -12.629301}
+  m_LocalPosition: {x: 2.289763, y: -4.40534, z: -12.629301}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -45923,10 +45923,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HealthImage: {fileID: 1993637482}
   player: {fileID: 1586416858}
-  vitaMassima: 200
+  vitaMassima: 1000
   xp: 100
   coin: 1
-  danno: 12
+  danno: 20
   stopDistance: 3.02
   chaseDistance: 10
   attackCooldown: 1.2
@@ -45990,7 +45990,7 @@ MonoBehaviour:
   teleportGizmoColor: {r: 0.35, g: 0.65, b: 1, a: 1}
   summonGizmoColor: {r: 0.65, g: 0.25, b: 1, a: 1}
   shieldSlider: {fileID: 1698963873}
-  shieldMassimo: 60
+  shieldMassimo: 125
   shieldRegenDelay: 5
   shieldBrokenRegenDelay: 8
   shieldRegenPerSecond: 12
@@ -48829,7 +48829,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8413529789942519730, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 55.82
+      value: -9.36
       objectReference: {fileID: 0}
     - target: {fileID: 8413529789942519730, guid: a4b4a6d32bcb19248a754d6602ffc7e4, type: 3}
       propertyPath: m_LocalPosition.z
