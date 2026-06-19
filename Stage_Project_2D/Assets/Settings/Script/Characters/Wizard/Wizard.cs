@@ -633,6 +633,13 @@ public class Wizard : Enemy
         GiveXPOnce();
         PassiveSpellManager passiveSpellManager = playerScript != null ? playerScript.GetComponent<PassiveSpellManager>() : null;
 
+        if(playerScript != null)
+        {
+            int coinReward = passiveSpellManager != null ? passiveSpellManager.GetCoinRewardWithPassives(coin) : coin;
+            playerScript.CoinSetGet += coinReward;
+            CoinHud.ShowCoinReward(coinReward, transform.position);
+        }
+
         if(passiveSpellManager != null)
             passiveSpellManager.NotifyEnemyKilled();
 

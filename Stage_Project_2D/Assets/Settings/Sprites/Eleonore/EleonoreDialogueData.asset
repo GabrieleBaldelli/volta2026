@@ -15,8 +15,8 @@ MonoBehaviour:
   npcName: Eleonore
   npcPortrait: {fileID: 21300000, guid: 69a950fdb856044a6a4863aab109bfff, type: 3}
   dialogueLines:
-  - Chi va la?!
-  - Stai lontano forestiero!
+  - Accidenti, ci hai battute sul tempo!
+  - La solita fortuna del principiante.
   autoProgressLines: 0101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
