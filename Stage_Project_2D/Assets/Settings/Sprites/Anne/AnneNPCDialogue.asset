@@ -15,8 +15,9 @@ MonoBehaviour:
   npcName: Anne
   npcPortrait: {fileID: 21300000, guid: f623e47e12f9d427784aa7a83d3b7a1b, type: 3}
   dialogueLines:
-  - Ei come va?
-  - Sei un viandante di passaggio?
+  - "Come fai ad essere cos\xEC forte!"
+  - Ma tranquillo che non sarai mai al nostro livello.
+  - E per dimostrartelo sconfiggeremo il King prima di te.
   autoProgressLines: 0101
   autoProgressDelay: 1.5
   typingSpeed: 0.05
